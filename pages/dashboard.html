@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="../src/css/dashboard.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <aside class="sidebar">
+
+        <h2>Sistema</h2>
+
+        <ul>
+
+            <li>Dashboard</li>
+
+            <li>Clientes</li>
+
+            <li>Productos</li>
+
+            <li>Proveedores</li>
+
+        </ul>
+
+    </aside>
+
+    <div class="contenido">
+
+        <header>
+
+            <div>
+
+                <h2>Bienvenido</h2>
+
+                <p>
+
+                    <span id="nombreUsuario"></span>
+
+                </p>
+
+            </div>
+
+            <button id="temaBtn">
+            🌙 Modo oscuro
+            </button>
+            
+            <button id="cerrarSesion">
+
+                Cerrar sesión
+
+            </button>
+
+        </header>
+
+        <main>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>Clientes</h3>
+
+                    <p>0 registrados</p>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Productos</h3>
+
+                    <p>0 registrados</p>
+
+                </div>
+
+                <div class="card">
+
+                    <h3>Proveedores</h3>
+
+                    <p>0 registrados</p>
+
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+<script src="../src/js/dashboard.js"></script>
+
+</body>
+
+</html>
