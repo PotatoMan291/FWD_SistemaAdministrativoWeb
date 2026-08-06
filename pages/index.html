@@ -2,36 +2,54 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes</title>
     <link rel="stylesheet" href="../src/css/styles.css">
 </head>
 <body>
     <div class="container">
-        <h2>Gestión de Clientes</h2>
+        <h2>Gestión de Clientes</h2>      <div class="container">
+    
+    <button id="btn-modo-oscuro" class="btn-toggle-theme" type="button">🌙 Modo Oscuro</button>
 
-        <!-- Formulario para Crear / Editar -->
+    
+</div>
+   
+        <!-- Formulario para Crear / Actualizar Cliente -->
         <form id="form-cliente">
             <input type="hidden" id="cliente-id">
+            
             <div class="form-group">
-                <label for="nombre">Nombre obligatorio:</label>
+                <label for="nombre">Nombre:</label>
                 <input type="text" id="nombre" required>
             </div>
+             
             <div class="form-group">
-                <label for="correo">Correo electrónico:</label>
+                <label for="correo">Correo Electrónico:</label>
                 <input type="email" id="correo" required>
             </div>
+
             <div class="form-group">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" id="telefono" required>
+                <label for="telefono">Teléfono (solo números):</label>
+                <input type="text" id="telefono" inputmode="numeric" pattern="[0-9]*" required>
             </div>
-            <button type="submit" id="btn-guardar" class="btn-primary">Guardar Cliente</button>
-            <button type="button" id="btn-cancelar" style="display:none;" onclick="limpiarFormulario()">Cancelar</button>
+
+            <div class="form-actions">
+                <button type="submit" id="btn-guardar" class="btn-primary">Guardar Cliente</button>
+                <button type="button" id="btn-cancelar" class="btn-secondary" style="display: none;" onclick="limpiarFormulario()">Cancelar</button>
+            </div>
+            <div class="obtener-clientes">
+               
+            </div>
         </form>
 
         <hr>
 
-   
-        <h3>Lista de Clientes</h3>
+        <!-- Tabla para Listar Clientes -->
+        <h3>Lista de Clientes Registrados</h3>     <div class="form-group" style="margin-top: 20px;">
+    <label for="buscador-cliente">Buscar Cliente:</label>
+    <input type="text" id="buscador-cliente" placeholder="Escribe el nombre, correo o teléfono...">
+</div>
         <table>
             <thead>
                 <tr>
@@ -42,10 +60,12 @@
                 </tr>
             </thead>
             <tbody id="tabla-clientes-body">
-               
+                <!-- Se llena dinámicamente con JavaScript -->
             </tbody>
         </table>
     </div>
+   <!-- Barra de Búsqueda -->
+     <a href=""></a>
 
     <script src="../src/js/script.js"></script>
 </body>

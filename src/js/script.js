@@ -78,7 +78,7 @@ function listarClientes() {
     });
 }
 
-
+// 3. EDITAR CLIENTE (Cargar datos en el formulario)
 function cargarClienteParaEditar(id) {
     const clientes = obtenerClientes();
     const cliente = clientes.find(c => c.id === id);
@@ -94,7 +94,7 @@ function cargarClienteParaEditar(id) {
     }
 }
 
-
+// 4. ELIMINAR CLIENTE
 function eliminarCliente(id) {
     if (confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
         let clientes = obtenerClientes();
@@ -105,6 +105,7 @@ function eliminarCliente(id) {
     }
 }
 
+// Función auxiliar para limpiar el formulario
 function limpiarFormulario() {
     document.getElementById("form-cliente").reset();
     document.getElementById("cliente-id").value = "";
@@ -112,5 +113,65 @@ function limpiarFormulario() {
     document.getElementById("btn-cancelar").style.display = "none";
 }
 
-
+// Cargar la lista al iniciar la página
 document.addEventListener("DOMContentLoaded", listarClientes);
+
+// GESTIÓN DE MODO OSCURO
+const btnModoOscuro = document.getElementById("btn-modo-oscuro");
+
+// Comprobar si el usuario ya tenía una preferencia guardada
+if (localStorage.getItem("modo_oscuro") === "true") {
+    document.body.classList.add("dark-mode");
+    btnModoOscuro.textContent = "☀️ Modo Claro";
+}
+
+btnModoOscuro.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    
+    const esOscuro = document.body.classList.contains("dark-mode");
+    
+    // Cambiar texto e icono del botón
+    btnModoOscuro.textContent = esOscuro ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
+    
+    // Guardar preferencia en localStorage
+    localStorage.setItem("modo_oscuro", esOscuro);
+});
+    
+// BUSCAR CLIENTE EN TIEMPO REAL
+document.getElementById("buscador-cliente").addEventListener("input", function(e) {
+    const textoBusqueda = e.target.value.toLowerCase().trim();
+    const clientes = obtenerClientes();
+    const tbody = document.getElementById("tabla-clientes-body");
+    
+    // Filtrar clientes que coincidan con el nombre, correo o teléfono
+    const clientesFiltrados = clientes.filter(cliente => 
+        cliente.nombre.toLowerCase().includes(textoBusqueda) ||
+        cliente.correo.toLowerCase().includes(textoBusqueda) ||
+        cliente.telefono.toLowerCase().includes(textoBusqueda)
+    );
+
+    tbody.innerHTML = "";
+
+    if (clientesFiltrados.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No se encontraron clientes coincidentes.</td></tr>`;
+        return;
+    }
+
+    // Renderizar solo los clientes filtrados
+    clientesFiltrados.forEach(cliente => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${cliente.nombre}</td>
+            <td>${cliente.correo}</td>
+            <td>${cliente.telefono}</td>
+            <td>
+                <button onclick="cargarClienteParaEditar('${cliente.id}')">Editar</button>
+                <button onclick="eliminarCliente('${cliente.id}')" style="background-color: #e74c3c; color: white;">Eliminar</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+});
+
+
+
