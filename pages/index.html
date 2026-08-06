@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Clientes</title>
+    <link rel="stylesheet" href="../src/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Gestión de Clientes</h2>
+
+        <!-- Formulario para Crear / Editar -->
+        <form id="form-cliente">
+            <input type="hidden" id="cliente-id">
+            <div class="form-group">
+                <label for="nombre">Nombre obligatorio:</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="correo">Correo electrónico:</label>
+                <input type="email" id="correo" required>
+            </div>
+            <div class="form-group">
+                <label for="telefono">Teléfono:</label>
+                <input type="tel" id="telefono" required>
+            </div>
+            <button type="submit" id="btn-guardar" class="btn-primary">Guardar Cliente</button>
+            <button type="button" id="btn-cancelar" style="display:none;" onclick="limpiarFormulario()">Cancelar</button>
+        </form>
+
+        <hr>
+
+   
+        <h3>Lista de Clientes</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-clientes-body">
+               
+            </tbody>
+        </table>
+    </div>
+
+    <script src="../src/js/script.js"></script>
+</body>
+</html>
