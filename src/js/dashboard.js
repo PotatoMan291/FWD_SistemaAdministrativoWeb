@@ -9,17 +9,26 @@ if (!usuario) {
 document.getElementById("nombreUsuario").textContent =
 usuario.nombre + " (" + usuario.rol + ")";
 
-document.getElementById("cerrarSesion").addEventListener("click", function(){
+document.getElementById("cerrarSesion").addEventListener("click", function() {
 
-    const confirmar = confirm("¿Desea cerrar sesión?");
+    Swal.fire({
+        title: "¿Cerrar sesión?",
+        text: "Tendrás que iniciar sesión nuevamente para entrar.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, cerrar sesión",
+        cancelButtonText: "Cancelar"
+    }).then((resultado) => {
 
-    if(confirmar){
+        if (resultado.isConfirmed) {
 
-        localStorage.removeItem("usuario");
+            localStorage.removeItem("usuario");
 
-        window.location.href = "login.html";
+            window.location.href = "../pages/login.html";
 
-    }
+        }
+
+    });
 
 });
 
@@ -31,7 +40,7 @@ if(temaGuardado === "dark"){
 
     document.body.classList.add("dark");
 
-    temaBtn.textContent = "☀️ Modo claro";
+    temaBtn.textContent = "Modo claro";
 
 }
 
@@ -43,14 +52,18 @@ temaBtn.addEventListener("click", function(){
 
         localStorage.setItem("tema","dark");
 
-        temaBtn.textContent="☀️ Modo claro";
+        temaBtn.textContent="Modo claro";
 
     }else{
 
         localStorage.setItem("tema","light");
 
-        temaBtn.textContent="🌙 Modo oscuro";
+        temaBtn.textContent="Modo oscuro";
 
     }
 
+});
+
+document.getElementById("clientes").addEventListener("click", function() {
+    window.location.href = "../pages/clientes.html";
 });

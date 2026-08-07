@@ -15,91 +15,81 @@
 
 <body>
 
-<div class="container">
+    <div class="container">
 
-    <aside class="sidebar">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
 
-        <h2>Sistema</h2>
+            <h2>Sistema</h2>
 
-        <ul>
+            <ul>
+                <li id="inicio">- Dashboard</li>
+                <li id="clientes">- Clientes</li>
+                <li id="productos">- Productos</li>
+                <li id="proveedores">- Proveedores</li>
+            </ul>
 
-            <li>Dashboard</li>
+        </aside>
 
-            <li>Clientes</li>
 
-            <li>Productos</li>
+        <div class="contenido">
 
-            <li>Proveedores</li>
+            <!-- HEADER -->
+            <header>
 
-        </ul>
+                <div>
+                    <h2 id="tituloPagina">Dashboard</h2>
+                    <p>
+                        Usuario:
+                        <span id="nombreUsuario"></span>
+                    </p>
+                </div>
 
-    </aside>
+                <div class="acciones">
 
-    <div class="contenido">
+                    <button id="temaBtn" class="tema-btn">
+                        Modo oscuro
+                    </button>
 
-        <header>
-
-            <div>
-
-                <h2>Bienvenido</h2>
-
-                <p>
-
-                    <span id="nombreUsuario"></span>
-
-                </p>
-
-            </div>
-
-            <button id="temaBtn">
-            🌙 Modo oscuro
-            </button>
-            
-            <button id="cerrarSesion">
-
-                Cerrar sesión
-
-            </button>
-
-        </header>
-
-        <main>
-
-            <div class="cards">
-
-                <div class="card">
-
-                    <h3>Clientes</h3>
-
-                    <p>0 registrados</p>
+                    <button id="cerrarSesion" class="logout-btn">
+                        Cerrar sesión
+                    </button>
 
                 </div>
 
-                <div class="card">
+            </header>
 
-                    <h3>Productos</h3>
 
-                    <p>0 registrados</p>
+            <!-- CONTENIDO QUE CAMBIA -->
+            <main id="contenidoPrincipal">
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>Clientes</h3>
+                        <p>0 registrados</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Productos</h3>
+                        <p>0 registrados</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Proveedores</h3>
+                        <p>0 registrados</p>
+                    </div>
 
                 </div>
 
-                <div class="card">
+            </main>
 
-                    <h3>Proveedores</h3>
-
-                    <p>0 registrados</p>
-
-                </div>
-
-            </div>
-
-        </main>
+        </div>
 
     </div>
 
-</div>
-
-<script src="../src/js/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../src/js/dashboard.js"></script>
 
 </body>
 
