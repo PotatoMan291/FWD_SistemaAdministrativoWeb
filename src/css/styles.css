@@ -218,7 +218,7 @@ th, td {
 }
 
 th {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    background: linear-gradient(135deg, #f8fafc 0%, #fbfbfc 100%);
     color: #4f46e5;
     font-weight: 700;
     font-size: 0.9rem;
@@ -231,7 +231,7 @@ td {
     border-bottom: 1px solid #f1f5f9;
     color: #475569;
     font-size: 0.95rem;
-    background-color: #ffffff;
+    background-color: #f0eded;
     transition: all 0.2s ease;
 }
 
