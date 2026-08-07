@@ -1,11 +1,11 @@
 // ======================================================
 // ADMINISTRACIÓN DE PRODUCTOS
-// Todos los productos se guardan en LocalStorage.
-// Clave utilizada: "productos"
+// LocalStorage: "productos"
 // ======================================================
 
 const CLAVE_PRODUCTOS = "productos";
 const CLAVE_PROVEEDORES = "proveedores";
+const CLAVE_CATEGORIAS = "categorias";
 
 const formProducto = document.getElementById("form-producto");
 const productoId = document.getElementById("producto-id");
@@ -21,6 +21,11 @@ const btnCancelarProducto = document.getElementById("btn-cancelar-producto");
 const tablaProductosBody = document.getElementById("tabla-productos-body");
 const buscadorProducto = document.getElementById("buscador-producto");
 const mensajeProducto = document.getElementById("mensaje-producto");
+
+const resumenTotalProductos = document.getElementById("resumen-total-productos");
+const resumenStockTotal = document.getElementById("resumen-stock-total");
+const resumenStockBajo = document.getElementById("resumen-stock-bajo");
+const resumenProveedores = document.getElementById("resumen-proveedores");
 
 
 // ------------------------------------------------------
@@ -58,6 +63,87 @@ function obtenerProveedores() {
 
 
 // ------------------------------------------------------
+// Actualizar tarjetas de resumen
+// ------------------------------------------------------
+function actualizarResumenProductos() {
+
+    const productos = obtenerProductos();
+    const proveedores = obtenerProveedores();
+
+    let stockTotal = 0;
+    let stockBajo = 0;
+
+    productos.forEach(function(producto) {
+
+        stockTotal += Number(producto.stock);
+
+        if (Number(producto.stock) <= 5) {
+            stockBajo++;
+        }
+    });
+
+    resumenTotalProductos.textContent = productos.length;
+    resumenStockTotal.textContent = stockTotal;
+    resumenStockBajo.textContent = stockBajo;
+    resumenProveedores.textContent = proveedores.length;
+}
+
+
+// ------------------------------------------------------
+// Leer categorías desde LocalStorage
+// ------------------------------------------------------
+function obtenerCategorias() {
+
+    const datos = localStorage.getItem(CLAVE_CATEGORIAS);
+
+    return datos ? JSON.parse(datos) : [];
+}
+
+
+// ------------------------------------------------------
+// Cargar categorías en el select
+// ------------------------------------------------------
+function cargarCategoriasEnSelect(categoriaSeleccionada = "") {
+
+    const categorias = obtenerCategorias();
+
+    productoCategoria.innerHTML =
+        '<option value="">Seleccione una categoría</option>';
+
+    categorias.forEach(function(categoria) {
+
+        const opcion = document.createElement("option");
+
+        opcion.value = categoria.id;
+        opcion.textContent = categoria.nombre;
+
+        if (
+            String(categoria.id) ===
+            String(categoriaSeleccionada)
+        ) {
+            opcion.selected = true;
+        }
+
+        productoCategoria.appendChild(opcion);
+    });
+}
+
+
+// ------------------------------------------------------
+// Buscar categoría por ID
+// ------------------------------------------------------
+function obtenerCategoria(idCategoria) {
+
+    const categorias = obtenerCategorias();
+
+    return categorias.find(function(categoria) {
+
+        return String(categoria.id) === String(idCategoria);
+    });
+}
+
+
+// ------------------------------------------------------
 // Cargar proveedores en el select
 // ------------------------------------------------------
 function cargarProveedoresEnSelect(proveedorSeleccionado = "") {
@@ -72,61 +158,99 @@ function cargarProveedoresEnSelect(proveedorSeleccionado = "") {
         const opcion = document.createElement("option");
 
         opcion.value = proveedor.id;
-        opcion.textContent = proveedor.nombre + " - " + proveedor.empresa;
+        opcion.textContent =
+            proveedor.nombre + " - " + proveedor.empresa;
 
-        if (String(proveedor.id) === String(proveedorSeleccionado)) {
+        if (
+            String(proveedor.id) ===
+            String(proveedorSeleccionado)
+        ) {
 
             opcion.selected = true;
-
         }
 
         productoProveedor.appendChild(opcion);
-
     });
 }
 
 
 // ------------------------------------------------------
-// Obtener nombre del proveedor usando su ID
+// Buscar proveedor por ID
 // ------------------------------------------------------
-function obtenerNombreProveedor(idProveedor) {
+function obtenerProveedor(idProveedor) {
 
     const proveedores = obtenerProveedores();
 
-    const proveedorEncontrado = proveedores.find(function(proveedor) {
+    return proveedores.find(function(proveedor) {
 
         return String(proveedor.id) === String(idProveedor);
-
     });
-
-    if (proveedorEncontrado) {
-
-        return proveedorEncontrado.nombre;
-
-    }
-
-    return "Proveedor no disponible";
 }
 
 
 // ------------------------------------------------------
 // Crear botón de acción
 // ------------------------------------------------------
-function crearBoton(texto, clase, idProducto, accion) {
+function crearBoton(
+    titulo,
+    clase,
+    icono,
+    idProducto,
+    accion
+) {
 
     const boton = document.createElement("button");
 
     boton.type = "button";
-    boton.textContent = texto;
     boton.className = clase;
+    boton.title = titulo;
+    boton.setAttribute("aria-label", titulo);
+
+    const iconoElemento =
+        document.createElement("i");
+
+    iconoElemento.className = icono;
+
+    boton.appendChild(iconoElemento);
 
     boton.addEventListener("click", function() {
 
         accion(idProducto);
-
     });
 
     return boton;
+}
+
+
+// ------------------------------------------------------
+// Crear badge de stock
+// ------------------------------------------------------
+function crearBadgeStock(stock) {
+
+    const badge = document.createElement("span");
+
+    badge.classList.add(
+        "badge",
+        "stock-badge"
+    );
+
+    if (Number(stock) === 0) {
+
+        badge.classList.add("text-bg-danger");
+        badge.textContent = "Sin stock";
+
+    } else if (Number(stock) <= 5) {
+
+        badge.classList.add("text-bg-warning");
+        badge.textContent = stock + " unidades";
+
+    } else {
+
+        badge.classList.add("text-bg-success");
+        badge.textContent = stock + " unidades";
+    }
+
+    return badge;
 }
 
 
@@ -144,7 +268,6 @@ function mostrarProductos(listaProductos) {
     } else {
 
         productos = obtenerProductos();
-
     }
 
     tablaProductosBody.innerHTML = "";
@@ -155,11 +278,17 @@ function mostrarProductos(listaProductos) {
         const celda = document.createElement("td");
 
         celda.colSpan = 7;
-        celda.textContent = "No hay productos registrados.";
-        celda.style.textAlign = "center";
+        celda.className = "empty-state";
+
+        celda.innerHTML =
+            '<i class="bi bi-inbox"></i>' +
+            '<strong>No hay productos para mostrar</strong>' +
+            '<div class="small mt-1">Registra un producto o cambia el criterio de búsqueda.</div>';
 
         fila.appendChild(celda);
         tablaProductosBody.appendChild(fila);
+
+        actualizarResumenProductos();
 
         return;
     }
@@ -169,42 +298,150 @@ function mostrarProductos(listaProductos) {
         const fila = document.createElement("tr");
 
         const celdaId = document.createElement("td");
+        celdaId.className = "id-chip";
         celdaId.textContent = producto.id;
 
         const celdaNombre = document.createElement("td");
-        celdaNombre.textContent = producto.nombre;
+
+        const nombre = document.createElement("div");
+        nombre.className = "table-primary-text";
+        nombre.textContent = producto.nombre;
+
+        const categoriaSecundaria =
+            document.createElement("span");
+
+        categoriaSecundaria.className =
+            "table-secondary-text";
+
+        categoriaSecundaria.textContent =
+            "Producto registrado";
+
+        celdaNombre.appendChild(nombre);
+        celdaNombre.appendChild(categoriaSecundaria);
 
         const celdaCategoria = document.createElement("td");
-        celdaCategoria.textContent = producto.categoria;
+
+        const badgeCategoria =
+            document.createElement("span");
+
+        badgeCategoria.className =
+            "badge border text-body category-badge";
+
+        const categoria =
+            obtenerCategoria(producto.categoriaId);
+
+        if (categoria) {
+
+            badgeCategoria.textContent =
+                categoria.nombre;
+
+        } else {
+
+            // Compatibilidad con productos antiguos
+            badgeCategoria.textContent =
+                producto.categoria ||
+                "Categoría no disponible";
+        }
+
+        celdaCategoria.appendChild(badgeCategoria);
 
         const celdaPrecio = document.createElement("td");
-        celdaPrecio.textContent = "₡" + Number(producto.precio).toLocaleString("es-CR");
+        celdaPrecio.className = "fw-semibold";
+
+        celdaPrecio.textContent =
+            "₡" +
+            Number(producto.precio)
+                .toLocaleString("es-CR");
 
         const celdaStock = document.createElement("td");
-        celdaStock.textContent = producto.stock;
+
+        celdaStock.appendChild(
+            crearBadgeStock(producto.stock)
+        );
 
         const celdaProveedor = document.createElement("td");
-        celdaProveedor.textContent =
-            obtenerNombreProveedor(producto.proveedorId);
 
-        const celdaAcciones = document.createElement("td");
+        const proveedor =
+            obtenerProveedor(producto.proveedorId);
+
+        if (proveedor) {
+
+            const proveedorNombre =
+                document.createElement("div");
+
+            proveedorNombre.className =
+                "table-primary-text";
+
+            proveedorNombre.textContent =
+                proveedor.nombre;
+
+            const proveedorEmpresa =
+                document.createElement("span");
+
+            proveedorEmpresa.className =
+                "table-secondary-text";
+
+            proveedorEmpresa.textContent =
+                proveedor.empresa;
+
+            celdaProveedor.appendChild(
+                proveedorNombre
+            );
+
+            celdaProveedor.appendChild(
+                proveedorEmpresa
+            );
+
+        } else {
+
+            const badge =
+                document.createElement("span");
+
+            badge.className =
+                "badge text-bg-secondary";
+
+            badge.textContent =
+                "Proveedor no disponible";
+
+            celdaProveedor.appendChild(badge);
+        }
+
+        const celdaAcciones =
+            document.createElement("td");
+
+        const grupoAcciones =
+            document.createElement("div");
+
+        grupoAcciones.className =
+            "action-group";
 
         const botonEditar = crearBoton(
-            "Editar",
-            "btn-editar",
+            "Editar producto",
+            "btn btn-outline-primary btn-action",
+            "bi bi-pencil",
             producto.id,
             editarProducto
         );
 
         const botonEliminar = crearBoton(
-            "Eliminar",
-            "btn-eliminar",
+            "Eliminar producto",
+            "btn btn-outline-danger btn-action",
+            "bi bi-trash3",
             producto.id,
             eliminarProducto
         );
 
-        celdaAcciones.appendChild(botonEditar);
-        celdaAcciones.appendChild(botonEliminar);
+        grupoAcciones.appendChild(
+            botonEditar
+        );
+
+        grupoAcciones.appendChild(
+            botonEliminar
+        );
+
+        celdaAcciones.appendChild(
+            grupoAcciones
+        );
 
         fila.appendChild(celdaId);
         fila.appendChild(celdaNombre);
@@ -215,21 +452,28 @@ function mostrarProductos(listaProductos) {
         fila.appendChild(celdaAcciones);
 
         tablaProductosBody.appendChild(fila);
-
     });
+
+    actualizarResumenProductos();
 }
 
 
 // ------------------------------------------------------
 // Validar datos
 // ------------------------------------------------------
-function validarProducto(nombre, categoria, precio, stock, proveedorId) {
+function validarProducto(
+    nombre,
+    categoriaId,
+    precio,
+    stock,
+    proveedorId
+) {
 
     mensajeProducto.textContent = "";
 
     if (
         nombre === "" ||
-        categoria === "" ||
+        categoriaId === "" ||
         precio === "" ||
         stock === "" ||
         proveedorId === ""
@@ -272,174 +516,202 @@ function validarProducto(nombre, categoria, precio, stock, proveedorId) {
 // ------------------------------------------------------
 // Registrar o actualizar producto
 // ------------------------------------------------------
-formProducto.addEventListener("submit", function(event) {
+formProducto.addEventListener(
+    "submit",
+    function(event) {
 
-    event.preventDefault();
+        event.preventDefault();
 
-    const id = productoId.value;
+        const id =
+            productoId.value;
 
-    const nombre = productoNombre.value.trim();
-    const categoria = productoCategoria.value.trim();
-    const precio = productoPrecio.value;
-    const stock = productoStock.value;
-    const proveedorId = productoProveedor.value;
+        const nombre =
+            productoNombre.value.trim();
 
-    if (!validarProducto(
-        nombre,
-        categoria,
-        precio,
-        stock,
-        proveedorId
-    )) {
+        const categoriaId =
+            productoCategoria.value;
 
-        return;
-    }
+        const precio =
+            productoPrecio.value;
 
-    let productos = obtenerProductos();
+        const stock =
+            productoStock.value;
 
-    // --------------------------------------------------
-    // REGISTRAR NUEVO PRODUCTO
-    // --------------------------------------------------
-    if (id === "") {
+        const proveedorId =
+            productoProveedor.value;
 
-        const nuevoProducto = {
+        if (
+            !validarProducto(
+                nombre,
+                categoriaId,
+                precio,
+                stock,
+                proveedorId
+            )
+        ) {
 
-            id: Date.now().toString(),
-            nombre: nombre,
-            categoria: categoria,
-            precio: Number(precio),
-            stock: Number(stock),
-            proveedorId: proveedorId
+            return;
+        }
 
-        };
+        let productos =
+            obtenerProductos();
 
-        productos.push(nuevoProducto);
+        // Registrar
+        if (id === "") {
 
-        guardarProductos(productos);
+            const nuevoProducto = {
 
-        limpiarFormularioProducto();
-        mostrarProductos();
+                id: Date.now().toString(),
+                nombre: nombre,
+                categoriaId: categoriaId,
+                precio: Number(precio),
+                stock: Number(stock),
+                proveedorId: proveedorId
+            };
 
-        return;
-    }
+            productos.push(
+                nuevoProducto
+            );
 
-    // --------------------------------------------------
-    // EDITAR PRODUCTO
-    // SweetAlert pregunta antes de guardar los cambios
-    // --------------------------------------------------
-    Swal.fire({
-
-        title: "¿Desea guardar los cambios?",
-
-        icon: "question",
-
-        showDenyButton: true,
-
-        showCancelButton: true,
-
-        confirmButtonText: "Guardar",
-
-        denyButtonText: "No guardar",
-
-        cancelButtonText: "Cancelar"
-
-    }).then(function(result) {
-
-        if (result.isConfirmed) {
-
-            productos = productos.map(function(producto) {
-
-                if (String(producto.id) === String(id)) {
-
-                    return {
-
-                        id: producto.id,
-                        nombre: nombre,
-                        categoria: categoria,
-                        precio: Number(precio),
-                        stock: Number(stock),
-                        proveedorId: proveedorId
-
-                    };
-
-                }
-
-                return producto;
-
-            });
-
-            // Actualizar LocalStorage solo si confirma
             guardarProductos(productos);
 
             limpiarFormularioProducto();
             mostrarProductos();
 
-            Swal.fire(
-                "¡Guardado!",
-                "Los cambios del producto se guardaron correctamente.",
-                "success"
-            );
+            mostrarToast("Producto registrado correctamente.", "success");
 
-        } else if (result.isDenied) {
-
-            Swal.fire(
-                "Cambios no guardados",
-                "Los cambios del producto no se guardaron.",
-                "info"
-            );
-
+            return;
         }
 
-        // Si presiona Cancelar, no se guarda nada
-        // y el formulario permanece en modo edición.
-    });
+        // Editar
+        Swal.fire({
 
-});
+            title: "¿Desea guardar los cambios?",
+
+            text: "Se actualizará la información del producto.",
+
+            icon: "question",
+
+            showDenyButton: true,
+
+            showCancelButton: true,
+
+            confirmButtonText: "Guardar",
+
+            denyButtonText: "No guardar",
+
+            cancelButtonText: "Cancelar"
+
+        }).then(function(result) {
+
+            if (result.isConfirmed) {
+
+                productos =
+                    productos.map(
+                        function(producto) {
+
+                            if (
+                                String(producto.id) ===
+                                String(id)
+                            ) {
+
+                                return {
+                                    id: producto.id,
+                                    nombre: nombre,
+                                    categoriaId: categoriaId,
+                                    precio: Number(precio),
+                                    stock: Number(stock),
+                                    proveedorId: proveedorId
+                                };
+                            }
+
+                            return producto;
+                        }
+                    );
+
+                guardarProductos(
+                    productos
+                );
+
+                limpiarFormularioProducto();
+                mostrarProductos();
+
+                mostrarToast("Cambios del producto guardados.", "success");
+
+            } else if (result.isDenied) {
+
+                Swal.fire(
+                    "Cambios no guardados",
+                    "Los cambios del producto no se guardaron.",
+                    "info"
+                );
+            }
+        });
+    }
+);
 
 
 // ------------------------------------------------------
-// Cargar producto en el formulario para editar
+// Cargar producto para editar
 // ------------------------------------------------------
 function editarProducto(id) {
 
-    const productos = obtenerProductos();
+    const productos =
+        obtenerProductos();
 
-    const productoEncontrado = productos.find(function(producto) {
+    const productoEncontrado =
+        productos.find(
+            function(producto) {
 
-        return String(producto.id) === String(id);
-
-    });
+                return (
+                    String(producto.id) ===
+                    String(id)
+                );
+            }
+        );
 
     if (!productoEncontrado) {
 
         return;
     }
 
-    productoId.value = productoEncontrado.id;
-    productoNombre.value = productoEncontrado.nombre;
-    productoCategoria.value = productoEncontrado.categoria;
-    productoPrecio.value = productoEncontrado.precio;
-    productoStock.value = productoEncontrado.stock;
+    productoId.value =
+        productoEncontrado.id;
+
+    productoNombre.value =
+        productoEncontrado.nombre;
+
+    cargarCategoriasEnSelect(
+        productoEncontrado.categoriaId
+    );
+
+    productoPrecio.value =
+        productoEncontrado.precio;
+
+    productoStock.value =
+        productoEncontrado.stock;
 
     cargarProveedoresEnSelect(
         productoEncontrado.proveedorId
     );
 
-    btnGuardarProducto.textContent =
-        "Actualizar Producto";
+    btnGuardarProducto.innerHTML =
+        '<i class="bi bi-check2-circle me-1"></i> Actualizar Producto';
 
     btnCancelarProducto.style.display =
         "inline-block";
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    document
+        .getElementById("formulario-productos")
+        .scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
 }
 
 
 // ------------------------------------------------------
-// Eliminar producto con SweetAlert2
+// Eliminar producto
 // ------------------------------------------------------
 function eliminarProducto(id) {
 
@@ -453,9 +725,9 @@ function eliminarProducto(id) {
 
         showCancelButton: true,
 
-        confirmButtonColor: "#3085d6",
+        confirmButtonColor: "#d93737",
 
-        cancelButtonColor: "#d33",
+        cancelButtonColor: "#6b7785",
 
         confirmButtonText: "Sí, eliminar",
 
@@ -465,32 +737,29 @@ function eliminarProducto(id) {
 
         if (result.isConfirmed) {
 
-            let productos = obtenerProductos();
+            let productos =
+                obtenerProductos();
 
-            productos = productos.filter(function(producto) {
+            productos =
+                productos.filter(
+                    function(producto) {
 
-                return String(producto.id) !== String(id);
+                        return (
+                            String(producto.id) !==
+                            String(id)
+                        );
+                    }
+                );
 
-            });
-
-            // Actualizar LocalStorage inmediatamente
-            guardarProductos(productos);
+            guardarProductos(
+                productos
+            );
 
             limpiarFormularioProducto();
             mostrarProductos();
 
-            Swal.fire({
-
-                title: "¡Eliminado!",
-
-                text: "El producto ha sido eliminado.",
-
-                icon: "success"
-
-            });
-
+            mostrarToast("Producto eliminado.", "success");
         }
-
     });
 }
 
@@ -504,8 +773,8 @@ function limpiarFormularioProducto() {
 
     productoId.value = "";
 
-    btnGuardarProducto.textContent =
-        "Guardar Producto";
+    btnGuardarProducto.innerHTML =
+        '<i class="bi bi-floppy me-1"></i> Guardar Producto';
 
     btnCancelarProducto.style.display =
         "none";
@@ -513,89 +782,174 @@ function limpiarFormularioProducto() {
     mensajeProducto.textContent = "";
 
     cargarProveedoresEnSelect();
+    cargarCategoriasEnSelect();
 }
 
 
 // ------------------------------------------------------
 // Cancelar edición
 // ------------------------------------------------------
-btnCancelarProducto.addEventListener("click", function() {
+btnCancelarProducto.addEventListener(
+    "click",
+    function() {
 
-    limpiarFormularioProducto();
+        limpiarFormularioProducto();
+    }
+);
 
-});
-
-
-// ------------------------------------------------------
-// Buscar productos en tiempo real
-// ------------------------------------------------------
-buscadorProducto.addEventListener("input", function(event) {
-
-    const texto = event.target.value
-        .toLowerCase()
-        .trim();
-
-    const productos = obtenerProductos();
-
-    const productosFiltrados =
-        productos.filter(function(producto) {
-
-            const nombreProveedor =
-                obtenerNombreProveedor(producto.proveedorId)
-                    .toLowerCase();
-
-            return (
-                producto.nombre.toLowerCase().includes(texto) ||
-                producto.categoria.toLowerCase().includes(texto) ||
-                nombreProveedor.includes(texto)
-            );
-
-        });
-
-    mostrarProductos(productosFiltrados);
-});
 
 
 // ------------------------------------------------------
-// Modo oscuro
-// Usa la misma clave del módulo de Clientes
+// Modo oscuro con CoreUI
 // ------------------------------------------------------
 const btnModoOscuro =
-    document.getElementById("btn-modo-oscuro");
+    document.getElementById(
+        "btn-modo-oscuro"
+    );
 
-if (localStorage.getItem("modo_oscuro") === "true") {
+function actualizarBotonTema(esOscuro) {
 
-    document.body.classList.add("dark-mode");
+    if (esOscuro) {
 
-    btnModoOscuro.textContent =
-        "☀️ Modo Claro";
+        btnModoOscuro.innerHTML =
+            '<i class="bi bi-sun"></i><span>Modo claro</span>';
+
+    } else {
+
+        btnModoOscuro.innerHTML =
+            '<i class="bi bi-moon-stars"></i><span>Modo oscuro</span>';
+    }
 }
 
-btnModoOscuro.addEventListener("click", function() {
-
-    document.body.classList.toggle("dark-mode");
+function aplicarTemaGuardado() {
 
     const esOscuro =
-        document.body.classList.contains("dark-mode");
+        localStorage.getItem(
+            "modo_oscuro"
+        ) === "true";
 
-    btnModoOscuro.textContent =
+    document.documentElement.setAttribute(
+        "data-theme",
         esOscuro
-            ? "☀️ Modo Claro"
-            : "🌙 Modo Oscuro";
+            ? "dark"
+            : "light"
+    );
 
-    localStorage.setItem(
-        "modo_oscuro",
+    actualizarBotonTema(
         esOscuro
     );
-});
+}
+
+btnModoOscuro.addEventListener(
+    "click",
+    function() {
+
+        const temaActual =
+            document.documentElement
+                .getAttribute(
+                    "data-theme"
+                );
+
+        const esOscuro =
+            temaActual !== "dark";
+
+        document.documentElement
+            .setAttribute(
+                "data-theme",
+                esOscuro
+                    ? "dark"
+                    : "light"
+            );
+
+        localStorage.setItem(
+            "modo_oscuro",
+            esOscuro
+        );
+
+        actualizarBotonTema(
+            esOscuro
+        );
+    }
+);
 
 
 // ------------------------------------------------------
-// Cargar datos al iniciar
+// Menú lateral responsive
 // ------------------------------------------------------
-document.addEventListener("DOMContentLoaded", function() {
+const sidebar =
+    document.getElementById("sidebar");
 
-    cargarProveedoresEnSelect();
-    mostrarProductos();
+const sidebarOverlay =
+    document.getElementById(
+        "sidebar-overlay"
+    );
 
-});
+const btnAbrirMenu =
+    document.getElementById(
+        "btn-abrir-menu"
+    );
+
+const btnCerrarMenu =
+    document.getElementById(
+        "btn-cerrar-menu"
+    );
+
+function abrirMenu() {
+
+    sidebar.classList.add(
+        "menu-open"
+    );
+
+    sidebarOverlay.classList.add(
+        "show"
+    );
+
+    document.body.classList.add(
+        "menu-open"
+    );
+}
+
+function cerrarMenu() {
+
+    sidebar.classList.remove(
+        "menu-open"
+    );
+
+    sidebarOverlay.classList.remove(
+        "show"
+    );
+
+    document.body.classList.remove(
+        "menu-open"
+    );
+}
+
+btnAbrirMenu.addEventListener(
+    "click",
+    abrirMenu
+);
+
+btnCerrarMenu.addEventListener(
+    "click",
+    cerrarMenu
+);
+
+sidebarOverlay.addEventListener(
+    "click",
+    cerrarMenu
+);
+
+
+// ------------------------------------------------------
+// Inicialización
+// ------------------------------------------------------
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        aplicarTemaGuardado();
+        cargarCategoriasEnSelect();
+        cargarProveedoresEnSelect();
+        mostrarProductos();
+    }
+);
