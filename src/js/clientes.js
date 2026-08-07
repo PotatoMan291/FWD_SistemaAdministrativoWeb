@@ -1,177 +1,1382 @@
-const STORAGE_KEY = "clientes_sistema";
+// ======================================================
+// ADMINISTRACIÓN DE CLIENTES
+// LocalStorage: "clientes_sistema"
+// ======================================================
 
-// Obtener clientes del LocalStorage
-function obtenerClientes() {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-}
 
-// Guardar array de clientes en LocalStorage
-function guardarClientes(clientes) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(clientes));
-}
+const STORAGE_KEY =
+    "clientes_sistema";
 
-// 1. CREAR / ACTUALIZAR CLIENTE
-document.getElementById("form-cliente").addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const id = document.getElementById("cliente-id").value;
-    const nombre = document.getElementById("nombre").value.trim();
-    const correo = document.getElementById("correo").value.trim();
-    const telefono = document.getElementById("telefono").value.trim();
 
-    // Validaciones básicas
-    if (!nombre || !correo || !telefono) {
-        alert("Todos los campos son obligatorios.");
-        return;
-    }
+const CLAVE_USUARIO =
+    "usuario";
 
-    let clientes = obtenerClientes();
 
-    if (id === "") {
-        // Crear nuevo cliente
-        const nuevoCliente = {
-            id: Date.now().toString(),
-            nombre,
-            correo,
-            telefono
-        };
-        clientes.push(nuevoCliente);
-    } else {
-        // Editar cliente existente
-        clientes = clientes.map(c => {
-            if (c.id === id) {
-                return { ...c, nombre, correo, telefono };
-            }
-            return c;
-        });
-    }
+// ------------------------------------------------------
+// Elementos
+// ------------------------------------------------------
 
-    guardarClientes(clientes);
-    limpiarFormulario();
-    listarClientes();
-});
-
-// 2. LISTAR CLIENTES EN LA TABLA
-function listarClientes() {
-    const clientes = obtenerClientes();
-    const tbody = document.getElementById("tabla-clientes-body");
-    tbody.innerHTML = "";
-
-    if (clientes.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No hay clientes registrados.</td></tr>`;
-        return;
-    }
-
-    clientes.forEach(cliente => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${cliente.nombre}</td>
-            <td>${cliente.correo}</td>
-            <td>${cliente.telefono}</td>
-            <td>
-                <button onclick="cargarClienteParaEditar('${cliente.id}')">Editar</button>
-                <button onclick="eliminarCliente('${cliente.id}')" style="background-color: #e74c3c; color: white;">Eliminar</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// 3. EDITAR CLIENTE (Cargar datos en el formulario)
-function cargarClienteParaEditar(id) {
-    const clientes = obtenerClientes();
-    const cliente = clientes.find(c => c.id === id);
-
-    if (cliente) {
-        document.getElementById("cliente-id").value = cliente.id;
-        document.getElementById("nombre").value = cliente.nombre;
-        document.getElementById("correo").value = cliente.correo;
-        document.getElementById("telefono").value = cliente.telefono;
-        
-        document.getElementById("btn-guardar").textContent = "Actualizar Cliente";
-        document.getElementById("btn-cancelar").style.display = "inline-block";
-    }
-}
-
-// 4. ELIMINAR CLIENTE
-function eliminarCliente(id) {
-    if (confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
-        let clientes = obtenerClientes();
-        clientes = clientes.filter(c => c.id !== id);
-        guardarClientes(clientes);
-        listarClientes();
-        limpiarFormulario();
-    }
-}
-
-// Función auxiliar para limpiar el formulario
-function limpiarFormulario() {
-    document.getElementById("form-cliente").reset();
-    document.getElementById("cliente-id").value = "";
-    document.getElementById("btn-guardar").textContent = "Guardar Cliente";
-    document.getElementById("btn-cancelar").style.display = "none";
-}
-
-// Cargar la lista al iniciar la página
-document.addEventListener("DOMContentLoaded", listarClientes);
-
-// GESTIÓN DE MODO OSCURO
-const btnModoOscuro = document.getElementById("btn-modo-oscuro");
-
-// Comprobar si el usuario ya tenía una preferencia guardada
-if (localStorage.getItem("modo_oscuro") === "true") {
-    document.body.classList.add("dark-mode");
-    btnModoOscuro.textContent = "☀️ Modo Claro";
-}
-
-btnModoOscuro.addEventListener("click", () => {
-    document.body.classList.toggle("dark-mode");
-    
-    const esOscuro = document.body.classList.contains("dark-mode");
-    
-    // Cambiar texto e icono del botón
-    btnModoOscuro.textContent = esOscuro ? "☀️ Modo Claro" : "🌙 Modo Oscuro";
-    
-    // Guardar preferencia en localStorage
-    localStorage.setItem("modo_oscuro", esOscuro);
-});
-    
-// BUSCAR CLIENTE EN TIEMPO REAL
-document.getElementById("buscador-cliente").addEventListener("input", function(e) {
-    const textoBusqueda = e.target.value.toLowerCase().trim();
-    const clientes = obtenerClientes();
-    const tbody = document.getElementById("tabla-clientes-body");
-    
-    // Filtrar clientes que coincidan con el nombre, correo o teléfono
-    const clientesFiltrados = clientes.filter(cliente => 
-        cliente.nombre.toLowerCase().includes(textoBusqueda) ||
-        cliente.correo.toLowerCase().includes(textoBusqueda) ||
-        cliente.telefono.toLowerCase().includes(textoBusqueda)
+const formCliente =
+    document.getElementById(
+        "form-cliente"
     );
 
-    tbody.innerHTML = "";
 
-    if (clientesFiltrados.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No se encontraron clientes coincidentes.</td></tr>`;
-        return;
+const clienteId =
+    document.getElementById(
+        "cliente-id"
+    );
+
+
+const clienteNombre =
+    document.getElementById(
+        "nombre"
+    );
+
+
+const clienteCorreo =
+    document.getElementById(
+        "correo"
+    );
+
+
+const clienteTelefono =
+    document.getElementById(
+        "telefono"
+    );
+
+
+const btnGuardar =
+    document.getElementById(
+        "btn-guardar"
+    );
+
+
+const btnCancelar =
+    document.getElementById(
+        "btn-cancelar"
+    );
+
+
+const tablaClientesBody =
+    document.getElementById(
+        "tabla-clientes-body"
+    );
+
+
+const buscadorCliente =
+    document.getElementById(
+        "buscador-cliente"
+    );
+
+
+const mensajeCliente =
+    document.getElementById(
+        "mensaje-cliente"
+    );
+
+
+
+// ------------------------------------------------------
+// LocalStorage
+// ------------------------------------------------------
+
+function obtenerClientes() {
+
+    const datos =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+
+    if (!datos) {
+
+        return [];
+
     }
 
-    // Renderizar solo los clientes filtrados
-    clientesFiltrados.forEach(cliente => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${cliente.nombre}</td>
-            <td>${cliente.correo}</td>
-            <td>${cliente.telefono}</td>
-            <td>
-                <button onclick="cargarClienteParaEditar('${cliente.id}')">Editar</button>
-                <button onclick="eliminarCliente('${cliente.id}')" style="background-color: #e74c3c; color: white;">Eliminar</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
+
+    try {
+
+        const clientes =
+            JSON.parse(datos);
+
+
+        return Array.isArray(clientes)
+            ? clientes
+            : [];
+
+    } catch (error) {
+
+        return [];
+
+    }
+
+}
+
+
+
+function guardarClientes(
+    clientes
+) {
+
+    localStorage.setItem(
+
+        STORAGE_KEY,
+
+        JSON.stringify(clientes)
+
+    );
+
+}
+
+
+
+// ------------------------------------------------------
+// Sesión
+// ------------------------------------------------------
+
+function verificarSesion() {
+
+    const usuarioGuardado =
+        localStorage.getItem(
+            CLAVE_USUARIO
+        );
+
+
+    if (!usuarioGuardado) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    try {
+
+        return JSON.parse(
+            usuarioGuardado
+        );
+
+    } catch (error) {
+
+        return {
+            nombre:
+                usuarioGuardado
+        };
+
+    }
+
+}
+
+
+
+function mostrarUsuario() {
+
+    const usuario =
+        verificarSesion();
+
+
+    if (!usuario) {
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "nombreUsuario"
+    ).textContent =
+        usuario.nombre ||
+        usuario.usuario ||
+        "Administrador";
+
+}
+
+
+
+// ------------------------------------------------------
+// Resumen
+// ------------------------------------------------------
+
+function actualizarResumenClientes() {
+
+    const clientes =
+        obtenerClientes();
+
+
+    const conCorreo =
+        clientes.filter(
+            function(cliente) {
+
+                return Boolean(
+                    cliente.correo
+                );
+
+            }
+        );
+
+
+    const conTelefono =
+        clientes.filter(
+            function(cliente) {
+
+                return Boolean(
+                    cliente.telefono
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "resumen-total-clientes"
+    ).textContent =
+        clientes.length;
+
+
+    document.getElementById(
+        "resumen-clientes-correo"
+    ).textContent =
+        conCorreo.length;
+
+
+    document.getElementById(
+        "resumen-clientes-telefono"
+    ).textContent =
+        conTelefono.length;
+
+}
+
+
+
+// ------------------------------------------------------
+// Validación
+// ------------------------------------------------------
+
+function validarCliente(
+    nombre,
+    correo,
+    telefono
+) {
+
+    mensajeCliente.textContent =
+        "";
+
+
+    if (
+        nombre === "" ||
+        correo === "" ||
+        telefono === ""
+    ) {
+
+        mensajeCliente.textContent =
+            "Todos los campos son obligatorios.";
+
+        return false;
+
+    }
+
+
+    if (
+        !/^[0-9]+$/.test(
+            telefono
+        )
+    ) {
+
+        mensajeCliente.textContent =
+            "El teléfono debe contener únicamente números.";
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+
+// ------------------------------------------------------
+// Crear / actualizar cliente
+// ------------------------------------------------------
+
+formCliente.addEventListener(
+
+    "submit",
+
+    function(event) {
+
+        event.preventDefault();
+
+
+        const id =
+            clienteId.value;
+
+
+        const nombre =
+            clienteNombre.value.trim();
+
+
+        const correo =
+            clienteCorreo.value.trim();
+
+
+        const telefono =
+            clienteTelefono.value.trim();
+
+
+        if (
+            !validarCliente(
+                nombre,
+                correo,
+                telefono
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        let clientes =
+            obtenerClientes();
+
+
+        // NUEVO CLIENTE
+        if (id === "") {
+
+
+            const nuevoCliente = {
+
+                id:
+                    Date.now().toString(),
+
+                nombre:
+                    nombre,
+
+                correo:
+                    correo,
+
+                telefono:
+                    telefono
+
+            };
+
+
+            clientes.push(
+                nuevoCliente
+            );
+
+
+            guardarClientes(
+                clientes
+            );
+
+
+            limpiarFormulario();
+
+
+            listarClientes();
+
+
+            mostrarToast(
+                "Cliente registrado correctamente.",
+                "success"
+            );
+
+
+            return;
+
+        }
+
+
+        // ACTUALIZAR CLIENTE
+
+        Swal.fire({
+
+            title:
+                "¿Guardar cambios?",
+
+            text:
+                "Se actualizará la información del cliente.",
+
+            icon:
+                "question",
+
+            showCancelButton:
+                true,
+
+            confirmButtonText:
+                "Guardar",
+
+            cancelButtonText:
+                "Cancelar"
+
+
+        }).then(
+            function(resultado) {
+
+
+                if (
+                    !resultado.isConfirmed
+                ) {
+
+                    return;
+
+                }
+
+
+                clientes =
+                    clientes.map(
+                        function(cliente) {
+
+
+                            if (
+                                String(cliente.id) ===
+                                String(id)
+                            ) {
+
+                                return {
+
+                                    id:
+                                        cliente.id,
+
+                                    nombre:
+                                        nombre,
+
+                                    correo:
+                                        correo,
+
+                                    telefono:
+                                        telefono
+
+                                };
+
+                            }
+
+
+                            return cliente;
+
+                        }
+                    );
+
+
+                guardarClientes(
+                    clientes
+                );
+
+
+                limpiarFormulario();
+
+
+                listarClientes();
+
+
+                mostrarToast(
+                    "Cliente actualizado correctamente.",
+                    "success"
+                );
+
+
+            }
+        );
+
+    }
+
+);
+
+
+
+// ------------------------------------------------------
+// Crear botones de acción
+// ------------------------------------------------------
+
+function crearBotonAccion(
+    titulo,
+    clase,
+    icono,
+    accion
+) {
+
+    const boton =
+        document.createElement(
+            "button"
+        );
+
+
+    boton.type =
+        "button";
+
+
+    boton.className =
+        clase;
+
+
+    boton.title =
+        titulo;
+
+
+    boton.setAttribute(
+        "aria-label",
+        titulo
+    );
+
+
+    boton.innerHTML =
+        `<i class="${icono}"></i>`;
+
+
+    boton.addEventListener(
+        "click",
+        accion
+    );
+
+
+    return boton;
+
+}
+
+
+
+// ------------------------------------------------------
+// Mostrar clientes
+// ------------------------------------------------------
+
+function listarClientes(
+    listaClientes
+) {
+
+    const clientes =
+        listaClientes ||
+        obtenerClientes();
+
+
+    tablaClientesBody.innerHTML =
+        "";
+
+
+    if (
+        clientes.length === 0
+    ) {
+
+
+        const fila =
+            document.createElement(
+                "tr"
+            );
+
+
+        const celda =
+            document.createElement(
+                "td"
+            );
+
+
+        celda.colSpan =
+            4;
+
+
+        celda.className =
+            "empty-state";
+
+
+        celda.innerHTML =
+            '<i class="bi bi-inbox"></i>' +
+            '<strong>No hay clientes para mostrar</strong>';
+
+
+        fila.appendChild(
+            celda
+        );
+
+
+        tablaClientesBody.appendChild(
+            fila
+        );
+
+
+        actualizarResumenClientes();
+
+
+        return;
+
+    }
+
+
+
+    clientes.forEach(
+        function(cliente) {
+
+
+            const fila =
+                document.createElement(
+                    "tr"
+                );
+
+
+            // CLIENTE
+            const celdaNombre =
+                document.createElement(
+                    "td"
+                );
+
+
+            const nombre =
+                document.createElement(
+                    "div"
+                );
+
+
+            nombre.className =
+                "table-primary-text";
+
+
+            nombre.textContent =
+                cliente.nombre;
+
+
+            const descripcion =
+                document.createElement(
+                    "span"
+                );
+
+
+            descripcion.className =
+                "table-secondary-text";
+
+
+            descripcion.textContent =
+                "Cliente registrado";
+
+
+            celdaNombre.appendChild(
+                nombre
+            );
+
+
+            celdaNombre.appendChild(
+                descripcion
+            );
+
+
+            // CORREO
+            const celdaCorreo =
+                document.createElement(
+                    "td"
+                );
+
+
+            celdaCorreo.textContent =
+                cliente.correo;
+
+
+            // TELÉFONO
+            const celdaTelefono =
+                document.createElement(
+                    "td"
+                );
+
+
+            celdaTelefono.textContent =
+                cliente.telefono;
+
+
+            // ACCIONES
+            const celdaAcciones =
+                document.createElement(
+                    "td"
+                );
+
+
+            const grupoAcciones =
+                document.createElement(
+                    "div"
+                );
+
+
+            grupoAcciones.className =
+                "action-group";
+
+
+            const botonEditar =
+                crearBotonAccion(
+
+                    "Editar cliente",
+
+                    "btn btn-outline-primary btn-action",
+
+                    "bi bi-pencil",
+
+                    function() {
+
+                        cargarClienteParaEditar(
+                            cliente.id
+                        );
+
+                    }
+
+                );
+
+
+            const botonEliminar =
+                crearBotonAccion(
+
+                    "Eliminar cliente",
+
+                    "btn btn-outline-danger btn-action",
+
+                    "bi bi-trash3",
+
+                    function() {
+
+                        eliminarCliente(
+                            cliente.id
+                        );
+
+                    }
+
+                );
+
+
+            grupoAcciones.appendChild(
+                botonEditar
+            );
+
+
+            grupoAcciones.appendChild(
+                botonEliminar
+            );
+
+
+            celdaAcciones.appendChild(
+                grupoAcciones
+            );
+
+
+            fila.appendChild(
+                celdaNombre
+            );
+
+
+            fila.appendChild(
+                celdaCorreo
+            );
+
+
+            fila.appendChild(
+                celdaTelefono
+            );
+
+
+            fila.appendChild(
+                celdaAcciones
+            );
+
+
+            tablaClientesBody.appendChild(
+                fila
+            );
+
+        }
+    );
+
+
+    actualizarResumenClientes();
+
+}
+
+
+
+// ------------------------------------------------------
+// Cargar cliente para editar
+// ------------------------------------------------------
+
+function cargarClienteParaEditar(
+    id
+) {
+
+    const clientes =
+        obtenerClientes();
+
+
+    const cliente =
+        clientes.find(
+            function(cliente) {
+
+                return (
+                    String(cliente.id) ===
+                    String(id)
+                );
+
+            }
+        );
+
+
+    if (!cliente) {
+
+        return;
+
+    }
+
+
+    clienteId.value =
+        cliente.id;
+
+
+    clienteNombre.value =
+        cliente.nombre;
+
+
+    clienteCorreo.value =
+        cliente.correo;
+
+
+    clienteTelefono.value =
+        cliente.telefono;
+
+
+    btnGuardar.innerHTML =
+        '<i class="bi bi-check2-circle"></i>' +
+        '<span>Actualizar Cliente</span>';
+
+
+    btnCancelar.style.display =
+        "inline-flex";
+
+
+    document.getElementById(
+        "formulario-clientes"
+    ).scrollIntoView({
+
+        behavior:
+            "smooth"
+
     });
-});
+
+}
 
 
 
+// ------------------------------------------------------
+// Eliminar cliente
+// ------------------------------------------------------
+
+function eliminarCliente(
+    id
+) {
+
+    Swal.fire({
+
+        title:
+            "¿Eliminar cliente?",
+
+        text:
+            "Esta acción no se puede deshacer.",
+
+        icon:
+            "warning",
+
+        showCancelButton:
+            true,
+
+        confirmButtonText:
+            "Sí, eliminar",
+
+        cancelButtonText:
+            "Cancelar",
+
+        confirmButtonColor:
+            "#d92d20"
+
+
+    }).then(
+        function(resultado) {
+
+
+            if (
+                !resultado.isConfirmed
+            ) {
+
+                return;
+
+            }
+
+
+            let clientes =
+                obtenerClientes();
+
+
+            clientes =
+                clientes.filter(
+                    function(cliente) {
+
+                        return (
+                            String(cliente.id) !==
+                            String(id)
+                        );
+
+                    }
+                );
+
+
+            guardarClientes(
+                clientes
+            );
+
+
+            limpiarFormulario();
+
+
+            listarClientes();
+
+
+            mostrarToast(
+                "Cliente eliminado.",
+                "success"
+            );
+
+
+        }
+    );
+
+}
+
+
+
+// ------------------------------------------------------
+// Limpiar formulario
+// ------------------------------------------------------
+
+function limpiarFormulario() {
+
+    formCliente.reset();
+
+
+    clienteId.value =
+        "";
+
+
+    mensajeCliente.textContent =
+        "";
+
+
+    btnGuardar.innerHTML =
+        '<i class="bi bi-floppy"></i>' +
+        '<span>Guardar Cliente</span>';
+
+
+    btnCancelar.style.display =
+        "none";
+
+}
+
+
+
+btnCancelar.addEventListener(
+
+    "click",
+
+    limpiarFormulario
+
+);
+
+
+
+// ------------------------------------------------------
+// Buscar clientes
+// ------------------------------------------------------
+
+buscadorCliente.addEventListener(
+
+    "input",
+
+    function(event) {
+
+
+        const texto =
+            event.target.value
+                .toLowerCase()
+                .trim();
+
+
+        const clientes =
+            obtenerClientes();
+
+
+        const filtrados =
+            clientes.filter(
+                function(cliente) {
+
+
+                    return (
+
+                        cliente.nombre
+                            .toLowerCase()
+                            .includes(texto)
+
+                        ||
+
+                        cliente.correo
+                            .toLowerCase()
+                            .includes(texto)
+
+                        ||
+
+                        cliente.telefono
+                            .toLowerCase()
+                            .includes(texto)
+
+                    );
+
+
+                }
+            );
+
+
+        listarClientes(
+            filtrados
+        );
+
+    }
+
+);
+
+
+
+// ------------------------------------------------------
+// Toast
+// ------------------------------------------------------
+
+function mostrarToast(
+    mensaje,
+    icono = "success"
+) {
+
+    Swal.fire({
+
+        toast:
+            true,
+
+        position:
+            "top-end",
+
+        icon:
+            icono,
+
+        title:
+            mensaje,
+
+        showConfirmButton:
+            false,
+
+        timer:
+            2200,
+
+        timerProgressBar:
+            true
+
+    });
+
+}
+
+
+
+// ------------------------------------------------------
+// Modo oscuro
+// ------------------------------------------------------
+
+const btnModoOscuro =
+    document.getElementById(
+        "btn-modo-oscuro"
+    );
+
+
+
+function actualizarBotonTema(
+    esOscuro
+) {
+
+    if (esOscuro) {
+
+        btnModoOscuro.innerHTML =
+            '<i class="bi bi-sun"></i>' +
+            '<span>Modo claro</span>';
+
+    } else {
+
+        btnModoOscuro.innerHTML =
+            '<i class="bi bi-moon-stars"></i>' +
+            '<span>Modo oscuro</span>';
+
+    }
+
+}
+
+
+
+function aplicarTemaGuardado() {
+
+    const esOscuro =
+        localStorage.getItem(
+            "modo_oscuro"
+        ) === "true";
+
+
+    document.documentElement
+        .setAttribute(
+
+            "data-theme",
+
+            esOscuro
+                ? "dark"
+                : "light"
+
+        );
+
+
+    actualizarBotonTema(
+        esOscuro
+    );
+
+}
+
+
+
+btnModoOscuro.addEventListener(
+
+    "click",
+
+    function() {
+
+
+        const temaActual =
+            document.documentElement
+                .getAttribute(
+                    "data-theme"
+                );
+
+
+        const esOscuro =
+            temaActual !== "dark";
+
+
+        document.documentElement
+            .setAttribute(
+
+                "data-theme",
+
+                esOscuro
+                    ? "dark"
+                    : "light"
+
+            );
+
+
+        localStorage.setItem(
+
+            "modo_oscuro",
+
+            esOscuro
+
+        );
+
+
+        actualizarBotonTema(
+            esOscuro
+        );
+
+    }
+
+);
+
+
+
+// ------------------------------------------------------
+// Sidebar responsive
+// ------------------------------------------------------
+
+const sidebar =
+    document.getElementById(
+        "sidebar"
+    );
+
+
+const sidebarOverlay =
+    document.getElementById(
+        "sidebar-overlay"
+    );
+
+
+const btnAbrirMenu =
+    document.getElementById(
+        "btn-abrir-menu"
+    );
+
+
+const btnCerrarMenu =
+    document.getElementById(
+        "btn-cerrar-menu"
+    );
+
+
+
+function abrirMenu() {
+
+    sidebar.classList.add(
+        "menu-open"
+    );
+
+
+    sidebarOverlay.classList.add(
+        "show"
+    );
+
+
+    document.body.classList.add(
+        "menu-open"
+    );
+
+}
+
+
+
+function cerrarMenu() {
+
+    sidebar.classList.remove(
+        "menu-open"
+    );
+
+
+    sidebarOverlay.classList.remove(
+        "show"
+    );
+
+
+    document.body.classList.remove(
+        "menu-open"
+    );
+
+}
+
+
+
+btnAbrirMenu.addEventListener(
+    "click",
+    abrirMenu
+);
+
+
+btnCerrarMenu.addEventListener(
+    "click",
+    cerrarMenu
+);
+
+
+sidebarOverlay.addEventListener(
+    "click",
+    cerrarMenu
+);
+
+
+
+// ------------------------------------------------------
+// Cerrar sesión
+// ------------------------------------------------------
+
+const btnCerrarSesion =
+    document.getElementById(
+        "btn-cerrar-sesion"
+    );
+
+
+
+btnCerrarSesion.addEventListener(
+
+    "click",
+
+    function() {
+
+
+        Swal.fire({
+
+            title:
+                "¿Cerrar sesión?",
+
+            text:
+                "Tendrás que iniciar sesión nuevamente para acceder al sistema.",
+
+            icon:
+                "warning",
+
+            showCancelButton:
+                true,
+
+            confirmButtonText:
+                "Sí, cerrar sesión",
+
+            cancelButtonText:
+                "Cancelar",
+
+            reverseButtons:
+                true
+
+
+        }).then(
+            function(resultado) {
+
+
+                if (
+                    resultado.isConfirmed
+                ) {
+
+
+                    localStorage.removeItem(
+                        CLAVE_USUARIO
+                    );
+
+
+                    window.location.href =
+                        "login.html";
+
+                }
+
+
+            }
+        );
+
+    }
+
+);
+
+
+
+// ------------------------------------------------------
+// Inicialización
+// ------------------------------------------------------
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function() {
+
+
+        verificarSesion();
+
+
+        mostrarUsuario();
+
+
+        aplicarTemaGuardado();
+
+
+        listarClientes();
+
+
+    }
+
+);

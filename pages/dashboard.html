@@ -1,95 +1,829 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 
 <head>
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Dashboard</title>
+    <title>
+        Dashboard | Sistema Administrativo
+    </title>
 
-    <link rel="stylesheet" href="../src/css/dashboard.css">
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    >
+
+    <!-- CSS del Dashboard -->
+    <link
+        rel="stylesheet"
+        href="../src/css/dashboard.css"
+    >
 
 </head>
 
+
 <body>
 
-    <div class="container">
 
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
+    <!-- ==================================================
+         SIDEBAR
+         ================================================== -->
 
-            <h2>Sistema</h2>
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
 
-            <ul>
-                <li id="inicio">- Dashboard</li>
-                <li id="clientes">- Clientes</li>
-                <li id="productos">- Productos</li>
-                <li id="proveedores">- Proveedores</li>
-            </ul>
+        <div class="sidebar-header">
 
-        </aside>
+            <a
+                href="dashboard.html"
+                class="brand"
+            >
 
+                <span class="brand-logo">
 
-        <div class="contenido">
+                    <i class="bi bi-grid-1x2-fill"></i>
 
-            <!-- HEADER -->
-            <header>
-
-                <div>
-                    <h2 id="tituloPagina">Dashboard</h2>
-                    <p>
-                        Usuario:
-                        <span id="nombreUsuario"></span>
-                    </p>
-                </div>
-
-                <div class="acciones">
-
-                    <button id="temaBtn" class="tema-btn">
-                        Modo oscuro
-                    </button>
-
-                    <button id="cerrarSesion" class="logout-btn">
-                        Cerrar sesión
-                    </button>
-
-                </div>
-
-            </header>
+                </span>
 
 
-            <!-- CONTENIDO QUE CAMBIA -->
-            <main id="contenidoPrincipal">
+                <span class="brand-text">
 
-                <div class="cards">
+                    <strong>
+                        Sistema
+                    </strong>
 
-                    <div class="card">
-                        <h3>Clientes</h3>
-                        <p>0 registrados</p>
-                    </div>
+                    <small>
+                        Administrativo
+                    </small>
 
-                    <div class="card">
-                        <h3>Productos</h3>
-                        <p>0 registrados</p>
-                    </div>
+                </span>
 
-                    <div class="card">
-                        <h3>Proveedores</h3>
-                        <p>0 registrados</p>
-                    </div>
+            </a>
 
-                </div>
 
-            </main>
+            <button
+                class="icon-btn sidebar-close"
+                id="btn-cerrar-menu"
+                type="button"
+                aria-label="Cerrar menú"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
 
         </div>
 
+
+        <div class="sidebar-section-title">
+
+            MENÚ
+
+        </div>
+
+
+        <nav class="sidebar-nav">
+
+
+            <a
+                href="../pages/dashboard.html"
+                class="sidebar-link active"
+            >
+
+                <span class="sidebar-icon">
+
+                    <i class="bi bi-grid"></i>
+
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a
+                href="../pages/clientes.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+
+                    <i class="bi bi-people"></i>
+
+                </span>
+
+                <span>
+                    Clientes
+                </span>
+
+            </a>
+
+
+            <a
+                href="../pages/productos.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+
+                    <i class="bi bi-box-seam"></i>
+
+                </span>
+
+                <span>
+                    Productos
+                </span>
+
+            </a>
+
+
+            <a
+                href="proveedores.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+
+                    <i class="bi bi-truck"></i>
+
+                </span>
+
+                <span>
+                    Proveedores
+                </span>
+
+            </a>
+
+
+            <a
+                href="categorias.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+
+                    <i class="bi bi-tags"></i>
+
+                </span>
+
+                <span>
+                    Categorías
+                </span>
+
+            </a>
+
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="storage-card">
+
+                <div class="storage-icon">
+
+                    <i class="bi bi-database-check"></i>
+
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        LocalStorage activo
+                    </strong>
+
+                    <small>
+                        Los datos se guardan en el navegador
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- Overlay para menú móvil -->
+
+    <div
+        class="sidebar-overlay"
+        id="sidebar-overlay"
+    ></div>
+
+
+
+    <!-- ==================================================
+         APP
+         ================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- ==================================================
+             TOPBAR
+             ================================================== -->
+
+        <header class="topbar">
+
+
+            <div class="topbar-left">
+
+
+                <button
+                    class="icon-btn menu-button"
+                    id="btn-abrir-menu"
+                    type="button"
+                    aria-label="Abrir menú"
+                >
+
+                    <i class="bi bi-list"></i>
+
+                </button>
+
+
+                <div class="breadcrumb-block">
+
+                    <span>
+                        Administración
+                    </span>
+
+                    <strong>
+                        Dashboard
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="topbar-actions">
+
+
+                <div class="user-info">
+
+                    <span class="user-icon">
+
+                        <i class="bi bi-person-circle"></i>
+
+                    </span>
+
+
+                    <div class="user-text">
+
+                        <small>
+                            Usuario
+                        </small>
+
+                        <strong id="nombreUsuario">
+                            Administrador
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="btn-modo-oscuro"
+                    class="theme-button"
+                    type="button"
+                >
+
+                    <i class="bi bi-moon-stars"></i>
+
+                    <span>
+                        Modo oscuro
+                    </span>
+
+                </button>
+
+
+                <button
+                    id="btn-cerrar-sesion"
+                    class="logout-button"
+                    type="button"
+                >
+
+                    <i class="bi bi-box-arrow-right"></i>
+
+                    <span>
+                        Cerrar sesión
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+        </header>
+
+
+
+        <!-- ==================================================
+             CONTENIDO
+             ================================================== -->
+
+        <main class="page-content">
+
+
+            <!-- Encabezado -->
+
+            <section class="page-heading">
+
+
+                <div>
+
+
+                    <div class="eyebrow">
+
+                        <span class="eyebrow-icon">
+
+                            <i class="bi bi-speedometer2"></i>
+
+                        </span>
+
+                        PANEL GENERAL
+
+                    </div>
+
+
+                    <h1>
+                        Dashboard
+                    </h1>
+
+
+                    <p>
+
+                        Consulta un resumen general de la información
+                        registrada en el sistema administrativo.
+
+                    </p>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- ==================================================
+                 TARJETAS DE RESUMEN
+                 ================================================== -->
+
+            <section class="stats-grid">
+
+
+                <!-- Clientes -->
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-blue">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+
+                    <div class="metric-content">
+
+                        <span>
+                            Total clientes
+                        </span>
+
+                        <strong id="resumen-clientes">
+                            0
+                        </strong>
+
+                        <small>
+                            Clientes registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- Productos -->
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-green">
+
+                        <i class="bi bi-box-seam"></i>
+
+                    </div>
+
+
+                    <div class="metric-content">
+
+                        <span>
+                            Total productos
+                        </span>
+
+                        <strong id="resumen-productos">
+                            0
+                        </strong>
+
+                        <small>
+                            Productos registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- Proveedores -->
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-orange">
+
+                        <i class="bi bi-truck"></i>
+
+                    </div>
+
+
+                    <div class="metric-content">
+
+                        <span>
+                            Proveedores
+                        </span>
+
+                        <strong id="resumen-proveedores">
+                            0
+                        </strong>
+
+                        <small>
+                            Proveedores registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+
+                <!-- Categorías -->
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-purple">
+
+                        <i class="bi bi-tags"></i>
+
+                    </div>
+
+
+                    <div class="metric-content">
+
+                        <span>
+                            Categorías
+                        </span>
+
+                        <strong id="resumen-categorias">
+                            0
+                        </strong>
+
+                        <small>
+                            Categorías disponibles
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+
+            <!-- ==================================================
+                 ACCESOS RÁPIDOS
+                 ================================================== -->
+
+            <section class="content-card">
+
+
+                <div class="card-header">
+
+
+                    <div>
+
+                        <h2>
+                            Accesos rápidos
+                        </h2>
+
+                        <p>
+                            Ingresa directamente a los módulos del sistema.
+                        </p>
+
+                    </div>
+
+
+                    <div class="header-icon">
+
+                        <i class="bi bi-lightning-charge"></i>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="card-body">
+
+
+                    <div class="quick-actions">
+
+
+                        <a
+                            href="clientes.html"
+                            class="quick-action"
+                        >
+
+                            <span class="quick-action-icon bg-blue">
+
+                                <i class="bi bi-people"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Clientes
+                                </strong>
+
+                                <small>
+                                    Administrar clientes
+                                </small>
+
+                            </div>
+
+                        </a>
+
+
+
+                        <a
+                            href="productos.html"
+                            class="quick-action"
+                        >
+
+                            <span class="quick-action-icon bg-green">
+
+                                <i class="bi bi-box-seam"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Productos
+                                </strong>
+
+                                <small>
+                                    Administrar inventario
+                                </small>
+
+                            </div>
+
+                        </a>
+
+
+
+                        <a
+                            href="proveedores.html"
+                            class="quick-action"
+                        >
+
+                            <span class="quick-action-icon bg-orange">
+
+                                <i class="bi bi-truck"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Proveedores
+                                </strong>
+
+                                <small>
+                                    Administrar proveedores
+                                </small>
+
+                            </div>
+
+                        </a>
+
+
+
+                        <a
+                            href="categorias.html"
+                            class="quick-action"
+                        >
+
+                            <span class="quick-action-icon bg-purple">
+
+                                <i class="bi bi-tags"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Categorías
+                                </strong>
+
+                                <small>
+                                    Administrar categorías
+                                </small>
+
+                            </div>
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- ==================================================
+                 INFORMACIÓN DEL SISTEMA
+                 ================================================== -->
+
+            <section class="content-card">
+
+
+                <div class="card-header">
+
+
+                    <div>
+
+                        <h2>
+                            Estado del sistema
+                        </h2>
+
+                        <p>
+                            Información general de almacenamiento y sesión.
+                        </p>
+
+                    </div>
+
+
+                    <div class="header-icon">
+
+                        <i class="bi bi-info-circle"></i>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div class="card-body">
+
+
+                    <div class="system-info-grid">
+
+
+                        <div class="system-info-item">
+
+                            <span>
+
+                                <i class="bi bi-database-check"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    LocalStorage
+                                </strong>
+
+                                <small>
+                                    Almacenamiento disponible
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="system-info-item">
+
+                            <span>
+
+                                <i class="bi bi-person-check"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Sesión activa
+                                </strong>
+
+                                <small id="estadoSesion">
+                                    Usuario autenticado
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="system-info-item">
+
+                            <span>
+
+                                <i class="bi bi-shield-check"></i>
+
+                            </span>
+
+
+                            <div>
+
+                                <strong>
+                                    Sistema
+                                </strong>
+
+                                <small>
+                                    Operando correctamente
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../src/js/dashboard.js"></script>
+
+
+    <!-- SweetAlert2 -->
+
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
+    ></script>
+
+
+    <!-- Dashboard JS -->
+
+    <script
+        defer
+        src="../src/js/dashboard.js"
+    ></script>
+
 
 </body>
 
