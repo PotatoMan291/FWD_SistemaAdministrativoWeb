@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="../src/css/dashboard.css">
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <h2>Sistema</h2>
+
+            <ul>
+                <li id="inicio">- Dashboard</li>
+                <li id="clientes">- Clientes</li>
+                <li id="productos">- Productos</li>
+                <li id="proveedores">- Proveedores</li>
+            </ul>
+
+        </aside>
+
+
+        <div class="contenido">
+
+            <!-- HEADER -->
+            <header>
+
+                <div>
+                    <h2 id="tituloPagina">Dashboard</h2>
+                    <p>
+                        Usuario:
+                        <span id="nombreUsuario"></span>
+                    </p>
+                </div>
+
+                <div class="acciones">
+
+                    <button id="temaBtn" class="tema-btn">
+                        Modo oscuro
+                    </button>
+
+                    <button id="cerrarSesion" class="logout-btn">
+                        Cerrar sesión
+                    </button>
+
+                </div>
+
+            </header>
+
+
+            <!-- CONTENIDO QUE CAMBIA -->
+            <main id="contenidoPrincipal">
+
+                <div class="cards">
+
+                    <div class="card">
+                        <h3>Clientes</h3>
+                        <p>0 registrados</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Productos</h3>
+                        <p>0 registrados</p>
+                    </div>
+
+                    <div class="card">
+                        <h3>Proveedores</h3>
+                        <p>0 registrados</p>
+                    </div>
+
+                </div>
+
+            </main>
+
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../src/js/dashboard.js"></script>
+
+</body>
+
+</html>

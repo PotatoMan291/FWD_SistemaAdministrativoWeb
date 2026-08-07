@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Sistema Administrativo</title>
+
+    <link rel="stylesheet" href="../src/css/login.css">
+</head>
+
+<body>
+    <div class="login-container">
+
+        <img src="../src/imgs/logo.png" alt="Logo" class="logo">
+
+        <h1>Sistema Administrativo</h1>
+
+        <p class="subtitulo">
+            Inicie sesión para continuar
+        </p>
+
+        <form id="loginForm">
+
+            <label for="usuario">Usuario</label>
+
+            <input
+                type="text"
+                id="usuario"
+                placeholder="Ingrese su usuario"
+                required>
+
+            <label for="password">Contraseña</label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Ingrese su contraseña"
+                required>
+
+            <p id="mensajeError"></p>
+
+            <button type="submit">
+
+                Ingresar
+
+            </button>
+
+        </form>
+
+    </div>
+
+    <script src="../src/js/login.js"></script>
+
+</body>
+
+</html>
