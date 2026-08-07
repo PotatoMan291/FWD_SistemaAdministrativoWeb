@@ -4,6 +4,7 @@
 // ======================================================
 
 const CLAVE_PEDIDOS = "pedidos";
+const CLAVE_USUARIO_PEDIDOS = "usuario";
 const CLAVE_CLIENTES_PEDIDOS = "clientes_sistema";
 const CLAVE_PRODUCTOS_PEDIDOS = "productos";
 const CLAVE_PROVEEDORES_PEDIDOS = "proveedores";
@@ -65,7 +66,42 @@ function guardarListaPedidos(clave, lista) {
     }
 }
 
-function obtenerPedidos() { return leerListaPedidos(CLAVE_PEDIDOS); }
+function obtenerPedidos() {
+    return leerListaPedidos(CLAVE_PEDIDOS).map(function(pedido) {
+        const items = Array.isArray(pedido.items)
+            ? pedido.items.map(function(item) {
+                const cantidadOriginal = Number(item.cantidad);
+                const precioOriginal = Number(item.precioUnitario);
+                const cantidad = Number.isInteger(cantidadOriginal) && cantidadOriginal > 0
+                    ? cantidadOriginal
+                    : 1;
+                const precioUnitario = Number.isFinite(precioOriginal) && precioOriginal >= 0
+                    ? precioOriginal
+                    : 0;
+                return {
+                    ...item,
+                    cantidad,
+                    precioUnitario,
+                    subtotal: cantidad * precioUnitario
+                };
+            })
+            : [];
+
+        const cantidadArticulos = items.reduce((total, item) => total + item.cantidad, 0);
+        const subtotal = items.reduce((total, item) => total + item.subtotal, 0);
+
+        return {
+            ...pedido,
+            items,
+            cantidadArticulos,
+            subtotal,
+            total: subtotal,
+            estado: ESTADOS_PEDIDO.includes(pedido.estado)
+                ? pedido.estado
+                : "pendiente"
+        };
+    });
+}
 function obtenerClientesPedido() { return leerListaPedidos(CLAVE_CLIENTES_PEDIDOS); }
 function obtenerProductosPedido() { return leerListaPedidos(CLAVE_PRODUCTOS_PEDIDOS); }
 function obtenerProveedoresPedido() { return leerListaPedidos(CLAVE_PROVEEDORES_PEDIDOS); }
@@ -143,6 +179,190 @@ function encontrarProveedor(id) {
     return obtenerProveedoresPedido().find(proveedor => String(proveedor.id) === String(id));
 }
 
+// ------------------------------------------------------
+// Control de stock
+// ------------------------------------------------------
+function obtenerPedidoEnEdicion() {
+    if (!pedidoId.value) return null;
+
+    return obtenerPedidos().find(
+        pedido => String(pedido.id) === String(pedidoId.value)
+    ) || null;
+}
+
+function cantidadOriginalProductoEnPedido(productoId) {
+    const pedido = obtenerPedidoEnEdicion();
+
+    if (!pedido || !Array.isArray(pedido.items)) {
+        return 0;
+    }
+
+    const item = pedido.items.find(
+        itemPedido => String(itemPedido.productoId) === String(productoId)
+    );
+
+    return item ? Number(item.cantidad || 0) : 0;
+}
+
+function stockActualProducto(producto) {
+    const stock = Number(producto && producto.stock);
+
+    return Number.isFinite(stock) && stock >= 0
+        ? Math.floor(stock)
+        : 0;
+}
+
+function stockMaximoParaPedido(productoId) {
+    const producto = encontrarProducto(productoId);
+
+    if (!producto) {
+        return cantidadOriginalProductoEnPedido(productoId);
+    }
+
+    return (
+        stockActualProducto(producto) +
+        cantidadOriginalProductoEnPedido(productoId)
+    );
+}
+
+function validarStockDeItems() {
+    for (const item of itemsPedidoActual) {
+        const cantidad = Number(item.cantidad);
+        const producto = encontrarProducto(item.productoId);
+        const cantidadOriginal =
+            cantidadOriginalProductoEnPedido(item.productoId);
+
+        if (!producto) {
+            if (cantidad !== cantidadOriginal) {
+                return (
+                    "El producto \"" +
+                    item.productoNombre +
+                    "\" ya no existe en el catálogo y no se puede modificar su cantidad."
+                );
+            }
+
+            continue;
+        }
+
+        const maximo =
+            stockMaximoParaPedido(item.productoId);
+
+        if (cantidad > maximo) {
+            return (
+                "Stock insuficiente para \"" +
+                item.productoNombre +
+                "\". Máximo disponible para este pedido: " +
+                maximo +
+                "."
+            );
+        }
+    }
+
+    return "";
+}
+
+function mapaCantidades(items) {
+    const mapa = new Map();
+
+    (Array.isArray(items) ? items : []).forEach(item => {
+        const id = String(item.productoId || "");
+        const cantidad = Number(item.cantidad || 0);
+
+        if (!id) return;
+
+        mapa.set(
+            id,
+            (mapa.get(id) || 0) + cantidad
+        );
+    });
+
+    return mapa;
+}
+
+function prepararProductosConStockActualizado(pedidoExistente, nuevosItems) {
+    const productos = obtenerProductosPedido();
+    const cantidadesAnteriores = mapaCantidades(
+        pedidoExistente && Array.isArray(pedidoExistente.items)
+            ? pedidoExistente.items
+            : []
+    );
+    const cantidadesNuevas = mapaCantidades(nuevosItems);
+
+    let error = "";
+
+    const actualizados = productos.map(producto => {
+        const id = String(producto.id);
+        const anterior = Number(cantidadesAnteriores.get(id) || 0);
+        const nueva = Number(cantidadesNuevas.get(id) || 0);
+        const stockActual = stockActualProducto(producto);
+
+        // El stock actual ya tiene descontada la cantidad anterior.
+        // Por eso primero se devuelve la cantidad anterior del pedido
+        // y luego se descuenta la nueva cantidad.
+        const stockNuevo =
+            stockActual + anterior - nueva;
+
+        if (stockNuevo < 0 && !error) {
+            error =
+                "Stock insuficiente para \"" +
+                String(producto.nombre || "Producto") +
+                "\". Disponibles actualmente: " +
+                stockActual +
+                ".";
+        }
+
+        return {
+            ...producto,
+            stock: Math.max(0, stockNuevo)
+        };
+    });
+
+    // Si un producto histórico ya fue eliminado del catálogo,
+    // no permitimos aumentar/modificar su cantidad.
+    for (const [productoId, nuevaCantidad] of cantidadesNuevas.entries()) {
+        const existeProducto = productos.some(
+            producto => String(producto.id) === String(productoId)
+        );
+
+        if (!existeProducto) {
+            const anterior =
+                Number(cantidadesAnteriores.get(productoId) || 0);
+
+            if (nuevaCantidad !== anterior && !error) {
+                error =
+                    "Uno de los productos históricos ya no existe en el catálogo. " +
+                    "Su cantidad no puede modificarse.";
+            }
+        }
+    }
+
+    return {
+        productos: actualizados,
+        error
+    };
+}
+
+function restaurarStockDePedido(pedido) {
+    const productos = obtenerProductosPedido();
+    const cantidades = mapaCantidades(
+        pedido && Array.isArray(pedido.items)
+            ? pedido.items
+            : []
+    );
+
+    return productos.map(producto => {
+        const cantidad =
+            Number(cantidades.get(String(producto.id)) || 0);
+
+        return {
+            ...producto,
+            stock:
+                stockActualProducto(producto) +
+                cantidad
+        };
+    });
+}
+
 function crearCelda(texto) {
     const td = document.createElement("td");
     td.textContent = String(texto ?? "");
@@ -198,8 +418,20 @@ function cargarProductosPedido() {
 
     productos.forEach(producto => {
         const opcion = document.createElement("option");
+        const stock = stockActualProducto(producto);
+
         opcion.value = producto.id;
-        opcion.textContent = producto.nombre + " · " + monedaCRC(producto.precio);
+        opcion.textContent =
+            producto.nombre +
+            " · " +
+            monedaCRC(producto.precio) +
+            " · Stock: " +
+            stock;
+
+        if (stock <= 0) {
+            opcion.disabled = true;
+        }
+
         pedidoProducto.appendChild(opcion);
     });
 
@@ -218,9 +450,25 @@ function actualizarMensajeProductoSeleccionado() {
     }
 
     const proveedor = encontrarProveedor(producto.proveedorId);
+    const stockActual = stockActualProducto(producto);
+    const cantidadOriginal =
+        cantidadOriginalProductoEnPedido(producto.id);
+
+    let detalleStock =
+        " · Stock disponible: " +
+        stockActual;
+
+    if (cantidadOriginal > 0) {
+        detalleStock +=
+            " · Este pedido ya tiene: " +
+            cantidadOriginal +
+            " · Máximo total editable: " +
+            (stockActual + cantidadOriginal);
+    }
+
     mensajeDisponibilidad.textContent =
         "Precio: " + monedaCRC(producto.precio) +
-        " · Stock registrado: " + Number(producto.stock || 0) +
+        detalleStock +
         " · Proveedor: " +
         (proveedor ? proveedor.nombre + " - " + proveedor.empresa : "No disponible");
 }
@@ -255,8 +503,29 @@ function agregarProductoAlPedido() {
         item => String(item.productoId) === String(producto.id)
     );
 
+    const cantidadActual =
+        existente
+            ? Number(existente.cantidad)
+            : 0;
+
+    const cantidadNueva =
+        cantidadActual + cantidad;
+
+    const maximoDisponible =
+        stockMaximoParaPedido(producto.id);
+
+    if (cantidadNueva > maximoDisponible) {
+        mensajePedido.textContent =
+            "Stock insuficiente para " +
+            producto.nombre +
+            ". Máximo disponible para este pedido: " +
+            maximoDisponible +
+            ".";
+        return;
+    }
+
     if (existente) {
-        existente.cantidad += cantidad;
+        existente.cantidad = cantidadNueva;
     } else {
         itemsPedidoActual.push({
             productoId: String(producto.id),
@@ -332,11 +601,27 @@ function renderizarItemsPedido() {
             control.className = "quantity-control";
 
             const input = document.createElement("input");
+            const productoActual =
+                encontrarProducto(item.productoId);
+
             input.type = "number";
             input.min = "1";
             input.step = "1";
             input.value = item.cantidad;
             input.setAttribute("aria-label", "Cantidad de " + item.productoNombre);
+
+            if (productoActual) {
+                input.max =
+                    String(
+                        stockMaximoParaPedido(
+                            item.productoId
+                        )
+                    );
+            } else {
+                input.disabled = true;
+                input.title =
+                    "Este producto ya no existe en el catálogo. Se conserva como dato histórico.";
+            }
 
             input.addEventListener("change", function () {
                 const nueva = Number(input.value);
@@ -344,6 +629,22 @@ function renderizarItemsPedido() {
                 if (!Number.isInteger(nueva) || nueva <= 0) {
                     input.value = item.cantidad;
                     toastPedido("La cantidad debe ser un entero mayor que cero.", "warning");
+                    return;
+                }
+
+                const maximo =
+                    stockMaximoParaPedido(
+                        item.productoId
+                    );
+
+                if (productoActual && nueva > maximo) {
+                    input.value = item.cantidad;
+                    toastPedido(
+                        "Stock insuficiente. Máximo disponible para este pedido: " +
+                        maximo +
+                        ".",
+                        "warning"
+                    );
                     return;
                 }
 
@@ -369,7 +670,24 @@ function renderizarItemsPedido() {
             icono.className = "bi bi-trash";
             quitar.appendChild(icono);
 
+            const productoDisponible =
+                encontrarProducto(item.productoId);
+
+            if (!productoDisponible) {
+                quitar.disabled = true;
+                quitar.title =
+                    "No se puede quitar un producto histórico que ya no existe en el catálogo.";
+            }
+
             quitar.addEventListener("click", function () {
+                if (!productoDisponible) {
+                    toastPedido(
+                        "Este producto es histórico y ya no existe en el catálogo.",
+                        "warning"
+                    );
+                    return;
+                }
+
                 itemsPedidoActual.splice(indice, 1);
                 renderizarItemsPedido();
             });
@@ -412,7 +730,11 @@ function validarPedido() {
         Number(item.cantidad) <= 0
     );
 
-    return invalido ? "Uno o más productos tienen cantidades o precios inválidos." : "";
+    if (invalido) {
+        return "Uno o más productos tienen cantidades o precios inválidos.";
+    }
+
+    return validarStockDeItems();
 }
 
 function itemsParaGuardar() {
@@ -430,6 +752,30 @@ function itemsParaGuardar() {
 formPedido.addEventListener("submit", function (evento) {
     evento.preventDefault();
     mensajePedido.textContent = "";
+
+
+    if (
+        !pedidoId.value &&
+        window.Permisos &&
+        !Permisos.exigir(
+            "crear"
+        )
+    ) {
+
+        return;
+    }
+
+
+    if (
+        pedidoId.value &&
+        window.Permisos &&
+        !Permisos.exigir(
+            "editar"
+        )
+    ) {
+
+        return;
+    }
 
     const error = validarPedido();
     if (error) {
@@ -479,14 +825,68 @@ formPedido.addEventListener("submit", function (evento) {
         );
     }
 
-    if (!guardarListaPedidos(CLAVE_PEDIDOS, resultado)) return;
+    const productosAntes =
+        obtenerProductosPedido();
 
-    toastPedido(idActual ? "Pedido actualizado correctamente." : "Pedido registrado correctamente.");
+    const ajusteStock =
+        prepararProductosConStockActualizado(
+            existente,
+            datos.items
+        );
+
+    if (ajusteStock.error) {
+        mensajePedido.textContent =
+            ajusteStock.error;
+        return;
+    }
+
+    // Primero se actualiza el inventario.
+    if (
+        !guardarListaPedidos(
+            CLAVE_PRODUCTOS_PEDIDOS,
+            ajusteStock.productos
+        )
+    ) {
+        return;
+    }
+
+    // Después se guarda el pedido. Si falla, se restaura el stock.
+    if (
+        !guardarListaPedidos(
+            CLAVE_PEDIDOS,
+            resultado
+        )
+    ) {
+        guardarListaPedidos(
+            CLAVE_PRODUCTOS_PEDIDOS,
+            productosAntes
+        );
+
+        return;
+    }
+
+    toastPedido(
+        idActual
+            ? "Pedido actualizado y stock ajustado correctamente."
+            : "Pedido registrado y stock descontado correctamente."
+    );
+
     limpiarFormularioPedido();
     mostrarPedidos();
 });
 
 function editarPedido(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "editar"
+        )
+    ) {
+
+        return;
+    }
+
     const pedido = obtenerPedidos().find(item => String(item.id) === String(id));
 
     if (!pedido) {
@@ -522,9 +922,36 @@ function editarPedido(id) {
 }
 
 function eliminarPedido(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "eliminar"
+        )
+    ) {
+
+        return;
+    }
+
+    const pedidoAEliminar =
+        obtenerPedidos().find(
+            pedido => String(pedido.id) === String(id)
+        );
+
+    if (!pedidoAEliminar) {
+        toastPedido(
+            "El pedido ya no existe.",
+            "warning"
+        );
+        mostrarPedidos();
+        return;
+    }
+
     alertaPedido({
         title: "¿Eliminar pedido?",
-        text: "Se eliminará el pedido, pero no el cliente, los productos ni los proveedores relacionados.",
+        text:
+            "El pedido se eliminará y las unidades de los productos que todavía existan " +
+            "en el catálogo volverán automáticamente al stock.",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#d93737",
@@ -534,15 +961,50 @@ function eliminarPedido(id) {
     }).then(resultado => {
         if (!resultado.isConfirmed) return;
 
-        const pedidos = obtenerPedidos().filter(
-            pedido => String(pedido.id) !== String(id)
-        );
+        const productosAntes =
+            obtenerProductosPedido();
 
-        if (!guardarListaPedidos(CLAVE_PEDIDOS, pedidos)) return;
+        const productosRestaurados =
+            restaurarStockDePedido(
+                pedidoAEliminar
+            );
 
-        if (String(pedidoId.value) === String(id)) limpiarFormularioPedido();
+        const pedidos =
+            obtenerPedidos().filter(
+                pedido => String(pedido.id) !== String(id)
+            );
+
+        if (
+            !guardarListaPedidos(
+                CLAVE_PRODUCTOS_PEDIDOS,
+                productosRestaurados
+            )
+        ) {
+            return;
+        }
+
+        if (
+            !guardarListaPedidos(
+                CLAVE_PEDIDOS,
+                pedidos
+            )
+        ) {
+            guardarListaPedidos(
+                CLAVE_PRODUCTOS_PEDIDOS,
+                productosAntes
+            );
+
+            return;
+        }
+
+        if (String(pedidoId.value) === String(id)) {
+            limpiarFormularioPedido();
+        }
+
         mostrarPedidos();
-        toastPedido("Pedido eliminado.");
+        toastPedido(
+            "Pedido eliminado y stock restaurado."
+        );
     });
 }
 
@@ -601,6 +1063,58 @@ function crearBotonPedido(titulo, icono, accion, claseExtra = "") {
     i.className = icono;
     boton.appendChild(i);
     boton.addEventListener("click", accion);
+    const descripcionPermiso =
+        String(
+            titulo ||
+            ""
+        )
+            .toLowerCase();
+
+    if (
+        descripcionPermiso.includes(
+            "editar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "editar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEditar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
+
+
+    if (
+        descripcionPermiso.includes(
+            "eliminar"
+        ) ||
+        descripcionPermiso.includes(
+            "borrar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "eliminar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEliminar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
+
+
     return boton;
 }
 
@@ -915,6 +1429,52 @@ async function exportarPedidosPDF() {
 }
 
 // ------------------------------------------------------
+// Sesión
+// ------------------------------------------------------
+function verificarSesionPedidos() {
+    const usuarioGuardado = localStorage.getItem(CLAVE_USUARIO_PEDIDOS);
+
+    if (!usuarioGuardado) {
+        window.location.href = "login.html";
+        return null;
+    }
+
+    try {
+        return JSON.parse(usuarioGuardado);
+    } catch (error) {
+        return { nombre: usuarioGuardado };
+    }
+}
+
+function mostrarUsuarioPedidos() {
+    const usuario = verificarSesionPedidos();
+    const elemento = document.getElementById("nombreUsuario");
+    if (!usuario || !elemento) return;
+    elemento.textContent = usuario.nombre || usuario.usuario || "Administrador";
+}
+
+function configurarCerrarSesionPedidos() {
+    const boton = document.getElementById("btn-cerrar-sesion");
+    if (!boton) return;
+
+    boton.addEventListener("click", function() {
+        alertaPedido({
+            title: "¿Cerrar sesión?",
+            text: "Tendrás que iniciar sesión nuevamente para acceder al sistema.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar sesión",
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        }).then(function(resultado) {
+            if (!resultado.isConfirmed) return;
+            localStorage.removeItem(CLAVE_USUARIO_PEDIDOS);
+            window.location.href = "login.html";
+        });
+    });
+}
+
+// ------------------------------------------------------
 // Tema y menú
 // ------------------------------------------------------
 function aplicarTemaPedido() {
@@ -967,6 +1527,19 @@ function configurarInterfazPedido() {
 // Eventos
 // ------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
+
+    if (
+        window.Permisos &&
+        !Permisos.verificarSesion()
+    ) {
+
+        return;
+    }
+
+
+    verificarSesionPedidos();
+    mostrarUsuarioPedidos();
+    configurarCerrarSesionPedidos();
     configurarInterfazPedido();
     cargarClientesPedido();
     cargarProductosPedido();

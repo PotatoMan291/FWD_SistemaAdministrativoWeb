@@ -23,7 +23,7 @@
     <!-- CSS del Dashboard -->
     <link
         rel="stylesheet"
-        href="../src/css/dashboard.css"
+        href="../src/css/dashboard.css?v=2"
     >
 
 </head>
@@ -183,6 +183,18 @@
 
             </a>
 
+            <a
+                href="pedidos.html"
+                class="sidebar-link"
+            >
+                <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
+                <span>Pedidos</span>
+            </a>
+
+               
+
+
+
 
         </nav>
 
@@ -294,6 +306,13 @@
                             Administrador
                         </strong>
 
+                        <span
+                            id="rolUsuario"
+                            class="role-badge"
+                        >
+                            Administrador
+                        </span>
+
                     </div>
 
                 </div>
@@ -388,7 +407,7 @@
                  TARJETAS DE RESUMEN
                  ================================================== -->
 
-            <section class="stats-grid">
+            <section class="stats-grid stats-grid-five">
 
 
                 <!-- Clientes -->
@@ -514,6 +533,18 @@
                 </article>
 
 
+                <!-- Pedidos -->
+
+                <article class="metric-card">
+                    <div class="metric-icon bg-blue"><i class="bi bi-receipt"></i></div>
+                    <div class="metric-content">
+                        <span>Pedidos</span>
+                        <strong id="resumen-pedidos">0</strong>
+                        <small>Pedidos registrados</small>
+                    </div>
+                </article>
+
+
             </section>
 
 
@@ -555,7 +586,7 @@
                 <div class="card-body">
 
 
-                    <div class="quick-actions">
+                    <div class="quick-actions quick-actions-five">
 
 
                         <a
@@ -668,6 +699,12 @@
 
                         </a>
 
+                        <a href="pedidos.html" class="quick-action">
+                            <span class="quick-action-icon bg-blue"><i class="bi bi-receipt"></i></span>
+                            <div><strong>Pedidos</strong><small>Administrar pedidos</small></div>
+                        </a>
+
+
 
                     </div>
 
@@ -677,6 +714,36 @@
 
             </section>
 
+
+
+            <!-- ==================================================
+                 GESTIÓN DE PEDIDOS
+                 ================================================== -->
+
+            <section class="content-card dashboard-orders-card">
+                <div class="card-header">
+                    <div>
+                        <h2>Gestión de pedidos</h2>
+                        <p>Cambia el estado de cada pedido directamente desde el Dashboard.</p>
+                    </div>
+                    <div class="header-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                </div>
+                <div class="card-body">
+                    <div class="dashboard-order-summary">
+                        <div class="dashboard-order-pill pending"><span>Pendientes</span><strong id="dashboard-pedidos-pendientes">0</strong></div>
+                        <div class="dashboard-order-pill process"><span>En proceso</span><strong id="dashboard-pedidos-proceso">0</strong></div>
+                        <div class="dashboard-order-pill delivered"><span>Entregados</span><strong id="dashboard-pedidos-entregados">0</strong></div>
+                    </div>
+                    <div class="dashboard-orders-note"><i class="bi bi-info-circle"></i><span>El cambio se guarda automáticamente en LocalStorage y se refleja en el módulo de Pedidos.</span></div>
+                    <div class="dashboard-orders-table-wrap">
+                        <table class="dashboard-orders-table">
+                            <thead><tr><th>Pedido</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estado</th></tr></thead>
+                            <tbody id="tabla-pedidos-dashboard"></tbody>
+                        </table>
+                    </div>
+                    <div class="dashboard-orders-footer"><a href="pedidos.html" class="dashboard-orders-link"><i class="bi bi-arrow-right-circle"></i> Ver todos los pedidos</a></div>
+                </div>
+            </section>
 
 
             <!-- ==================================================
@@ -819,7 +886,8 @@
 
     <!-- Dashboard JS -->
 
-    <script
+    <script defer src="../src/js/permisos.js"></script>
+<script
         defer
         src="../src/js/dashboard.js"
     ></script>

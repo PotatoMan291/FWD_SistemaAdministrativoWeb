@@ -586,6 +586,58 @@ function crearBoton(
         accion(idProducto);
     });
 
+    const descripcionPermiso =
+        String(
+            titulo ||
+            ""
+        )
+            .toLowerCase();
+
+    if (
+        descripcionPermiso.includes(
+            "editar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "editar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEditar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
+
+
+    if (
+        descripcionPermiso.includes(
+            "eliminar"
+        ) ||
+        descripcionPermiso.includes(
+            "borrar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "eliminar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEliminar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
+
+
     return boton;
 }
 
@@ -964,6 +1016,30 @@ formProducto.addEventListener(
         const id =
             productoId.value;
 
+        if (
+            id === "" &&
+            window.Permisos &&
+            !Permisos.exigir(
+                "crear"
+            )
+        ) {
+
+            return;
+        }
+
+
+        if (
+            id !== "" &&
+            window.Permisos &&
+            !Permisos.exigir(
+                "editar"
+            )
+        ) {
+
+            return;
+        }
+
+
         const nombre =
             productoNombre.value.trim();
 
@@ -1125,6 +1201,17 @@ formProducto.addEventListener(
 // ------------------------------------------------------
 function editarProducto(id) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "editar"
+        )
+    ) {
+
+        return;
+    }
+
+
     const productos =
         obtenerProductos();
 
@@ -1219,6 +1306,17 @@ function obtenerPedidosAsociadosProducto(idProducto) {
 // Eliminar producto
 // ------------------------------------------------------
 function eliminarProducto(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "eliminar"
+        )
+    ) {
+
+        return;
+    }
+
 
     const pedidosAsociados =
         obtenerPedidosAsociadosProducto(
@@ -1488,6 +1586,15 @@ sidebarOverlay.addEventListener(
 document.addEventListener(
     "DOMContentLoaded",
     function() {
+
+        if (
+            window.Permisos &&
+            !Permisos.verificarSesion()
+        ) {
+
+            return;
+        }
+
 
         aplicarTemaGuardado();
         cargarCategoriasEnSelect();

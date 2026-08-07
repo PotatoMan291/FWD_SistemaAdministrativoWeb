@@ -12,6 +12,10 @@ const CLAVE_USUARIO =
     "usuario";
 
 
+const CLAVE_PEDIDOS =
+    "pedidos";
+
+
 // ------------------------------------------------------
 // Elementos
 // ------------------------------------------------------
@@ -316,6 +320,30 @@ formCliente.addEventListener(
         const id =
             clienteId.value;
 
+        if (
+            id === "" &&
+            window.Permisos &&
+            !Permisos.exigir(
+                "crear"
+            )
+        ) {
+
+            return;
+        }
+
+
+        if (
+            id !== "" &&
+            window.Permisos &&
+            !Permisos.exigir(
+                "editar"
+            )
+        ) {
+
+            return;
+        }
+
+
 
         const nombre =
             clienteNombre.value.trim();
@@ -534,6 +562,58 @@ function crearBotonAccion(
         "click",
         accion
     );
+
+
+    const descripcionPermiso =
+        String(
+            titulo ||
+            ""
+        )
+            .toLowerCase();
+
+    if (
+        descripcionPermiso.includes(
+            "editar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "editar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEditar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
+
+
+    if (
+        descripcionPermiso.includes(
+            "eliminar"
+        ) ||
+        descripcionPermiso.includes(
+            "borrar"
+        )
+    ) {
+
+        boton.dataset.permiso =
+            "eliminar";
+
+
+        if (
+            window.Permisos &&
+            !Permisos.puedeEliminar()
+        ) {
+
+            boton.hidden =
+                true;
+        }
+    }
 
 
     return boton;
@@ -799,6 +879,17 @@ function cargarClienteParaEditar(
     id
 ) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "editar"
+        )
+    ) {
+
+        return;
+    }
+
+
     const clientes =
         obtenerClientes();
 
@@ -862,6 +953,76 @@ function cargarClienteParaEditar(
 
 
 // ------------------------------------------------------
+// Pedidos asociados al cliente
+// ------------------------------------------------------
+
+function obtenerPedidosAsociadosCliente(
+    idCliente
+) {
+
+    const datos =
+        localStorage.getItem(
+            CLAVE_PEDIDOS
+        );
+
+
+    if (!datos) {
+
+        return [];
+
+    }
+
+
+    try {
+
+        const pedidos =
+            JSON.parse(
+                datos
+            );
+
+
+        if (
+            !Array.isArray(
+                pedidos
+            )
+        ) {
+
+            return [];
+
+        }
+
+
+        return pedidos.filter(
+            function(pedido) {
+
+                return (
+                    String(
+                        pedido.clienteId
+                    ) ===
+                    String(
+                        idCliente
+                    )
+                );
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "No se pudieron revisar los pedidos asociados al cliente:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+
+// ------------------------------------------------------
 // Eliminar cliente
 // ------------------------------------------------------
 
@@ -869,13 +1030,57 @@ function eliminarCliente(
     id
 ) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir(
+            "eliminar"
+        )
+    ) {
+
+        return;
+    }
+
+
+    const pedidosAsociados =
+        obtenerPedidosAsociadosCliente(
+            id
+        );
+
+
+    const tienePedidos =
+        pedidosAsociados.length > 0;
+
+
+    const titulo =
+        tienePedidos
+            ? "Cliente con pedidos asociados"
+            : "¿Eliminar cliente?";
+
+
+    const texto =
+        tienePedidos
+            ? (
+                "Este cliente tiene " +
+                pedidosAsociados.length +
+                (
+                    pedidosAsociados.length === 1
+                        ? " pedido asociado. "
+                        : " pedidos asociados. "
+                ) +
+                "Si continúa, el cliente se eliminará del catálogo, " +
+                "pero los pedidos NO se eliminarán y conservarán " +
+                "el nombre histórico del cliente."
+            )
+            : "Esta acción no se puede deshacer.";
+
+
     Swal.fire({
 
         title:
-            "¿Eliminar cliente?",
+            titulo,
 
         text:
-            "Esta acción no se puede deshacer.",
+            texto,
 
         icon:
             "warning",
@@ -1363,6 +1568,15 @@ document.addEventListener(
     "DOMContentLoaded",
 
     function() {
+
+
+        if (
+            window.Permisos &&
+            !Permisos.verificarSesion()
+        ) {
+
+            return;
+        }
 
 
         verificarSesion();
