@@ -29,13 +29,347 @@ const resumenProveedores = document.getElementById("resumen-proveedores");
 
 
 // ------------------------------------------------------
+// Utilidades de seguridad y almacenamiento
+// ------------------------------------------------------
+let advertenciaStorageMostrada = false;
+
+function mostrarToast(
+    mensaje,
+    icono = "success"
+) {
+
+    if (window.Swal) {
+
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: icono,
+            title: mensaje,
+            showConfirmButton: false,
+            timer: 2200,
+            timerProgressBar: true
+        });
+
+        return;
+    }
+
+    console.log(mensaje);
+}
+
+
+function avisarProblemaStorage(mensaje) {
+
+    if (advertenciaStorageMostrada) {
+        return;
+    }
+
+    advertenciaStorageMostrada = true;
+
+    if (window.Swal) {
+
+        Swal.fire({
+            title: "Problema con el almacenamiento",
+            text: mensaje,
+            icon: "error",
+            confirmButtonText: "Entendido"
+        });
+
+    } else {
+
+        console.error(mensaje);
+    }
+}
+
+
+function leerTextoLocalStorage(clave) {
+
+    try {
+
+        return localStorage.getItem(clave);
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo leer LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "El navegador no permite acceder a LocalStorage. Los cambios no podrán persistirse."
+        );
+
+        return null;
+    }
+}
+
+
+function leerListaLocalStorage(clave) {
+
+    const datos =
+        leerTextoLocalStorage(clave);
+
+    if (!datos) {
+        return [];
+    }
+
+    try {
+
+        const lista = JSON.parse(datos);
+
+        if (!Array.isArray(lista)) {
+
+            throw new Error(
+                "El contenido almacenado no es una lista."
+            );
+        }
+
+        return lista.filter(
+            function(item) {
+
+                return (
+                    item &&
+                    typeof item === "object"
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Datos inválidos en " + clave + ":",
+            error
+        );
+
+        // Conservar una copia antes de recuperar la aplicación.
+        try {
+
+            const claveBackup =
+                clave +
+                "_backup_corrupto_" +
+                Date.now();
+
+            localStorage.setItem(
+                claveBackup,
+                datos
+            );
+
+            localStorage.setItem(
+                clave,
+                "[]"
+            );
+
+        } catch (errorBackup) {
+
+            console.error(
+                "No fue posible crear el respaldo:",
+                errorBackup
+            );
+        }
+
+        avisarProblemaStorage(
+            "Se detectaron datos dañados. Se creó un respaldo y el módulo se recuperó para evitar que la página falle."
+        );
+
+        return [];
+    }
+}
+
+
+function guardarListaLocalStorage(
+    clave,
+    lista
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            JSON.stringify(lista)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo guardar LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "No fue posible guardar los cambios. Revise el espacio disponible o los permisos del navegador."
+        );
+
+        return false;
+    }
+}
+
+
+function leerPreferenciaSegura(
+    clave,
+    valorPorDefecto = ""
+) {
+
+    const valor =
+        leerTextoLocalStorage(clave);
+
+    return (
+        valor === null ||
+        valor === ""
+    )
+        ? valorPorDefecto
+        : valor;
+}
+
+
+function guardarPreferenciaSegura(
+    clave,
+    valor
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            String(valor)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo guardar la preferencia " + clave,
+            error
+        );
+
+        return false;
+    }
+}
+
+
+function generarIdSeguro() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID ===
+            "function"
+    ) {
+
+        return window.crypto.randomUUID();
+    }
+
+    return (
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2, 10)
+    );
+}
+
+
+function normalizarTextoComparacion(texto) {
+
+    return String(texto || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+}
+
+
+function textoSeguro(
+    valor,
+    maximo = 250
+) {
+
+    return String(valor ?? "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+function numeroSeguro(
+    valor,
+    valorPorDefecto = 0
+) {
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero)
+        ? numero
+        : valorPorDefecto;
+}
+
+
+function normalizarProductoGuardado(producto) {
+
+    return {
+        id: textoSeguro(producto.id, 100),
+        nombre: textoSeguro(producto.nombre, 120),
+        categoriaId: textoSeguro(producto.categoriaId, 100),
+        categoria: textoSeguro(producto.categoria, 80),
+        precio: numeroSeguro(producto.precio, 0),
+        stock: numeroSeguro(producto.stock, 0),
+        proveedorId: textoSeguro(producto.proveedorId, 100)
+    };
+}
+
+
+function normalizarProveedorGuardado(proveedor) {
+
+    return {
+        id: textoSeguro(proveedor.id, 100),
+        nombre: textoSeguro(proveedor.nombre, 100),
+        empresa: textoSeguro(proveedor.empresa, 100),
+        telefono: textoSeguro(proveedor.telefono, 25),
+        correo: textoSeguro(proveedor.correo, 150)
+            .toLowerCase(),
+        direccion: textoSeguro(proveedor.direccion, 200)
+    };
+}
+
+
+function normalizarCategoriaGuardada(categoria) {
+
+    return {
+        id: textoSeguro(categoria.id, 100),
+        nombre: textoSeguro(categoria.nombre, 80),
+        descripcion: textoSeguro(categoria.descripcion, 250)
+    };
+}
+
+
+function textoSeguroGrafico(
+    valor,
+    maximo = 60
+) {
+
+    return String(valor ?? "")
+        .replace(/[<>]/g, "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+// ------------------------------------------------------
 // Leer productos desde LocalStorage
 // ------------------------------------------------------
 function obtenerProductos() {
 
-    const datos = localStorage.getItem(CLAVE_PRODUCTOS);
+    return leerListaLocalStorage(
+        CLAVE_PRODUCTOS
+    )
+        .map(normalizarProductoGuardado)
+        .filter(function(producto) {
 
-    return datos ? JSON.parse(datos) : [];
+            return (
+                producto.id !== "" &&
+                producto.nombre !== ""
+            );
+        });
 }
 
 
@@ -44,9 +378,9 @@ function obtenerProductos() {
 // ------------------------------------------------------
 function guardarProductos(productos) {
 
-    localStorage.setItem(
+    return guardarListaLocalStorage(
         CLAVE_PRODUCTOS,
-        JSON.stringify(productos)
+        productos
     );
 }
 
@@ -56,9 +390,17 @@ function guardarProductos(productos) {
 // ------------------------------------------------------
 function obtenerProveedores() {
 
-    const datos = localStorage.getItem(CLAVE_PROVEEDORES);
+    return leerListaLocalStorage(
+        CLAVE_PROVEEDORES
+    )
+        .map(normalizarProveedorGuardado)
+        .filter(function(proveedor) {
 
-    return datos ? JSON.parse(datos) : [];
+            return (
+                proveedor.id !== "" &&
+                proveedor.nombre !== ""
+            );
+        });
 }
 
 
@@ -94,9 +436,17 @@ function actualizarResumenProductos() {
 // ------------------------------------------------------
 function obtenerCategorias() {
 
-    const datos = localStorage.getItem(CLAVE_CATEGORIAS);
+    return leerListaLocalStorage(
+        CLAVE_CATEGORIAS
+    )
+        .map(normalizarCategoriaGuardada)
+        .filter(function(categoria) {
 
-    return datos ? JSON.parse(datos) : [];
+            return (
+                categoria.id !== "" &&
+                categoria.nombre !== ""
+            );
+        });
 }
 
 
@@ -126,6 +476,15 @@ function cargarCategoriasEnSelect(categoriaSeleccionada = "") {
 
         productoCategoria.appendChild(opcion);
     });
+
+    productoCategoria.disabled =
+        categorias.length === 0;
+
+    if (categorias.length === 0) {
+
+        productoCategoria.innerHTML =
+            '<option value="">Primero registre una categoría</option>';
+    }
 }
 
 
@@ -171,6 +530,15 @@ function cargarProveedoresEnSelect(proveedorSeleccionado = "") {
 
         productoProveedor.appendChild(opcion);
     });
+
+    productoProveedor.disabled =
+        proveedores.length === 0;
+
+    if (proveedores.length === 0) {
+
+        productoProveedor.innerHTML =
+            '<option value="">Primero registre un proveedor</option>';
+    }
 }
 
 
@@ -485,23 +853,42 @@ function validarProducto(
         return false;
     }
 
-    if (Number(precio) <= 0) {
+    if (nombre.length > 120) {
 
         mensajeProducto.textContent =
-            "El precio debe ser mayor que 0.";
+            "El nombre no puede superar 120 caracteres.";
 
         return false;
     }
 
-    if (Number(stock) < 0) {
+    const precioNumero = Number(precio);
+    const stockNumero = Number(stock);
+
+    if (
+        !Number.isFinite(precioNumero) ||
+        precioNumero <= 0 ||
+        precioNumero > 999999999.99
+    ) {
 
         mensajeProducto.textContent =
-            "El stock no puede ser negativo.";
+            "Ingrese un precio válido mayor que 0.";
 
         return false;
     }
 
-    if (!Number.isInteger(Number(stock))) {
+    if (
+        !Number.isFinite(stockNumero) ||
+        stockNumero < 0 ||
+        stockNumero > 10000000
+    ) {
+
+        mensajeProducto.textContent =
+            "Ingrese un stock válido entre 0 y 10 000 000.";
+
+        return false;
+    }
+
+    if (!Number.isInteger(stockNumero)) {
 
         mensajeProducto.textContent =
             "El stock debe ser un número entero.";
@@ -509,7 +896,59 @@ function validarProducto(
         return false;
     }
 
+    if (!obtenerCategoria(categoriaId)) {
+
+        mensajeProducto.textContent =
+            "La categoría seleccionada ya no existe. Seleccione otra categoría.";
+
+        return false;
+    }
+
+    if (!obtenerProveedor(proveedorId)) {
+
+        mensajeProducto.textContent =
+            "El proveedor seleccionado ya no existe. Seleccione otro proveedor.";
+
+        return false;
+    }
+
     return true;
+}
+
+
+function productoDuplicado(
+    productos,
+    idActual,
+    nombre,
+    categoriaId,
+    proveedorId
+) {
+
+    const nombreNormalizado =
+        normalizarTextoComparacion(nombre);
+
+    return productos.some(
+        function(producto) {
+
+            if (
+                String(producto.id) ===
+                String(idActual)
+            ) {
+
+                return false;
+            }
+
+            return (
+                normalizarTextoComparacion(
+                    producto.nombre
+                ) === nombreNormalizado &&
+                String(producto.categoriaId) ===
+                    String(categoriaId) &&
+                String(producto.proveedorId) ===
+                    String(proveedorId)
+            );
+        }
+    );
 }
 
 
@@ -556,12 +995,38 @@ formProducto.addEventListener(
         let productos =
             obtenerProductos();
 
+        if (
+            productoDuplicado(
+                productos,
+                id,
+                nombre,
+                categoriaId,
+                proveedorId
+            )
+        ) {
+
+            mensajeProducto.textContent =
+                "Ya existe un producto con el mismo nombre, categoría y proveedor.";
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    title: "Producto duplicado",
+                    text: mensajeProducto.textContent,
+                    icon: "warning",
+                    confirmButtonText: "Entendido"
+                });
+            }
+
+            return;
+        }
+
         // Registrar
         if (id === "") {
 
             const nuevoProducto = {
 
-                id: Date.now().toString(),
+                id: generarIdSeguro(),
                 nombre: nombre,
                 categoriaId: categoriaId,
                 precio: Number(precio),
@@ -573,7 +1038,9 @@ formProducto.addEventListener(
                 nuevoProducto
             );
 
-            guardarProductos(productos);
+            if (!guardarProductos(productos)) {
+                return;
+            }
 
             limpiarFormularioProducto();
             mostrarProductos();
@@ -629,9 +1096,11 @@ formProducto.addEventListener(
                         }
                     );
 
-                guardarProductos(
+                if (!guardarProductos(
                     productos
-                );
+                )) {
+                    return;
+                }
 
                 limpiarFormularioProducto();
                 mostrarProductos();
@@ -751,11 +1220,18 @@ function eliminarProducto(id) {
                     }
                 );
 
-            guardarProductos(
+            if (!guardarProductos(
                 productos
-            );
+            )) {
+                return;
+            }
 
-            limpiarFormularioProducto();
+            if (
+                String(productoId.value) ===
+                String(id)
+            ) {
+                limpiarFormularioProducto();
+            }
             mostrarProductos();
 
             mostrarToast("Producto eliminado.", "success");
@@ -824,8 +1300,9 @@ function actualizarBotonTema(esOscuro) {
 function aplicarTemaGuardado() {
 
     const esOscuro =
-        localStorage.getItem(
-            "modo_oscuro"
+        leerPreferenciaSegura(
+            "modo_oscuro",
+            "false"
         ) === "true";
 
     document.documentElement.setAttribute(
@@ -861,7 +1338,7 @@ btnModoOscuro.addEventListener(
                     : "light"
             );
 
-        localStorage.setItem(
+        guardarPreferenciaSegura(
             "modo_oscuro",
             esOscuro
         );

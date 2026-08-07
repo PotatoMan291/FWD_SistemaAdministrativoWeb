@@ -1752,3 +1752,26 @@ html[data-theme="dark"] .choices__item--choice.is-highlighted {
         grid-template-columns: 1fr;
     }
 }
+
+
+/* Corrección Choices.js: permitir que los dropdowns de Categoría y
+   Proveedor salgan por encima de la tarjeta del formulario. */
+#formulario-productos {
+    overflow: visible;
+}
+
+#formulario-productos .card-body,
+#formulario-productos .form-grid,
+#formulario-productos .form-field,
+#formulario-productos .input-shell {
+    overflow: visible;
+}
+
+#formulario-productos .choices {
+    position: relative;
+    z-index: 20;
+}
+
+#formulario-productos .choices.is-open {
+    z-index: 1200;
+}

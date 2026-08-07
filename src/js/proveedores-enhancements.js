@@ -5,33 +5,15 @@
 let chartProductosProveedor = null;
 
 let vistaProveedoresActual =
-    localStorage.getItem(
-        "vista_proveedores"
-    ) || "tabla";
+    leerPreferenciaSegura(
+        "vista_proveedores",
+        "tabla"
+    );
 
 const valoresAnimadosProveedores = {};
 
 let ultimaFirmaDatosProveedores = "";
 
-
-// ------------------------------------------------------
-// Toast
-// ------------------------------------------------------
-function mostrarToast(
-    mensaje,
-    icono = "success"
-) {
-
-    Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: icono,
-        title: mensaje,
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true
-    });
-}
 
 
 
@@ -188,7 +170,7 @@ function obtenerIniciales(
     nombre
 ) {
 
-    return nombre
+    return String(nombre || "")
         .trim()
         .split(/\s+/)
         .slice(0, 2)
@@ -222,11 +204,25 @@ function crearBotonProveedorCard(
         "card-action-button " +
         clase;
 
-    boton.innerHTML =
-        '<i class="bi ' +
-        icono +
-        '"></i>' +
+    const iconoElemento =
+        document.createElement("i");
+
+    iconoElemento.className =
+        "bi " + icono;
+
+    const textoElemento =
+        document.createElement("span");
+
+    textoElemento.textContent =
         texto;
+
+    boton.appendChild(
+        iconoElemento
+    );
+
+    boton.appendChild(
+        textoElemento
+    );
 
     boton.addEventListener(
         "click",
@@ -563,7 +559,9 @@ function renderizarChartProveedores() {
         proveedores.map(
             function(proveedor) {
 
-                return proveedor.nombre;
+                return textoSeguroGrafico(
+                    proveedor.nombre
+                );
             }
         );
 
@@ -677,7 +675,7 @@ function cambiarVistaProveedores(
     vistaProveedoresActual =
         vista;
 
-    localStorage.setItem(
+    guardarPreferenciaSegura(
         "vista_proveedores",
         vista
     );
@@ -743,10 +741,16 @@ function cambiarVistaProveedores(
 // ------------------------------------------------------
 function escaparCSV(valor) {
 
-    return '"' +
-        String(valor ?? "")
-            .replace(/"/g, '""') +
-        '"';
+    let texto =
+        String(valor ?? "");
+
+    if (/^\s*[=+@-]/.test(texto)) {
+        texto = "'" + texto;
+    }
+
+    texto = texto.replace(/"/g, '""');
+
+    return '"' + texto + '"';
 }
 
 
@@ -844,9 +848,9 @@ function exportarProveedoresCSV() {
 function obtenerFirmaDatosProveedores() {
 
     return (
-        localStorage.getItem("proveedores") || "[]"
+        leerTextoLocalStorage("proveedores") || "[]"
     ) + "|" + (
-        localStorage.getItem("productos") || "[]"
+        leerTextoLocalStorage("productos") || "[]"
     );
 }
 

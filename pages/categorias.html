@@ -2,6 +2,8 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Categorías | Sistema Administrativo</title>
@@ -255,6 +257,8 @@
                                     <input
                                         type="text"
                                         id="categoria-nombre"
+                                        maxlength="80"
+                                        autocomplete="off"
                                         placeholder="Ej. Tecnología"
                                         required>
                                 </div>
@@ -269,6 +273,8 @@
                                     <input
                                         type="text"
                                         id="categoria-descripcion"
+                                        maxlength="250"
+                                        autocomplete="off"
                                         placeholder="Ej. Equipos y accesorios tecnológicos"
                                         required>
                                 </div>
@@ -276,7 +282,7 @@
 
                         </div>
 
-                        <div id="mensaje-categoria" class="form-message" role="alert"></div>
+                        <div id="mensaje-categoria" class="form-message" role="alert" aria-live="polite"></div>
 
                         <div class="form-actions">
 
@@ -320,6 +326,8 @@
                         <input
                             type="search"
                             id="buscador-categoria"
+                            maxlength="120"
+                            autocomplete="off"
                             placeholder="Buscar categoría...">
                     </div>
 
@@ -351,8 +359,8 @@
 
     </div>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
     <script defer src="../src/js/categorias.js"></script>
     <script defer src="../src/js/categorias-enhancements.js"></script>
 

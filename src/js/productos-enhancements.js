@@ -11,28 +11,15 @@ let choicesProveedor = null;
 
 let filtroStockActual = "todos";
 let vistaProductosActual =
-    localStorage.getItem("vista_productos") || "tabla";
+    leerPreferenciaSegura(
+        "vista_productos",
+        "tabla"
+    );
 
 let sortableProductos = null;
 
 let ultimaFirmaDatosProductos = "";
 
-
-// ------------------------------------------------------
-// Toast reutilizable
-// ------------------------------------------------------
-function mostrarToast(mensaje, icono = "success") {
-
-    Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: icono,
-        title: mensaje,
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true
-    });
-}
 
 
 
@@ -185,7 +172,9 @@ function crearChoices(
 }
 
 
-function inicializarChoicesCategoria() {
+function inicializarChoicesCategoria(
+    categoriaSeleccionada = ""
+) {
 
     if (choicesCategoria) {
 
@@ -198,10 +187,23 @@ function inicializarChoicesCategoria() {
             productoCategoria,
             "Seleccione una categoría"
         );
+
+    // Forzar la categoría seleccionada después de crear Choices.
+    if (
+        choicesCategoria &&
+        categoriaSeleccionada !== ""
+    ) {
+
+        choicesCategoria.setChoiceByValue(
+            String(categoriaSeleccionada)
+        );
+    }
 }
 
 
-function inicializarChoicesProveedor() {
+function inicializarChoicesProveedor(
+    proveedorSeleccionado = ""
+) {
 
     if (choicesProveedor) {
 
@@ -214,6 +216,17 @@ function inicializarChoicesProveedor() {
             productoProveedor,
             "Seleccione un proveedor"
         );
+
+    // Forzar el proveedor seleccionado después de crear Choices.
+    if (
+        choicesProveedor &&
+        proveedorSeleccionado !== ""
+    ) {
+
+        choicesProveedor.setChoiceByValue(
+            String(proveedorSeleccionado)
+        );
+    }
 }
 
 
@@ -237,7 +250,9 @@ cargarCategoriasEnSelect =
             categoriaSeleccionada
         );
 
-        inicializarChoicesCategoria();
+        inicializarChoicesCategoria(
+            categoriaSeleccionada
+        );
     };
 
 cargarProveedoresEnSelect =
@@ -253,7 +268,9 @@ cargarProveedoresEnSelect =
             proveedorSeleccionado
         );
 
-        inicializarChoicesProveedor();
+        inicializarChoicesProveedor(
+            proveedorSeleccionado
+        );
     };
 
 
@@ -286,7 +303,11 @@ function obtenerDatosCategoriasProductos() {
                 }
             ).length;
 
-        nombres.push(categoria.nombre);
+        nombres.push(
+            textoSeguroGrafico(
+                categoria.nombre
+            )
+        );
         cantidades.push(cantidad);
     });
 
@@ -657,8 +678,9 @@ function obtenerListaOrdenada(
 ) {
 
     const ordenGuardado =
-        localStorage.getItem(
-            "orden_tarjetas_productos"
+        leerPreferenciaSegura(
+            "orden_tarjetas_productos",
+            ""
         );
 
     if (!ordenGuardado) {
@@ -721,11 +743,25 @@ function crearBotonTarjeta(
         "card-action-button " +
         clase;
 
-    boton.innerHTML =
-        '<i class="bi ' +
-        icono +
-        '"></i>' +
+    const iconoElemento =
+        document.createElement("i");
+
+    iconoElemento.className =
+        "bi " + icono;
+
+    const textoElemento =
+        document.createElement("span");
+
+    textoElemento.textContent =
         texto;
+
+    boton.appendChild(
+        iconoElemento
+    );
+
+    boton.appendChild(
+        textoElemento
+    );
 
     boton.addEventListener(
         "click",
@@ -898,10 +934,26 @@ function renderizarTarjetasProductos(
             stockRow.className =
                 "card-meta-row";
 
-            stockRow.innerHTML =
-                "<span>Stock</span><strong>" +
+            const stockLabel =
+                document.createElement("span");
+
+            stockLabel.textContent =
+                "Stock";
+
+            const stockValor =
+                document.createElement("strong");
+
+            stockValor.textContent =
                 producto.stock +
-                " unidades</strong>";
+                " unidades";
+
+            stockRow.appendChild(
+                stockLabel
+            );
+
+            stockRow.appendChild(
+                stockValor
+            );
 
             const progress =
                 document.createElement(
@@ -1046,6 +1098,21 @@ function inicializarSortableProductos() {
         return;
     }
 
+    // Evitar alterar el orden global mientras solo se muestra
+    // un subconjunto filtrado de productos.
+    if (
+        buscadorProducto.value.trim() !== "" ||
+        filtroStockActual !== "todos"
+    ) {
+
+        if (sortableProductos) {
+            sortableProductos.destroy();
+            sortableProductos = null;
+        }
+
+        return;
+    }
+
     if (sortableProductos) {
 
         sortableProductos.destroy();
@@ -1075,7 +1142,7 @@ function inicializarSortableProductos() {
                             )
                             .filter(Boolean);
 
-                        localStorage.setItem(
+                        guardarPreferenciaSegura(
                             "orden_tarjetas_productos",
                             ids.join("|")
                         );
@@ -1128,7 +1195,7 @@ function cambiarVistaProductos(
 
     vistaProductosActual = vista;
 
-    localStorage.setItem(
+    guardarPreferenciaSegura(
         "vista_productos",
         vista
     );
@@ -1272,11 +1339,16 @@ function aplicarFiltrosProductos() {
 // ------------------------------------------------------
 function escaparCSV(valor) {
 
-    const texto =
-        String(
-            valor ?? ""
-        )
-        .replace(/"/g, '""');
+    let texto =
+        String(valor ?? "");
+
+    // Evitar CSV/Formula Injection al abrir el archivo en Excel
+    // o programas de hojas de cálculo.
+    if (/^\s*[=+@-]/.test(texto)) {
+        texto = "'" + texto;
+    }
+
+    texto = texto.replace(/"/g, '""');
 
     return '"' + texto + '"';
 }
@@ -1395,11 +1467,11 @@ function exportarProductosCSV() {
 function obtenerFirmaDatosProductos() {
 
     return (
-        localStorage.getItem("productos") || "[]" 
+        leerTextoLocalStorage("productos") || "[]"
     ) + "|" + (
-        localStorage.getItem("categorias") || "[]"
+        leerTextoLocalStorage("categorias") || "[]"
     ) + "|" + (
-        localStorage.getItem("proveedores") || "[]"
+        leerTextoLocalStorage("proveedores") || "[]"
     );
 }
 
@@ -1561,12 +1633,16 @@ document
         // se inicializan aquí.
         if (!choicesCategoria) {
 
-            inicializarChoicesCategoria();
+            inicializarChoicesCategoria(
+                productoCategoria.value
+            );
         }
 
         if (!choicesProveedor) {
 
-            inicializarChoicesProveedor();
+            inicializarChoicesProveedor(
+                productoProveedor.value
+            );
         }
 
         // El CRUD principal ejecuta mostrarProductos() al iniciar.

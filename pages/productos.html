@@ -2,6 +2,8 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Productos | Sistema Administrativo</title>
@@ -304,6 +306,8 @@
                                         type="text"
                                         id="producto-nombre"
                                         placeholder="Ej. Laptop Lenovo"
+                                        maxlength="120"
+                                        autocomplete="off"
                                         required>
                                 </div>
                             </div>
@@ -334,7 +338,9 @@
                                         type="number"
                                         id="producto-precio"
                                         min="0.01"
+                                        max="999999999.99"
                                         step="0.01"
+                                        inputmode="decimal"
                                         placeholder="0"
                                         required>
                                 </div>
@@ -350,7 +356,9 @@
                                         type="number"
                                         id="producto-stock"
                                         min="0"
+                                        max="10000000"
                                         step="1"
+                                        inputmode="numeric"
                                         placeholder="0"
                                         required>
                                 </div>
@@ -370,7 +378,7 @@
 
                         </div>
 
-                        <div id="mensaje-producto" class="form-message" role="alert"></div>
+                        <div id="mensaje-producto" class="form-message" role="alert" aria-live="polite"></div>
 
                         <div class="form-actions">
 
@@ -415,6 +423,8 @@
                             <input
                                 type="search"
                                 id="buscador-producto"
+                                maxlength="120"
+                                autocomplete="off"
                                 placeholder="Buscar producto...">
                         </div>
 
@@ -479,10 +489,10 @@
 
     </div>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js"></script>
     <script defer src="../src/js/productos.js"></script>
     <script defer src="../src/js/productos-enhancements.js"></script>
 

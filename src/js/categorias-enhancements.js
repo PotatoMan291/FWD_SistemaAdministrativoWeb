@@ -10,25 +10,6 @@ const valoresAnimadosCategorias = {};
 let ultimaFirmaDatosCategorias = "";
 
 
-// ------------------------------------------------------
-// Toast
-// ------------------------------------------------------
-function mostrarToast(
-    mensaje,
-    icono = "success"
-) {
-
-    Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: icono,
-        title: mensaje,
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true
-    });
-}
-
 
 
 // ------------------------------------------------------
@@ -206,7 +187,9 @@ function renderizarGraficosCategorias() {
         categorias.map(
             function(categoria) {
 
-                return categoria.nombre;
+                return textoSeguroGrafico(
+                    categoria.nombre
+                );
             }
         );
 
@@ -386,10 +369,16 @@ function renderizarGraficosCategorias() {
 // ------------------------------------------------------
 function escaparCSV(valor) {
 
-    return '"' +
-        String(valor ?? "")
-            .replace(/"/g, '""') +
-        '"';
+    let texto =
+        String(valor ?? "");
+
+    if (/^\s*[=+@-]/.test(texto)) {
+        texto = "'" + texto;
+    }
+
+    texto = texto.replace(/"/g, '""');
+
+    return '"' + texto + '"';
 }
 
 
@@ -485,9 +474,9 @@ function exportarCategoriasCSV() {
 function obtenerFirmaDatosCategorias() {
 
     return (
-        localStorage.getItem("categorias") || "[]"
+        leerTextoLocalStorage("categorias") || "[]"
     ) + "|" + (
-        localStorage.getItem("productos") || "[]"
+        leerTextoLocalStorage("productos") || "[]"
     );
 }
 
