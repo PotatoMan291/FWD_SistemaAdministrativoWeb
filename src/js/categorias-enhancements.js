@@ -10,25 +10,6 @@ const valoresAnimadosCategorias = {};
 let ultimaFirmaDatosCategorias = "";
 
 
-// ------------------------------------------------------
-// Toast
-// ------------------------------------------------------
-function mostrarToast(
-    mensaje,
-    icono = "success"
-) {
-
-    Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: icono,
-        title: mensaje,
-        showConfirmButton: false,
-        timer: 2200,
-        timerProgressBar: true
-    });
-}
-
 
 
 // ------------------------------------------------------
@@ -206,7 +187,9 @@ function renderizarGraficosCategorias() {
         categorias.map(
             function(categoria) {
 
-                return categoria.nombre;
+                return textoSeguroGrafico(
+                    categoria.nombre
+                );
             }
         );
 
@@ -386,10 +369,16 @@ function renderizarGraficosCategorias() {
 // ------------------------------------------------------
 function escaparCSV(valor) {
 
-    return '"' +
-        String(valor ?? "")
-            .replace(/"/g, '""') +
-        '"';
+    let texto =
+        String(valor ?? "");
+
+    if (/^\s*[=+@-]/.test(texto)) {
+        texto = "'" + texto;
+    }
+
+    texto = texto.replace(/"/g, '""');
+
+    return '"' + texto + '"';
 }
 
 
@@ -480,14 +469,158 @@ function exportarCategoriasCSV() {
 
 
 // ------------------------------------------------------
+// Exportar reporte PDF
+// ------------------------------------------------------
+async function exportarCategoriasPDF() {
+
+    const categorias =
+        obtenerCategorias();
+
+    if (categorias.length === 0) {
+
+        mostrarToast(
+            "No hay categorías para exportar.",
+            "info"
+        );
+
+        return;
+    }
+
+    if (
+        typeof PDFReporte ===
+        "undefined"
+    ) {
+
+        mostrarToast(
+            "El módulo PDF no está disponible.",
+            "error"
+        );
+
+        return;
+    }
+
+    const productos =
+        obtenerProductos();
+
+    let usadas = 0;
+
+    categorias.forEach(
+        function(categoria) {
+
+            if (
+                cantidadProductosCategoria(
+                    categoria.id
+                ) > 0
+            ) {
+
+                usadas++;
+            }
+        }
+    );
+
+    const sinUsar =
+        categorias.length -
+        usadas;
+
+    const filas =
+        categorias.map(
+            function(categoria) {
+
+                return [
+                    categoria.id,
+                    categoria.nombre,
+                    categoria.descripcion,
+                    cantidadProductosCategoria(
+                        categoria.id
+                    )
+                ];
+            }
+        );
+
+    await PDFReporte.generarReporte({
+        titulo:
+            "Reporte de Categorías",
+        subtitulo:
+            "Organización del catálogo",
+        nombreArchivo:
+            "reporte_categorias",
+        fondoGraficosOscuro:
+            document.documentElement
+                .getAttribute(
+                    "data-theme"
+                ) === "dark",
+        metricas: [
+            {
+                etiqueta:
+                    "Total de categorías",
+                valor:
+                    categorias.length
+            },
+            {
+                etiqueta:
+                    "Categorías utilizadas",
+                valor:
+                    usadas
+            },
+            {
+                etiqueta:
+                    "Categorías sin utilizar",
+                valor:
+                    sinUsar
+            },
+            {
+                etiqueta:
+                    "Productos registrados",
+                valor:
+                    productos.length
+            }
+        ],
+        graficos: [
+            {
+                titulo:
+                    "Productos por categoría",
+                chart:
+                    chartProductosCategoria
+            },
+            {
+                titulo:
+                    "Uso de categorías",
+                chart:
+                    chartUsoCategorias
+            }
+        ],
+        tabla: {
+            titulo:
+                "Listado completo de categorías",
+            columnas: [
+                "ID",
+                "Categoría",
+                "Descripción",
+                "Productos asociados"
+            ],
+            filas: filas
+        },
+        alFinalizar:
+            function() {
+
+                mostrarToast(
+                    "Reporte PDF de categorías generado.",
+                    "success"
+                );
+            }
+    });
+}
+
+
+// ------------------------------------------------------
 // Detectar cambios reales en LocalStorage
 // ------------------------------------------------------
 function obtenerFirmaDatosCategorias() {
 
     return (
-        localStorage.getItem("categorias") || "[]"
+        leerTextoLocalStorage("categorias") || "[]"
     ) + "|" + (
-        localStorage.getItem("productos") || "[]"
+        leerTextoLocalStorage("productos") || "[]"
     );
 }
 
@@ -540,6 +673,15 @@ document.getElementById(
             "click",
             exportarCategoriasCSV
         );
+
+        document
+            .getElementById(
+                "btn-exportar-categorias-pdf"
+            )
+            .addEventListener(
+                "click",
+                exportarCategoriasPDF
+            );
 
         btnModoOscuro.addEventListener(
             "click",

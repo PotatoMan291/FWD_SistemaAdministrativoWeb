@@ -42,31 +42,358 @@ const resumenProductosAsociados =
 
 
 // ------------------------------------------------------
+// Utilidades de seguridad y almacenamiento
+// ------------------------------------------------------
+let advertenciaStorageMostrada = false;
+
+function mostrarToast(
+    mensaje,
+    icono = "success"
+) {
+
+    if (window.Swal) {
+
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: icono,
+            title: mensaje,
+            showConfirmButton: false,
+            timer: 2200,
+            timerProgressBar: true
+        });
+
+        return;
+    }
+
+    console.log(mensaje);
+}
+
+
+function avisarProblemaStorage(mensaje) {
+
+    if (advertenciaStorageMostrada) {
+        return;
+    }
+
+    advertenciaStorageMostrada = true;
+
+    if (window.Swal) {
+
+        Swal.fire({
+            title: "Problema con el almacenamiento",
+            text: mensaje,
+            icon: "error",
+            confirmButtonText: "Entendido"
+        });
+
+    } else {
+
+        console.error(mensaje);
+    }
+}
+
+
+function leerTextoLocalStorage(clave) {
+
+    try {
+
+        return localStorage.getItem(clave);
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo leer LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "El navegador no permite acceder a LocalStorage. Los cambios no podrán persistirse."
+        );
+
+        return null;
+    }
+}
+
+
+function leerListaLocalStorage(clave) {
+
+    const datos =
+        leerTextoLocalStorage(clave);
+
+    if (!datos) {
+        return [];
+    }
+
+    try {
+
+        const lista = JSON.parse(datos);
+
+        if (!Array.isArray(lista)) {
+
+            throw new Error(
+                "El contenido almacenado no es una lista."
+            );
+        }
+
+        return lista.filter(
+            function(item) {
+
+                return (
+                    item &&
+                    typeof item === "object"
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Datos inválidos en " + clave + ":",
+            error
+        );
+
+        // Conservar una copia antes de recuperar la aplicación.
+        try {
+
+            const claveBackup =
+                clave +
+                "_backup_corrupto_" +
+                Date.now();
+
+            localStorage.setItem(
+                claveBackup,
+                datos
+            );
+
+            localStorage.setItem(
+                clave,
+                "[]"
+            );
+
+        } catch (errorBackup) {
+
+            console.error(
+                "No fue posible crear el respaldo:",
+                errorBackup
+            );
+        }
+
+        avisarProblemaStorage(
+            "Se detectaron datos dañados. Se creó un respaldo y el módulo se recuperó para evitar que la página falle."
+        );
+
+        return [];
+    }
+}
+
+
+function guardarListaLocalStorage(
+    clave,
+    lista
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            JSON.stringify(lista)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo guardar LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "No fue posible guardar los cambios. Revise el espacio disponible o los permisos del navegador."
+        );
+
+        return false;
+    }
+}
+
+
+function leerPreferenciaSegura(
+    clave,
+    valorPorDefecto = ""
+) {
+
+    const valor =
+        leerTextoLocalStorage(clave);
+
+    return (
+        valor === null ||
+        valor === ""
+    )
+        ? valorPorDefecto
+        : valor;
+}
+
+
+function guardarPreferenciaSegura(
+    clave,
+    valor
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            String(valor)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo guardar la preferencia " + clave,
+            error
+        );
+
+        return false;
+    }
+}
+
+
+function generarIdSeguro() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID ===
+            "function"
+    ) {
+
+        return window.crypto.randomUUID();
+    }
+
+    return (
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2, 10)
+    );
+}
+
+
+function normalizarTextoComparacion(texto) {
+
+    return String(texto || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+}
+
+
+function textoSeguro(
+    valor,
+    maximo = 250
+) {
+
+    return String(valor ?? "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+function numeroSeguro(
+    valor,
+    valorPorDefecto = 0
+) {
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero)
+        ? numero
+        : valorPorDefecto;
+}
+
+
+function normalizarProductoGuardado(producto) {
+
+    return {
+        id: textoSeguro(producto.id, 100),
+        nombre: textoSeguro(producto.nombre, 120),
+        categoriaId: textoSeguro(producto.categoriaId, 100),
+        categoria: textoSeguro(producto.categoria, 80),
+        precio: numeroSeguro(producto.precio, 0),
+        stock: numeroSeguro(producto.stock, 0),
+        proveedorId: textoSeguro(producto.proveedorId, 100)
+    };
+}
+
+
+function normalizarProveedorGuardado(proveedor) {
+
+    return {
+        id: textoSeguro(proveedor.id, 100),
+        nombre: textoSeguro(proveedor.nombre, 100),
+        empresa: textoSeguro(proveedor.empresa, 100),
+        telefono: textoSeguro(proveedor.telefono, 25),
+        correo: textoSeguro(proveedor.correo, 150)
+            .toLowerCase(),
+        direccion: textoSeguro(proveedor.direccion, 200)
+    };
+}
+
+
+function normalizarCategoriaGuardada(categoria) {
+
+    return {
+        id: textoSeguro(categoria.id, 100),
+        nombre: textoSeguro(categoria.nombre, 80),
+        descripcion: textoSeguro(categoria.descripcion, 250)
+    };
+}
+
+
+function textoSeguroGrafico(
+    valor,
+    maximo = 60
+) {
+
+    return String(valor ?? "")
+        .replace(/[<>]/g, "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+// ------------------------------------------------------
 // Leer proveedores desde LocalStorage
 // ------------------------------------------------------
 function obtenerProveedores() {
 
-    const datos =
-        localStorage.getItem(
-            CLAVE_PROVEEDORES
-        );
+    return leerListaLocalStorage(
+        CLAVE_PROVEEDORES
+    )
+        .map(normalizarProveedorGuardado)
+        .filter(function(proveedor) {
 
-    return datos
-        ? JSON.parse(datos)
-        : [];
+            return (
+                proveedor.id !== "" &&
+                proveedor.nombre !== ""
+            );
+        });
 }
 
 
 // ------------------------------------------------------
 // Guardar proveedores en LocalStorage
 // ------------------------------------------------------
-function guardarProveedores(
-    proveedores
-) {
+function guardarProveedores(proveedores) {
 
-    localStorage.setItem(
+    return guardarListaLocalStorage(
         CLAVE_PROVEEDORES,
-        JSON.stringify(proveedores)
+        proveedores
     );
 }
 
@@ -76,14 +403,17 @@ function guardarProveedores(
 // ------------------------------------------------------
 function obtenerProductos() {
 
-    const datos =
-        localStorage.getItem(
-            "productos"
-        );
+    return leerListaLocalStorage(
+        "productos"
+    )
+        .map(normalizarProductoGuardado)
+        .filter(function(producto) {
 
-    return datos
-        ? JSON.parse(datos)
-        : [];
+            return (
+                producto.id !== "" &&
+                producto.nombre !== ""
+            );
+        });
 }
 
 
@@ -351,22 +681,31 @@ function mostrarProveedores(
             const celdaCorreo =
                 document.createElement("td");
 
-            const enlaceCorreo =
-                document.createElement("a");
+            if (correoValido(proveedor.correo)) {
 
-            enlaceCorreo.href =
-                "mailto:" +
-                proveedor.correo;
+                const enlaceCorreo =
+                    document.createElement("a");
 
-            enlaceCorreo.className =
-                "text-decoration-none";
+                enlaceCorreo.href =
+                    "mailto:" +
+                    proveedor.correo;
 
-            enlaceCorreo.textContent =
-                proveedor.correo;
+                enlaceCorreo.className =
+                    "text-decoration-none";
 
-            celdaCorreo.appendChild(
-                enlaceCorreo
-            );
+                enlaceCorreo.textContent =
+                    proveedor.correo;
+
+                celdaCorreo.appendChild(
+                    enlaceCorreo
+                );
+
+            } else {
+
+                celdaCorreo.textContent =
+                    proveedor.correo ||
+                    "Correo no disponible";
+            }
 
             const celdaDireccion =
                 document.createElement("td");
@@ -435,9 +774,26 @@ function mostrarProveedores(
 // ------------------------------------------------------
 function correoValido(correo) {
 
+    const patron =
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
     return (
-        correo.includes("@") &&
-        correo.includes(".")
+        correo.length <= 150 &&
+        patron.test(correo)
+    );
+}
+
+
+function telefonoValido(telefono) {
+
+    const digitos =
+        normalizarTelefonoProveedor(
+            telefono
+        );
+
+    return (
+        digitos.length >= 8 &&
+        digitos.length <= 15
     );
 }
 
@@ -453,8 +809,7 @@ function validarProveedor(
     direccion
 ) {
 
-    mensajeProveedor.textContent =
-        "";
+    mensajeProveedor.textContent = "";
 
     if (
         nombre === "" ||
@@ -470,6 +825,33 @@ function validarProveedor(
         return false;
     }
 
+    if (
+        nombre.length > 100 ||
+        empresa.length > 100
+    ) {
+
+        mensajeProveedor.textContent =
+            "El nombre y la empresa no pueden superar 100 caracteres.";
+
+        return false;
+    }
+
+    if (direccion.length > 200) {
+
+        mensajeProveedor.textContent =
+            "La dirección no puede superar 200 caracteres.";
+
+        return false;
+    }
+
+    if (!telefonoValido(telefono)) {
+
+        mensajeProveedor.textContent =
+            "Ingrese un teléfono válido de 8 a 15 dígitos.";
+
+        return false;
+    }
+
     if (!correoValido(correo)) {
 
         mensajeProveedor.textContent =
@@ -479,6 +861,155 @@ function validarProveedor(
     }
 
     return true;
+}
+
+
+// ------------------------------------------------------
+// Normalizar datos para detectar duplicados
+// ------------------------------------------------------
+function normalizarTextoProveedor(texto) {
+
+    return normalizarTextoComparacion(
+        texto
+    );
+}
+
+
+function normalizarTelefonoProveedor(telefono) {
+
+    let digitos =
+        String(telefono || "")
+            .replace(/\D/g, "");
+
+    // Normalizar formatos equivalentes con prefijo internacional 506.
+    // Ej.: 8888-8888 y +506 8888-8888 se consideran el mismo número.
+    if (
+        digitos.length === 11 &&
+        digitos.startsWith("506")
+    ) {
+
+        digitos = digitos.slice(3);
+    }
+
+    if (
+        digitos.length === 13 &&
+        digitos.startsWith("00506")
+    ) {
+
+        digitos = digitos.slice(5);
+    }
+
+    return digitos;
+}
+
+
+// ------------------------------------------------------
+// Buscar un proveedor que choque con los datos ingresados
+// ------------------------------------------------------
+function buscarProveedorDuplicado(
+    proveedores,
+    idActual,
+    nombre,
+    empresa,
+    telefono,
+    correo
+) {
+
+    const nombreNormalizado =
+        normalizarTextoProveedor(nombre);
+
+    const empresaNormalizada =
+        normalizarTextoProveedor(empresa);
+
+    const telefonoNormalizado =
+        normalizarTelefonoProveedor(telefono);
+
+    const correoNormalizado =
+        normalizarTextoProveedor(correo);
+
+    return proveedores.find(
+        function(proveedor) {
+
+            // Al editar, no comparar contra el mismo registro.
+            if (
+                String(proveedor.id) ===
+                String(idActual)
+            ) {
+
+                return false;
+            }
+
+            const mismoCorreo =
+                normalizarTextoProveedor(
+                    proveedor.correo
+                ) === correoNormalizado;
+
+            const mismoTelefono =
+                normalizarTelefonoProveedor(
+                    proveedor.telefono
+                ) === telefonoNormalizado;
+
+            const mismaPersonaEmpresa =
+                normalizarTextoProveedor(
+                    proveedor.nombre
+                ) === nombreNormalizado &&
+                normalizarTextoProveedor(
+                    proveedor.empresa
+                ) === empresaNormalizada;
+
+            return (
+                mismoCorreo ||
+                mismoTelefono ||
+                mismaPersonaEmpresa
+            );
+        }
+    );
+}
+
+
+function obtenerMotivoProveedorDuplicado(
+    proveedorDuplicado,
+    nombre,
+    empresa,
+    telefono,
+    correo
+) {
+
+    if (
+        normalizarTextoProveedor(
+            proveedorDuplicado.correo
+        ) ===
+        normalizarTextoProveedor(correo)
+    ) {
+
+        return "Ya existe un proveedor con ese correo electrónico.";
+    }
+
+    if (
+        normalizarTelefonoProveedor(
+            proveedorDuplicado.telefono
+        ) ===
+        normalizarTelefonoProveedor(telefono)
+    ) {
+
+        return "Ya existe un proveedor con ese número de teléfono.";
+    }
+
+    if (
+        normalizarTextoProveedor(
+            proveedorDuplicado.nombre
+        ) ===
+        normalizarTextoProveedor(nombre) &&
+        normalizarTextoProveedor(
+            proveedorDuplicado.empresa
+        ) ===
+        normalizarTextoProveedor(empresa)
+    ) {
+
+        return "Ya existe este proveedor registrado para la misma empresa.";
+    }
+
+    return "Ya existe un proveedor con las mismas credenciales.";
 }
 
 
@@ -504,7 +1035,9 @@ formProveedor.addEventListener(
             proveedorTelefono.value.trim();
 
         const correo =
-            proveedorCorreo.value.trim();
+            proveedorCorreo.value
+                .trim()
+                .toLowerCase();
 
         const direccion =
             proveedorDireccion.value.trim();
@@ -525,12 +1058,43 @@ formProveedor.addEventListener(
         let proveedores =
             obtenerProveedores();
 
+        const proveedorDuplicado =
+            buscarProveedorDuplicado(
+                proveedores,
+                id,
+                nombre,
+                empresa,
+                telefono,
+                correo
+            );
+
+        if (proveedorDuplicado) {
+
+            mensajeProveedor.textContent =
+                obtenerMotivoProveedorDuplicado(
+                    proveedorDuplicado,
+                    nombre,
+                    empresa,
+                    telefono,
+                    correo
+                );
+
+            Swal.fire({
+                title: "Proveedor duplicado",
+                text: mensajeProveedor.textContent,
+                icon: "warning",
+                confirmButtonText: "Entendido"
+            });
+
+            return;
+        }
+
         // Registrar
         if (id === "") {
 
             const nuevoProveedor = {
 
-                id: Date.now().toString(),
+                id: generarIdSeguro(),
                 nombre: nombre,
                 empresa: empresa,
                 telefono: telefono,
@@ -542,9 +1106,11 @@ formProveedor.addEventListener(
                 nuevoProveedor
             );
 
-            guardarProveedores(
+            if (!guardarProveedores(
                 proveedores
-            );
+            )) {
+                return;
+            }
 
             limpiarFormularioProveedor();
             mostrarProveedores();
@@ -600,9 +1166,11 @@ formProveedor.addEventListener(
                         }
                     );
 
-                guardarProveedores(
+                if (!guardarProveedores(
                     proveedores
-                );
+                )) {
+                    return;
+                }
 
                 limpiarFormularioProveedor();
                 mostrarProveedores();
@@ -687,8 +1255,8 @@ function eliminarProveedor(id) {
     const productos =
         obtenerProductos();
 
-    const tieneProductos =
-        productos.some(
+    const relacionados =
+        productos.filter(
             function(producto) {
 
                 return (
@@ -698,31 +1266,32 @@ function eliminarProveedor(id) {
             }
         );
 
-    let mensaje =
-        "¡No podrá revertir esta acción!";
+    // Mantener integridad referencial: un proveedor en uso
+    // no se elimina mientras existan productos asociados.
+    if (relacionados.length > 0) {
 
-    if (tieneProductos) {
+        Swal.fire({
+            title: "Proveedor en uso",
+            text:
+                "No puede eliminar este proveedor porque tiene " +
+                relacionados.length +
+                " producto(s) asociado(s). Reasigne o elimine esos productos primero.",
+            icon: "warning",
+            confirmButtonText: "Entendido"
+        });
 
-        mensaje =
-            "Este proveedor tiene productos relacionados. ¡No podrá revertir esta acción!";
+        return;
     }
 
     Swal.fire({
 
         title: "¿Está seguro?",
-
-        text: mensaje,
-
+        text: "¡No podrá revertir esta acción!",
         icon: "warning",
-
         showCancelButton: true,
-
         confirmButtonColor: "#d93737",
-
         cancelButtonColor: "#6b7785",
-
         confirmButtonText: "Sí, eliminar",
-
         cancelButtonText: "Cancelar"
 
     }).then(function(result) {
@@ -743,14 +1312,25 @@ function eliminarProveedor(id) {
                     }
                 );
 
-            guardarProveedores(
+            if (!guardarProveedores(
                 proveedores
-            );
+            )) {
+                return;
+            }
 
-            limpiarFormularioProveedor();
+            if (
+                String(proveedorId.value) ===
+                String(id)
+            ) {
+                limpiarFormularioProveedor();
+            }
+
             mostrarProveedores();
 
-            mostrarToast("Proveedor eliminado.", "success");
+            mostrarToast(
+                "Proveedor eliminado.",
+                "success"
+            );
         }
     });
 }
@@ -808,19 +1388,19 @@ buscadorProveedor.addEventListener(
                 function(proveedor) {
 
                     return (
-                        proveedor.nombre
+                        String(proveedor.nombre || "")
                             .toLowerCase()
                             .includes(texto) ||
-                        proveedor.empresa
+                        String(proveedor.empresa || "")
                             .toLowerCase()
                             .includes(texto) ||
-                        proveedor.telefono
+                        String(proveedor.telefono || "")
                             .toLowerCase()
                             .includes(texto) ||
-                        proveedor.correo
+                        String(proveedor.correo || "")
                             .toLowerCase()
                             .includes(texto) ||
-                        proveedor.direccion
+                        String(proveedor.direccion || "")
                             .toLowerCase()
                             .includes(texto)
                     );
@@ -859,8 +1439,9 @@ function actualizarBotonTema(esOscuro) {
 function aplicarTemaGuardado() {
 
     const esOscuro =
-        localStorage.getItem(
-            "modo_oscuro"
+        leerPreferenciaSegura(
+            "modo_oscuro",
+            "false"
         ) === "true";
 
     document.documentElement
@@ -897,7 +1478,7 @@ btnModoOscuro.addEventListener(
                     : "light"
             );
 
-        localStorage.setItem(
+        guardarPreferenciaSegura(
             "modo_oscuro",
             esOscuro
         );

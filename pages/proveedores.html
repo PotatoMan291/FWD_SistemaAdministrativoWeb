@@ -2,6 +2,8 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Proveedores | Sistema Administrativo</title>
@@ -56,6 +58,11 @@
                 <a href="categorias.html" class="sidebar-link">
                     <span class="sidebar-icon"><i class="bi bi-tags"></i></span>
                     <span>Categorías</span>
+                </a>
+
+                <a href="pedidos.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
+                    <span>Pedidos</span>
                 </a>
         </nav>
 
@@ -137,6 +144,11 @@
                     <button type="button" class="secondary-action" id="btn-exportar-proveedores">
                         <i class="bi bi-download"></i>
                         Exportar CSV
+                    </button>
+
+                    <button type="button" class="secondary-action" id="btn-exportar-proveedores-pdf">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Exportar PDF
                     </button>
 
                     <a href="#formulario-proveedores" class="primary-action">
@@ -285,6 +297,7 @@
                                     <input
                                         type="text"
                                         id="proveedor-nombre"
+                                        maxlength="100" autocomplete="name"
                                         placeholder="Ej. Carlos Vargas"
                                         required>
                                 </div>
@@ -299,6 +312,7 @@
                                     <input
                                         type="text"
                                         id="proveedor-empresa"
+                                        maxlength="100" autocomplete="organization"
                                         placeholder="Ej. Tech CR"
                                         required>
                                 </div>
@@ -313,6 +327,7 @@
                                     <input
                                         type="text"
                                         id="proveedor-telefono"
+                                        maxlength="25" inputmode="tel" autocomplete="tel"
                                         placeholder="Ej. 8888-8888"
                                         required>
                                 </div>
@@ -327,6 +342,7 @@
                                     <input
                                         type="email"
                                         id="proveedor-correo"
+                                        maxlength="150" autocomplete="email"
                                         placeholder="correo@empresa.com"
                                         required>
                                 </div>
@@ -341,6 +357,7 @@
                                     <input
                                         type="text"
                                         id="proveedor-direccion"
+                                        maxlength="200" autocomplete="street-address"
                                         placeholder="Ej. San José, Costa Rica"
                                         required>
                                 </div>
@@ -348,7 +365,7 @@
 
                         </div>
 
-                        <div id="mensaje-proveedor" class="form-message" role="alert"></div>
+                        <div id="mensaje-proveedor" class="form-message" role="alert" aria-live="polite"></div>
 
                         <div class="form-actions">
 
@@ -393,6 +410,8 @@
                             <input
                                 type="search"
                                 id="buscador-proveedor"
+                                maxlength="150"
+                                autocomplete="off"
                                 placeholder="Buscar proveedor...">
                         </div>
 
@@ -441,9 +460,10 @@
 
     </div>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
     <script defer src="../src/js/proveedores.js"></script>
+    <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/proveedores-enhancements.js"></script>
 
 </body>

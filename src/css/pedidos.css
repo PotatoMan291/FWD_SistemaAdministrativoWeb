@@ -1775,3 +1775,630 @@ html[data-theme="dark"] .choices__item--choice.is-highlighted {
 #formulario-productos .choices.is-open {
     z-index: 1200;
 }
+
+/* ======================================================
+   PEDIDOS
+   ====================================================== */
+/* ======================================================
+   PEDIDOS
+   ====================================================== */
+
+.order-form-card {
+    padding: 0;
+    overflow: visible;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow-sm);
+}
+
+.card-header-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 26px;
+    border-bottom: 1px solid var(--border);
+    background:
+        linear-gradient(
+            135deg,
+            color-mix(in srgb, var(--brand-500) 5%, var(--surface)),
+            var(--surface)
+        );
+    border-radius: 14px 14px 0 0;
+}
+
+.card-header-custom h2,
+.table-toolbar h2,
+.order-items-heading h3 {
+    margin: 4px 0;
+    color: var(--text);
+    font-size: 20px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.card-header-custom p,
+.table-toolbar p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.relation-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid color-mix(in srgb, var(--brand-500) 30%, var(--border));
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--brand-500) 9%, var(--surface));
+    color: var(--brand-500);
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    letter-spacing: .01em;
+}
+
+#form-pedido {
+    padding: 26px;
+}
+
+/* Cliente + estado inicial */
+.order-client-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(250px, .8fr);
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 22px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.form-field label {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.form-field small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+/* Inputs y SELECTS de Pedidos */
+#form-pedido select,
+#form-pedido input[type="number"],
+#buscador-pedido {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    background-color: var(--input-bg);
+    color: var(--text);
+    box-shadow: var(--shadow-sm);
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition),
+        background-color var(--transition);
+}
+
+#form-pedido select {
+    appearance: auto;
+    padding: 10px 42px 10px 13px;
+    cursor: pointer;
+}
+
+#form-pedido input[type="number"] {
+    padding: 10px 12px;
+}
+
+#form-pedido select:hover,
+#form-pedido input[type="number"]:hover,
+#buscador-pedido:hover {
+    border-color: var(--gray-300);
+}
+
+#form-pedido select:focus,
+#form-pedido input[type="number"]:focus,
+#buscador-pedido:focus {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 14%, transparent);
+}
+
+#form-pedido select:disabled,
+#form-pedido input:disabled {
+    cursor: not-allowed;
+    opacity: .62;
+    background: var(--gray-50);
+}
+
+#form-pedido select option {
+    background: var(--surface);
+    color: var(--text);
+    padding: 9px;
+}
+
+html[data-theme="dark"] #form-pedido select,
+html[data-theme="dark"] #form-pedido input[type="number"] {
+    color-scheme: dark;
+}
+
+html[data-theme="dark"] #form-pedido select option {
+    background: #161f31;
+    color: #f2f4f7;
+}
+
+/* Estado inicial */
+.order-status-readonly {
+    justify-content: center;
+    min-height: 100%;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-subtle);
+}
+
+.status-preview {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 36px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(245, 158, 11, .10);
+}
+
+.status-pendiente {
+    background: #f59e0b;
+}
+
+.status-proceso {
+    background: #6366f1;
+}
+
+.status-entregado {
+    background: #16a34a;
+}
+
+/* Selector de productos */
+.product-picker {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 120px auto;
+    gap: 14px;
+    align-items: end;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface-subtle);
+}
+
+.product-picker .form-field {
+    margin: 0;
+}
+
+.quantity-field {
+    min-width: 0;
+}
+
+.add-product-button {
+    min-height: 46px;
+    padding: 10px 17px;
+    border: 1px solid var(--brand-500);
+    border-radius: 10px;
+    background: var(--brand-500);
+    color: #fff;
+    box-shadow: 0 1px 2px rgba(70, 95, 255, .18);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+.add-product-button:hover:not(:disabled) {
+    background: var(--brand-600);
+    border-color: var(--brand-600);
+    transform: translateY(-1px);
+}
+
+.add-product-button:disabled {
+    cursor: not-allowed;
+    opacity: .48;
+    transform: none;
+}
+
+.availability-message {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    margin: 9px 0 0;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--brand-500) 5%, transparent);
+    color: var(--text-secondary);
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+/* Detalle del carrito */
+.order-items-wrap {
+    margin-top: 22px;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.order-items-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 17px 19px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-subtle);
+}
+
+.items-counter {
+    display: inline-flex;
+    align-items: center;
+    min-height: 29px;
+    padding: 5px 9px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* Tabla de productos del pedido */
+.order-items-table {
+    min-width: 760px;
+}
+
+.order-items-table thead th {
+    background: var(--gray-50);
+}
+
+.order-items-table tbody td {
+    vertical-align: middle;
+}
+
+.quantity-control {
+    display: inline-flex;
+    align-items: center;
+}
+
+.quantity-control input {
+    width: 78px !important;
+    min-height: 36px !important;
+    padding: 6px 9px !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    background: var(--input-bg) !important;
+    color: var(--text) !important;
+    text-align: center;
+}
+
+.historical-badge {
+    display: inline-flex;
+    margin-top: 5px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, .12);
+    color: #b45309;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+/* Resumen del pedido */
+.order-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 20px;
+}
+
+.order-summary-box {
+    min-height: 92px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface-subtle);
+}
+
+.order-summary-box span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .055em;
+}
+
+.order-summary-box strong {
+    display: block;
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1.15;
+}
+
+.order-total-box {
+    border-color: color-mix(in srgb, var(--brand-500) 35%, var(--border));
+    background: color-mix(in srgb, var(--brand-500) 7%, var(--surface));
+}
+
+.order-total-box strong {
+    color: var(--brand-500);
+}
+
+/* Mensajes y botones */
+.form-message {
+    min-height: 20px;
+    margin-top: 12px;
+    color: #d92d20;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.btn-main,
+.btn-secondary-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 10px 15px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition);
+}
+
+.btn-main {
+    border: 1px solid var(--brand-500);
+    background: var(--brand-500);
+    color: #fff;
+}
+
+.btn-main:hover {
+    border-color: var(--brand-600);
+    background: var(--brand-600);
+    transform: translateY(-1px);
+}
+
+.btn-secondary-custom {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+}
+
+.btn-secondary-custom:hover {
+    border-color: var(--gray-300);
+    background: var(--gray-50);
+}
+
+/* Estado dentro del historial */
+.order-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 29px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.order-status-badge.pendiente {
+    background: rgba(245, 158, 11, .12);
+    color: #b45309;
+}
+
+.order-status-badge.en-proceso {
+    background: rgba(99, 102, 241, .12);
+    color: #4f46e5;
+}
+
+.order-status-badge.entregado {
+    background: rgba(22, 163, 74, .12);
+    color: #15803d;
+}
+
+html[data-theme="dark"] .order-status-badge.pendiente {
+    color: #fbbf24;
+}
+
+html[data-theme="dark"] .order-status-badge.en-proceso {
+    color: #a5b4fc;
+}
+
+html[data-theme="dark"] .order-status-badge.entregado {
+    color: #86efac;
+}
+
+.order-id {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.order-client-name {
+    color: var(--text);
+    font-weight: 700;
+}
+
+.order-client-history {
+    display: block;
+    margin-top: 3px;
+    color: var(--text-secondary);
+    font-size: 10px;
+}
+
+/* Acciones de historial */
+.order-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.order-action-button {
+    width: 34px;
+    height: 34px;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition:
+        border-color var(--transition),
+        color var(--transition),
+        background var(--transition);
+}
+
+.order-action-button:hover {
+    border-color: var(--brand-500);
+    background: color-mix(in srgb, var(--brand-500) 6%, var(--surface));
+    color: var(--brand-500);
+}
+
+.order-action-button.delete:hover {
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, .06);
+    color: #dc2626;
+}
+
+.empty-order-row {
+    padding: 34px !important;
+    text-align: center !important;
+    color: var(--text-secondary);
+}
+
+/* Historial de pedidos */
+#buscador-pedido {
+    padding: 10px 12px 10px 38px;
+    background: var(--input-bg);
+    color: var(--text);
+}
+
+.table-toolbar {
+    gap: 20px;
+}
+
+/* Corregir contraste general de la tabla en modo oscuro */
+html[data-theme="dark"] .order-items-table thead th {
+    background: #161f31;
+}
+
+html[data-theme="dark"] .order-items-wrap,
+html[data-theme="dark"] .order-summary-box,
+html[data-theme="dark"] .order-status-readonly,
+html[data-theme="dark"] .product-picker {
+    box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+    .order-client-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .product-picker {
+        grid-template-columns: minmax(0, 1fr) 110px;
+    }
+
+    .add-product-button {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+}
+
+@media (max-width: 760px) {
+    #form-pedido,
+    .card-header-custom {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .card-header-custom,
+    .order-items-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .product-picker,
+    .order-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .relation-badge {
+        white-space: normal;
+    }
+
+    .form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .btn-main,
+    .btn-secondary-custom {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    #form-pedido {
+        padding: 16px;
+    }
+
+    .card-header-custom {
+        padding: 18px 16px;
+    }
+
+    .product-picker {
+        padding: 14px;
+    }
+
+    .order-summary-box {
+        min-height: auto;
+    }
+}

@@ -43,14 +43,347 @@ const resumenProductos =
 
 
 // ------------------------------------------------------
+// Utilidades de seguridad y almacenamiento
+// ------------------------------------------------------
+let advertenciaStorageMostrada = false;
+
+function mostrarToast(
+    mensaje,
+    icono = "success"
+) {
+
+    if (window.Swal) {
+
+        Swal.fire({
+            toast: true,
+            position: "top-end",
+            icon: icono,
+            title: mensaje,
+            showConfirmButton: false,
+            timer: 2200,
+            timerProgressBar: true
+        });
+
+        return;
+    }
+
+    console.log(mensaje);
+}
+
+
+function avisarProblemaStorage(mensaje) {
+
+    if (advertenciaStorageMostrada) {
+        return;
+    }
+
+    advertenciaStorageMostrada = true;
+
+    if (window.Swal) {
+
+        Swal.fire({
+            title: "Problema con el almacenamiento",
+            text: mensaje,
+            icon: "error",
+            confirmButtonText: "Entendido"
+        });
+
+    } else {
+
+        console.error(mensaje);
+    }
+}
+
+
+function leerTextoLocalStorage(clave) {
+
+    try {
+
+        return localStorage.getItem(clave);
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo leer LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "El navegador no permite acceder a LocalStorage. Los cambios no podrán persistirse."
+        );
+
+        return null;
+    }
+}
+
+
+function leerListaLocalStorage(clave) {
+
+    const datos =
+        leerTextoLocalStorage(clave);
+
+    if (!datos) {
+        return [];
+    }
+
+    try {
+
+        const lista = JSON.parse(datos);
+
+        if (!Array.isArray(lista)) {
+
+            throw new Error(
+                "El contenido almacenado no es una lista."
+            );
+        }
+
+        return lista.filter(
+            function(item) {
+
+                return (
+                    item &&
+                    typeof item === "object"
+                );
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Datos inválidos en " + clave + ":",
+            error
+        );
+
+        // Conservar una copia antes de recuperar la aplicación.
+        try {
+
+            const claveBackup =
+                clave +
+                "_backup_corrupto_" +
+                Date.now();
+
+            localStorage.setItem(
+                claveBackup,
+                datos
+            );
+
+            localStorage.setItem(
+                clave,
+                "[]"
+            );
+
+        } catch (errorBackup) {
+
+            console.error(
+                "No fue posible crear el respaldo:",
+                errorBackup
+            );
+        }
+
+        avisarProblemaStorage(
+            "Se detectaron datos dañados. Se creó un respaldo y el módulo se recuperó para evitar que la página falle."
+        );
+
+        return [];
+    }
+}
+
+
+function guardarListaLocalStorage(
+    clave,
+    lista
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            JSON.stringify(lista)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo guardar LocalStorage:",
+            error
+        );
+
+        avisarProblemaStorage(
+            "No fue posible guardar los cambios. Revise el espacio disponible o los permisos del navegador."
+        );
+
+        return false;
+    }
+}
+
+
+function leerPreferenciaSegura(
+    clave,
+    valorPorDefecto = ""
+) {
+
+    const valor =
+        leerTextoLocalStorage(clave);
+
+    return (
+        valor === null ||
+        valor === ""
+    )
+        ? valorPorDefecto
+        : valor;
+}
+
+
+function guardarPreferenciaSegura(
+    clave,
+    valor
+) {
+
+    try {
+
+        localStorage.setItem(
+            clave,
+            String(valor)
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo guardar la preferencia " + clave,
+            error
+        );
+
+        return false;
+    }
+}
+
+
+function generarIdSeguro() {
+
+    if (
+        window.crypto &&
+        typeof window.crypto.randomUUID ===
+            "function"
+    ) {
+
+        return window.crypto.randomUUID();
+    }
+
+    return (
+        Date.now().toString(36) +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2, 10)
+    );
+}
+
+
+function normalizarTextoComparacion(texto) {
+
+    return String(texto || "")
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+}
+
+
+function textoSeguro(
+    valor,
+    maximo = 250
+) {
+
+    return String(valor ?? "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+function numeroSeguro(
+    valor,
+    valorPorDefecto = 0
+) {
+
+    const numero = Number(valor);
+
+    return Number.isFinite(numero)
+        ? numero
+        : valorPorDefecto;
+}
+
+
+function normalizarProductoGuardado(producto) {
+
+    return {
+        id: textoSeguro(producto.id, 100),
+        nombre: textoSeguro(producto.nombre, 120),
+        categoriaId: textoSeguro(producto.categoriaId, 100),
+        categoria: textoSeguro(producto.categoria, 80),
+        precio: numeroSeguro(producto.precio, 0),
+        stock: numeroSeguro(producto.stock, 0),
+        proveedorId: textoSeguro(producto.proveedorId, 100)
+    };
+}
+
+
+function normalizarProveedorGuardado(proveedor) {
+
+    return {
+        id: textoSeguro(proveedor.id, 100),
+        nombre: textoSeguro(proveedor.nombre, 100),
+        empresa: textoSeguro(proveedor.empresa, 100),
+        telefono: textoSeguro(proveedor.telefono, 25),
+        correo: textoSeguro(proveedor.correo, 150)
+            .toLowerCase(),
+        direccion: textoSeguro(proveedor.direccion, 200)
+    };
+}
+
+
+function normalizarCategoriaGuardada(categoria) {
+
+    return {
+        id: textoSeguro(categoria.id, 100),
+        nombre: textoSeguro(categoria.nombre, 80),
+        descripcion: textoSeguro(categoria.descripcion, 250)
+    };
+}
+
+
+function textoSeguroGrafico(
+    valor,
+    maximo = 60
+) {
+
+    return String(valor ?? "")
+        .replace(/[<>]/g, "")
+        .trim()
+        .slice(0, maximo);
+}
+
+
+// ------------------------------------------------------
 // Leer categorías
 // ------------------------------------------------------
 function obtenerCategorias() {
 
-    const datos =
-        localStorage.getItem(CLAVE_CATEGORIAS);
+    return leerListaLocalStorage(
+        CLAVE_CATEGORIAS
+    )
+        .map(normalizarCategoriaGuardada)
+        .filter(function(categoria) {
 
-    return datos ? JSON.parse(datos) : [];
+            return (
+                categoria.id !== "" &&
+                categoria.nombre !== ""
+            );
+        });
 }
 
 
@@ -59,9 +392,9 @@ function obtenerCategorias() {
 // ------------------------------------------------------
 function guardarCategorias(categorias) {
 
-    localStorage.setItem(
+    return guardarListaLocalStorage(
         CLAVE_CATEGORIAS,
-        JSON.stringify(categorias)
+        categorias
     );
 }
 
@@ -71,10 +404,17 @@ function guardarCategorias(categorias) {
 // ------------------------------------------------------
 function obtenerProductos() {
 
-    const datos =
-        localStorage.getItem("productos");
+    return leerListaLocalStorage(
+        "productos"
+    )
+        .map(normalizarProductoGuardado)
+        .filter(function(producto) {
 
-    return datos ? JSON.parse(datos) : [];
+            return (
+                producto.id !== "" &&
+                producto.nombre !== ""
+            );
+        });
 }
 
 
@@ -338,6 +678,22 @@ function validarCategoria(
         return false;
     }
 
+    if (nombre.length > 80) {
+
+        mensajeCategoria.textContent =
+            "El nombre no puede superar 80 caracteres.";
+
+        return false;
+    }
+
+    if (descripcion.length > 250) {
+
+        mensajeCategoria.textContent =
+            "La descripción no puede superar 250 caracteres.";
+
+        return false;
+    }
+
     return true;
 }
 
@@ -379,9 +735,12 @@ formCategoria.addEventListener(
                 function(categoria) {
 
                     return (
-                        categoria.nombre
-                            .toLowerCase() ===
-                        nombre.toLowerCase() &&
+                        normalizarTextoComparacion(
+                            categoria.nombre
+                        ) ===
+                        normalizarTextoComparacion(
+                            nombre
+                        ) &&
                         String(categoria.id) !==
                         String(id)
                     );
@@ -401,7 +760,7 @@ formCategoria.addEventListener(
 
             const nuevaCategoria = {
 
-                id: Date.now().toString(),
+                id: generarIdSeguro(),
                 nombre: nombre,
                 descripcion: descripcion
             };
@@ -410,9 +769,11 @@ formCategoria.addEventListener(
                 nuevaCategoria
             );
 
-            guardarCategorias(
+            if (!guardarCategorias(
                 categorias
-            );
+            )) {
+                return;
+            }
 
             limpiarFormularioCategoria();
             mostrarCategorias();
@@ -465,9 +826,11 @@ formCategoria.addEventListener(
                         }
                     );
 
-                guardarCategorias(
+                if (!guardarCategorias(
                     categorias
-                );
+                )) {
+                    return;
+                }
 
                 limpiarFormularioCategoria();
                 mostrarCategorias();
@@ -594,11 +957,18 @@ function eliminarCategoria(id) {
                     }
                 );
 
-            guardarCategorias(
+            if (!guardarCategorias(
                 categorias
-            );
+            )) {
+                return;
+            }
 
-            limpiarFormularioCategoria();
+            if (
+                String(categoriaId.value) ===
+                String(id)
+            ) {
+                limpiarFormularioCategoria();
+            }
             mostrarCategorias();
 
             mostrarToast("Categoría eliminada.", "success");
@@ -658,10 +1028,10 @@ buscadorCategoria.addEventListener(
                 function(categoria) {
 
                     return (
-                        categoria.nombre
+                        String(categoria.nombre || "")
                             .toLowerCase()
                             .includes(texto) ||
-                        categoria.descripcion
+                        String(categoria.descripcion || "")
                             .toLowerCase()
                             .includes(texto)
                     );
@@ -698,8 +1068,9 @@ function actualizarBotonTema(esOscuro) {
 function aplicarTemaGuardado() {
 
     const esOscuro =
-        localStorage.getItem(
-            "modo_oscuro"
+        leerPreferenciaSegura(
+            "modo_oscuro",
+            "false"
         ) === "true";
 
     document.documentElement
@@ -730,7 +1101,7 @@ btnModoOscuro.addEventListener(
                 esOscuro ? "dark" : "light"
             );
 
-        localStorage.setItem(
+        guardarPreferenciaSegura(
             "modo_oscuro",
             esOscuro
         );
