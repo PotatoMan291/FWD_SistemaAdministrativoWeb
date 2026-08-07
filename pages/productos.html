@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Productos | Sistema Administrativo</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css">
+    <link rel="stylesheet" href="../src/css/productos.css">
+</head>
+
+<body>
+<aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+            <a href="dashboard.html" class="brand">
+                <span class="brand-logo">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                </span>
+
+                <span class="brand-text">
+                    <strong>Sistema</strong>
+                    <small>Administrativo</small>
+                </span>
+            </a>
+
+            <button
+                class="icon-btn sidebar-close"
+                id="btn-cerrar-menu"
+                type="button"
+                aria-label="Cerrar menú">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-section-title">MENÚ</div>
+
+        <nav class="sidebar-nav">
+            
+                <a href="dashboard.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-grid"></i></span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../pages/clientes.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-people"></i></span>
+                    <span>Clientes</span>
+                </a>
+                <a href="../pages/productos.html" class="sidebar-link active">
+                    <span class="sidebar-icon"><i class="bi bi-box-seam"></i></span>
+                    <span>Productos</span>
+                </a>
+                <a href="../pages/proveedores.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-truck"></i></span>
+                    <span>Proveedores</span>
+                </a>
+                <a href="categorias.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-tags"></i></span>
+                    <span>Categorías</span>
+                </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+            <div class="storage-card">
+                <div class="storage-icon">
+                    <i class="bi bi-database-check"></i>
+                </div>
+
+                <div>
+                    <strong>LocalStorage activo</strong>
+                    <small>Los datos se guardan en el navegador</small>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+
+    <div class="app-shell">
+
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="icon-btn menu-button"
+                    id="btn-abrir-menu"
+                    type="button"
+                    aria-label="Abrir menú">
+                    <i class="bi bi-list"></i>
+                </button>
+
+                <div class="breadcrumb-block">
+                    <span>Administración</span>
+                    <strong>Productos</strong>
+                </div>
+
+            </div>
+
+            <div class="topbar-actions">
+
+                <button
+                    id="btn-modo-oscuro"
+                    class="theme-button"
+                    type="button">
+                    <i class="bi bi-moon-stars"></i>
+                    <span>Modo oscuro</span>
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <main class="page-content">
+
+            <section class="page-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        <span class="eyebrow-icon">
+                            <i class="bi bi-box-seam"></i>
+                        </span>
+                        INVENTARIO
+                    </div>
+
+                    <h1>Productos</h1>
+
+                    <p>
+                        Administra productos, existencias, categorías y proveedores.
+                    </p>
+                </div>
+
+                <div class="heading-actions">
+                    <button type="button" class="secondary-action" id="btn-exportar-productos">
+                        <i class="bi bi-download"></i>
+                        Exportar CSV
+                    </button>
+
+                    <a href="#formulario-productos" class="primary-action">
+                        <i class="bi bi-plus-lg"></i>
+                        Nuevo producto
+                    </a>
+                </div>
+
+            </section>
+
+            <section class="stats-grid">
+
+                <article class="metric-card">
+                    <div class="metric-icon bg-blue">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+
+                    <div class="metric-content">
+                        <span>Total productos</span>
+                        <strong id="resumen-total-productos">0</strong>
+                        <small>Productos registrados</small>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-icon bg-green">
+                        <i class="bi bi-boxes"></i>
+                    </div>
+
+                    <div class="metric-content">
+                        <span>Stock total</span>
+                        <strong id="resumen-stock-total">0</strong>
+                        <small>Unidades disponibles</small>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-icon bg-orange">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+
+                    <div class="metric-content">
+                        <span>Stock bajo</span>
+                        <strong id="resumen-stock-bajo">0</strong>
+                        <small>5 unidades o menos</small>
+                    </div>
+                </article>
+
+                <article class="metric-card">
+                    <div class="metric-icon bg-purple">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <div class="metric-content">
+                        <span>Proveedores</span>
+                        <strong id="resumen-proveedores">0</strong>
+                        <small>Disponibles</small>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="analytics-grid">
+
+                <article class="content-card analytics-card">
+                    <div class="mini-card-header">
+                        <div>
+                            <span class="mini-label">DISTRIBUCIÓN</span>
+                            <h2>Productos por categoría</h2>
+                        </div>
+
+                        <span class="mini-icon bg-blue">
+                            <i class="bi bi-bar-chart"></i>
+                        </span>
+                    </div>
+
+                    <div class="chart-area" id="chart-productos-categoria">
+                        <div class="chart-empty">Agrega productos para visualizar el gráfico.</div>
+                    </div>
+                </article>
+
+                <article class="content-card analytics-card">
+                    <div class="mini-card-header">
+                        <div>
+                            <span class="mini-label">INVENTARIO</span>
+                            <h2>Estado del stock</h2>
+                        </div>
+
+                        <span class="mini-icon bg-green">
+                            <i class="bi bi-pie-chart"></i>
+                        </span>
+                    </div>
+
+                    <div class="chart-area" id="chart-estado-stock">
+                        <div class="chart-empty">Agrega productos para visualizar el gráfico.</div>
+                    </div>
+                </article>
+
+                <article class="content-card insight-card">
+                    <div class="mini-card-header">
+                        <div>
+                            <span class="mini-label">RESUMEN</span>
+                            <h2>Información del inventario</h2>
+                        </div>
+
+                        <span class="mini-icon bg-purple">
+                            <i class="bi bi-stars"></i>
+                        </span>
+                    </div>
+
+                    <div class="insight-list">
+                        <div class="insight-row">
+                            <span>Valor total</span>
+                            <strong id="valor-total-inventario">₡0</strong>
+                        </div>
+
+                        <div class="insight-row">
+                            <span>Precio promedio</span>
+                            <strong id="precio-promedio-productos">₡0</strong>
+                        </div>
+
+                        <div class="insight-row">
+                            <span>Mayor stock</span>
+                            <strong id="producto-mayor-stock">Sin datos</strong>
+                        </div>
+
+                        <div class="insight-row">
+                            <span>Sin stock</span>
+                            <strong id="productos-sin-stock">0</strong>
+                        </div>
+                    </div>
+                </article>
+
+            </section>
+
+            <section class="content-card" id="formulario-productos">
+
+                <div class="card-header">
+                    <div>
+                        <h2>Datos del producto</h2>
+                        <p>Completa los campos para registrar o actualizar un producto.</p>
+                    </div>
+
+                    <div class="header-icon">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <form id="form-producto">
+
+                        <input type="hidden" id="producto-id">
+
+                        <div class="form-grid">
+
+                            <div class="form-field">
+                                <label for="producto-nombre">Nombre del producto</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-box"></i>
+
+                                    <input
+                                        type="text"
+                                        id="producto-nombre"
+                                        placeholder="Ej. Laptop Lenovo"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="producto-categoria">Categoría</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-tags"></i>
+
+                                    <select id="producto-categoria" required>
+                                        <option value="">Seleccione una categoría</option>
+                                    </select>
+                                </div>
+
+                                <small class="field-note">
+                                    Las categorías se administran desde el módulo Categorías.
+                                </small>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="producto-precio">Precio</label>
+
+                                <div class="input-shell">
+                                    <span class="input-prefix">₡</span>
+
+                                    <input
+                                        type="number"
+                                        id="producto-precio"
+                                        min="0.01"
+                                        step="0.01"
+                                        placeholder="0"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="producto-stock">Stock</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-boxes"></i>
+
+                                    <input
+                                        type="number"
+                                        id="producto-stock"
+                                        min="0"
+                                        step="1"
+                                        placeholder="0"
+                                        required>
+                                </div>
+                            </div>
+
+                            <div class="form-field form-field-full">
+                                <label for="producto-proveedor">Proveedor</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-truck"></i>
+
+                                    <select id="producto-proveedor" required>
+                                        <option value="">Seleccione un proveedor</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div id="mensaje-producto" class="form-message" role="alert"></div>
+
+                        <div class="form-actions">
+
+                            <button
+                                type="submit"
+                                id="btn-guardar-producto"
+                                class="btn btn-primary">
+                                <i class="bi bi-floppy me-1"></i>
+                                Guardar Producto
+                            </button>
+
+                            <button
+                                type="button"
+                                id="btn-cancelar-producto"
+                                class="btn btn-secondary"
+                                style="display:none;">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Cancelar
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+            <section class="content-card table-card">
+
+                <div class="card-header table-card-header">
+
+                    <div>
+                        <h2>Productos registrados</h2>
+                        <p>Consulta y administra el inventario existente.</p>
+                    </div>
+
+                    <div class="table-toolbar">
+                        <div class="search-field">
+                            <i class="bi bi-search"></i>
+
+                            <input
+                                type="search"
+                                id="buscador-producto"
+                                placeholder="Buscar producto...">
+                        </div>
+
+                        <div class="view-switch" aria-label="Cambiar vista">
+                            <button type="button" class="view-button active" id="btn-vista-tabla" title="Vista de tabla">
+                                <i class="bi bi-list-ul"></i>
+                            </button>
+
+                            <button type="button" class="view-button" id="btn-vista-tarjetas" title="Vista de tarjetas">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="filter-bar">
+                    <span class="filter-label">Filtrar stock:</span>
+
+                    <div class="filter-chips">
+                        <button type="button" class="filter-chip active" data-stock-filter="todos">Todos</button>
+                        <button type="button" class="filter-chip" data-stock-filter="disponible">Disponible</button>
+                        <button type="button" class="filter-chip" data-stock-filter="bajo">Stock bajo</button>
+                        <button type="button" class="filter-chip" data-stock-filter="sin">Sin stock</button>
+                    </div>
+                </div>
+
+                <div class="table-scroll" id="vista-tabla-productos">
+
+                    <table class="data-table">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Producto</th>
+                                <th>Categoría</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Proveedor</th>
+                                <th class="text-end">Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabla-productos-body"></tbody>
+
+                    </table>
+
+                </div>
+
+                <div class="cards-view hidden" id="vista-tarjetas-productos">
+                    <div class="cards-view-note">
+                        <i class="bi bi-arrows-move"></i>
+                        Puedes arrastrar las tarjetas para cambiar su orden visual.
+                    </div>
+
+                    <div class="product-grid" id="productos-cards"></div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script defer src="../src/js/productos.js"></script>
+    <script defer src="../src/js/productos-enhancements.js"></script>
+
+</body>
+</html>

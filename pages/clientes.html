@@ -1,91 +1,748 @@
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestión de Clientes</title>
-    <link rel="stylesheet" href="../src/css/clientes.css" />
-  </head>
-  <body>
-    <div class="container">
-      <h2>Gestión de Clientes</h2>
-      <div class="container">
-        <button id="btn-modo-oscuro" class="btn-toggle-theme" type="button">
-          Modo Oscuro
-        </button>
-      </div>
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
 
-      <!-- Formulario para Crear / Actualizar Cliente -->
-      <form id="form-cliente">
-        <input type="hidden" id="cliente-id" />
+<head>
 
-        <div class="form-group">
-          <label for="nombre">Nombre:</label>
-          <input type="text" id="nombre" required />
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Clientes | Sistema Administrativo
+    </title>
+
+    <!-- Bootstrap Icons -->
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="../src/css/clientes.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==================================================
+         SIDEBAR
+         ================================================== -->
+
+    <aside
+        class="sidebar"
+        id="sidebar"
+    >
+
+        <div class="sidebar-header">
+
+            <a
+                href="dashboard.html"
+                class="brand"
+            >
+
+                <span class="brand-logo">
+
+                    <i class="bi bi-grid-1x2-fill"></i>
+
+                </span>
+
+
+                <span class="brand-text">
+
+                    <strong>
+                        Sistema
+                    </strong>
+
+                    <small>
+                        Administrativo
+                    </small>
+
+                </span>
+
+            </a>
+
+
+            <button
+                class="icon-btn sidebar-close"
+                id="btn-cerrar-menu"
+                type="button"
+                aria-label="Cerrar menú"
+            >
+
+                <i class="bi bi-x-lg"></i>
+
+            </button>
+
         </div>
 
-        <div class="form-group">
-          <label for="correo">Correo Electrónico:</label>
-          <input type="email" id="correo" required />
+
+        <div class="sidebar-section-title">
+            MENÚ
         </div>
 
-        <div class="form-group">
-          <label for="telefono">Teléfono (solo números):</label>
-          <input
-            type="text"
-            id="telefono"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            required
-          />
+
+        <nav class="sidebar-nav">
+
+            <a
+                href="dashboard.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+                    <i class="bi bi-grid"></i>
+                </span>
+
+                <span>
+                    Dashboard
+                </span>
+
+            </a>
+
+
+            <a
+                href="clientes.html"
+                class="sidebar-link active"
+            >
+
+                <span class="sidebar-icon">
+                    <i class="bi bi-people"></i>
+                </span>
+
+                <span>
+                    Clientes
+                </span>
+
+            </a>
+
+
+            <a
+                href="productos.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+                    <i class="bi bi-box-seam"></i>
+                </span>
+
+                <span>
+                    Productos
+                </span>
+
+            </a>
+
+
+            <a
+                href="proveedores.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+                    <i class="bi bi-truck"></i>
+                </span>
+
+                <span>
+                    Proveedores
+                </span>
+
+            </a>
+
+
+            <a
+                href="categorias.html"
+                class="sidebar-link"
+            >
+
+                <span class="sidebar-icon">
+                    <i class="bi bi-tags"></i>
+                </span>
+
+                <span>
+                    Categorías
+                </span>
+
+            </a>
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+            <div class="storage-card">
+
+                <div class="storage-icon">
+
+                    <i class="bi bi-database-check"></i>
+
+                </div>
+
+                <div>
+
+                    <strong>
+                        LocalStorage activo
+                    </strong>
+
+                    <small>
+                        Los datos se guardan en el navegador
+                    </small>
+
+                </div>
+
+            </div>
+
         </div>
 
-        <div class="form-actions">
-          <button type="submit" id="btn-guardar" class="btn-primary">
-            Guardar Cliente
-          </button>
-          <button
-            type="button"
-            id="btn-cancelar"
-            class="btn-secondary"
-            style="display: none"
-            onclick="limpiarFormulario()"
-          >
-            Cancelar
-          </button>
-        </div>
-        <div class="obtener-clientes"></div>
-      </form>
+    </aside>
 
-      <hr />
 
-      <!-- Tabla para Listar Clientes -->
-      <h3>Lista de Clientes Registrados</h3>
-      <div class="form-group" style="margin-top: 20px">
-        <label for="buscador-cliente">Buscar Cliente:</label>
-        <input
-          type="text"
-          id="buscador-cliente"
-          placeholder="Escribe el nombre, correo o teléfono..."
-        />
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Teléfono</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody id="tabla-clientes-body">
-          <!-- Se llena dinámicamente con JavaScript -->
-        </tbody>
-      </table>
+    <div
+        class="sidebar-overlay"
+        id="sidebar-overlay"
+    ></div>
+
+
+    <!-- ==================================================
+         APP
+         ================================================== -->
+
+    <div class="app-shell">
+
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <button
+                    class="icon-btn menu-button"
+                    id="btn-abrir-menu"
+                    type="button"
+                    aria-label="Abrir menú"
+                >
+
+                    <i class="bi bi-list"></i>
+
+                </button>
+
+
+                <div class="breadcrumb-block">
+
+                    <span>
+                        Administración
+                    </span>
+
+                    <strong>
+                        Clientes
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="topbar-actions">
+
+
+                <div class="user-info">
+
+                    <span class="user-icon">
+
+                        <i class="bi bi-person-circle"></i>
+
+                    </span>
+
+                    <div class="user-text">
+
+                        <small>
+                            Usuario
+                        </small>
+
+                        <strong id="nombreUsuario">
+                            Administrador
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    id="btn-modo-oscuro"
+                    class="theme-button"
+                    type="button"
+                >
+
+                    <i class="bi bi-moon-stars"></i>
+
+                    <span>
+                        Modo oscuro
+                    </span>
+
+                </button>
+
+
+                <button
+                    id="btn-cerrar-sesion"
+                    class="logout-button"
+                    type="button"
+                >
+
+                    <i class="bi bi-box-arrow-right"></i>
+
+                    <span>
+                        Cerrar sesión
+                    </span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- ==================================================
+             CONTENIDO
+             ================================================== -->
+
+        <main class="page-content">
+
+
+            <!-- TÍTULO -->
+
+            <section class="page-heading">
+
+                <div>
+
+                    <div class="eyebrow">
+
+                        <span class="eyebrow-icon">
+
+                            <i class="bi bi-people"></i>
+
+                        </span>
+
+                        ADMINISTRACIÓN
+
+                    </div>
+
+
+                    <h1>
+                        Clientes
+                    </h1>
+
+
+                    <p>
+                        Registra, consulta y administra los clientes del sistema.
+                    </p>
+
+                </div>
+
+
+                <div class="heading-actions">
+
+                    <a
+                        href="#formulario-clientes"
+                        class="primary-action"
+                    >
+
+                        <i class="bi bi-person-plus"></i>
+
+                        Nuevo cliente
+
+                    </a>
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 RESUMEN
+                 ================================================== -->
+
+            <section class="stats-grid stats-grid-three">
+
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-blue">
+
+                        <i class="bi bi-people"></i>
+
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Total clientes
+                        </span>
+
+                        <strong id="resumen-total-clientes">
+                            0
+                        </strong>
+
+                        <small>
+                            Clientes registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-green">
+
+                        <i class="bi bi-envelope-check"></i>
+
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Con correo
+                        </span>
+
+                        <strong id="resumen-clientes-correo">
+                            0
+                        </strong>
+
+                        <small>
+                            Contactos disponibles
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+                <article class="metric-card">
+
+                    <div class="metric-icon bg-purple">
+
+                        <i class="bi bi-telephone"></i>
+
+                    </div>
+
+                    <div class="metric-content">
+
+                        <span>
+                            Con teléfono
+                        </span>
+
+                        <strong id="resumen-clientes-telefono">
+                            0
+                        </strong>
+
+                        <small>
+                            Números registrados
+                        </small>
+
+                    </div>
+
+                </article>
+
+
+            </section>
+
+
+            <!-- ==================================================
+                 FORMULARIO
+                 ================================================== -->
+
+            <section
+                class="content-card"
+                id="formulario-clientes"
+            >
+
+                <div class="card-header">
+
+                    <div>
+
+                        <h2>
+                            Datos del cliente
+                        </h2>
+
+                        <p>
+                            Completa los campos para registrar o actualizar un cliente.
+                        </p>
+
+                    </div>
+
+
+                    <div class="header-icon">
+
+                        <i class="bi bi-person-vcard"></i>
+
+                    </div>
+
+                </div>
+
+
+                <div class="card-body">
+
+
+                    <form id="form-cliente">
+
+
+                        <input
+                            type="hidden"
+                            id="cliente-id"
+                        >
+
+
+                        <div class="form-grid">
+
+
+                            <!-- Nombre -->
+
+                            <div class="form-field">
+
+                                <label for="nombre">
+                                    Nombre
+                                </label>
+
+
+                                <div class="input-shell">
+
+                                    <i class="bi bi-person"></i>
+
+                                    <input
+                                        type="text"
+                                        id="nombre"
+                                        placeholder="Ej. Juan Pérez"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Correo -->
+
+                            <div class="form-field">
+
+                                <label for="correo">
+                                    Correo electrónico
+                                </label>
+
+
+                                <div class="input-shell">
+
+                                    <i class="bi bi-envelope"></i>
+
+                                    <input
+                                        type="email"
+                                        id="correo"
+                                        placeholder="cliente@correo.com"
+                                        required
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Teléfono -->
+
+                            <div class="form-field form-field-full">
+
+                                <label for="telefono">
+                                    Teléfono
+                                </label>
+
+
+                                <div class="input-shell">
+
+                                    <i class="bi bi-telephone"></i>
+
+                                    <input
+                                        type="text"
+                                        id="telefono"
+                                        inputmode="numeric"
+                                        pattern="[0-9]*"
+                                        placeholder="Ej. 88888888"
+                                        required
+                                    >
+
+                                </div>
+
+
+                                <small class="field-note">
+                                    Ingresa únicamente números.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            id="mensaje-cliente"
+                            class="form-message"
+                            role="alert"
+                        ></div>
+
+
+                        <div class="form-actions">
+
+
+                            <button
+                                type="submit"
+                                id="btn-guardar"
+                                class="btn btn-primary"
+                            >
+
+                                <i class="bi bi-floppy"></i>
+
+                                <span>
+                                    Guardar Cliente
+                                </span>
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                id="btn-cancelar"
+                                class="btn btn-secondary"
+                                style="display: none;"
+                            >
+
+                                <i class="bi bi-x-circle"></i>
+
+                                Cancelar
+
+                            </button>
+
+
+                        </div>
+
+
+                    </form>
+
+
+                </div>
+
+            </section>
+
+
+            <!-- ==================================================
+                 TABLA
+                 ================================================== -->
+
+            <section class="content-card table-card">
+
+
+                <div class="card-header table-card-header">
+
+
+                    <div>
+
+                        <h2>
+                            Clientes registrados
+                        </h2>
+
+                        <p>
+                            Consulta, edita o elimina clientes existentes.
+                        </p>
+
+                    </div>
+
+
+                    <div class="search-field">
+
+                        <i class="bi bi-search"></i>
+
+                        <input
+                            type="search"
+                            id="buscador-cliente"
+                            placeholder="Buscar cliente..."
+                        >
+
+                    </div>
+
+
+                </div>
+
+
+                <div class="table-scroll">
+
+
+                    <table class="data-table">
+
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Cliente
+                                </th>
+
+                                <th>
+                                    Correo
+                                </th>
+
+                                <th>
+                                    Teléfono
+                                </th>
+
+                                <th class="text-end">
+                                    Acciones
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody
+                            id="tabla-clientes-body"
+                        ></tbody>
+
+
+                    </table>
+
+
+                </div>
+
+
+            </section>
+
+
+        </main>
+
+
     </div>
-    <!-- Barra de Búsqueda -->
-    <a href=""></a>
 
-    <script src="../src/js/clientes.js"></script>
-  </body>
+
+    <!-- SweetAlert2 -->
+
+    <script
+        defer
+        src="https://cdn.jsdelivr.net/npm/sweetalert2@11"
+    ></script>
+
+
+    <!-- Clientes JS -->
+
+    <script
+        defer
+        src="../src/js/clientes.js"
+    ></script>
+
+
+</body>
+
 </html>
