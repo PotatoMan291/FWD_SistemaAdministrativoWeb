@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Proveedores</title>
+
+    <link rel="stylesheet" href="../src/css/proveedores.css">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <aside class="sidebar">
+            <div class="sidebar-titulo">
+                <h2>Sistema</h2>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="dashboard.html" class="sidebar-link">
+                    <span class="sidebar-icono">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="index.html" class="sidebar-link">
+                    <span class="sidebar-icono"></span>
+                    <span>Clientes</span>
+                </a>
+
+                <a href="productos.html" class="sidebar-link">
+                    <span class="sidebar-icono"></span>
+                    <span>Productos</span>
+                </a>
+
+                <a href="proveedores.html" class="sidebar-link activo">
+                    <span class="sidebar-icono"></span>
+                    <span>Proveedores</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="contenido-principal">
+<div class="container">
+
+        <h2>Gestión de Proveedores</h2>
+
+        <button id="btn-modo-oscuro" class="btn-toggle-theme" type="button">
+            🌙 Modo Oscuro
+        </button>
+
+        <form id="form-proveedor">
+
+            <input type="hidden" id="proveedor-id">
+
+            <div class="form-group">
+                <label for="proveedor-nombre">Nombre del proveedor:</label>
+                <input type="text" id="proveedor-nombre" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proveedor-empresa">Empresa:</label>
+                <input type="text" id="proveedor-empresa" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proveedor-telefono">Teléfono:</label>
+                <input type="text" id="proveedor-telefono" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proveedor-correo">Correo electrónico:</label>
+                <input type="email" id="proveedor-correo" required>
+            </div>
+
+            <div class="form-group">
+                <label for="proveedor-direccion">Dirección:</label>
+                <input type="text" id="proveedor-direccion" required>
+            </div>
+
+            <p id="mensaje-proveedor" class="mensaje-error"></p>
+
+            <div class="form-actions">
+                <button type="submit" id="btn-guardar-proveedor" class="btn-primary">
+                    Guardar Proveedor
+                </button>
+
+                <button type="button" id="btn-cancelar-proveedor" class="btn-secondary" style="display:none;">
+                    Cancelar
+                </button>
+            </div>
+
+        </form>
+
+        <hr>
+
+        <h3>Lista de Proveedores Registrados</h3>
+
+        <div class="form-group" style="margin-top:20px;">
+            <label for="buscador-proveedor">Buscar Proveedor:</label>
+            <input
+                type="text"
+                id="buscador-proveedor"
+                placeholder="Escribe nombre, empresa, teléfono o correo..."
+            >
+        </div>
+
+        <div class="tabla-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Empresa</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Dirección</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabla-proveedores-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+        </main>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../src/js/proveedores.js"></script>
+</body>
+</html>
