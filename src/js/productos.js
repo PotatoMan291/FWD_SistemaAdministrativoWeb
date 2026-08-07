@@ -1180,15 +1180,80 @@ function editarProducto(id) {
 
 
 // ------------------------------------------------------
+// Pedidos asociados a un producto
+// ------------------------------------------------------
+function obtenerPedidosAsociadosProducto(idProducto) {
+
+    const pedidos =
+        leerListaLocalStorage(
+            "pedidos"
+        );
+
+    return pedidos.filter(
+        function(pedido) {
+
+            return (
+                Array.isArray(
+                    pedido.items
+                ) &&
+                pedido.items.some(
+                    function(item) {
+
+                        return (
+                            String(
+                                item.productoId
+                            ) ===
+                            String(
+                                idProducto
+                            )
+                        );
+                    }
+                )
+            );
+        }
+    );
+}
+
+
+// ------------------------------------------------------
 // Eliminar producto
 // ------------------------------------------------------
 function eliminarProducto(id) {
 
+    const pedidosAsociados =
+        obtenerPedidosAsociadosProducto(
+            id
+        );
+
+    const tienePedidos =
+        pedidosAsociados.length > 0;
+
+    const titulo =
+        tienePedidos
+            ? "Producto con pedidos asociados"
+            : "¿Está seguro?";
+
+    const texto =
+        tienePedidos
+            ? (
+                "Este producto aparece en " +
+                pedidosAsociados.length +
+                (
+                    pedidosAsociados.length === 1
+                        ? " pedido. "
+                        : " pedidos. "
+                ) +
+                "Si continúa, el producto se eliminará del catálogo, " +
+                "pero los pedidos conservarán su nombre, precio y proveedor históricos. " +
+                "No se eliminará ningún pedido."
+            )
+            : "¡No podrá revertir esta acción!";
+
     Swal.fire({
 
-        title: "¿Está seguro?",
+        title: titulo,
 
-        text: "¡No podrá revertir esta acción!",
+        text: texto,
 
         icon: "warning",
 

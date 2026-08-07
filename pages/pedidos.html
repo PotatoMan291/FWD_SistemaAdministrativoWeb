@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos | Sistema Administrativo</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../src/css/pedidos.css">
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <a href="dashboard.html" class="brand">
+      <span class="brand-logo"><i class="bi bi-grid-1x2-fill"></i></span>
+      <span class="brand-text"><strong>Sistema</strong><small>Administrativo</small></span>
+    </a>
+    <button class="icon-btn sidebar-close" id="btn-cerrar-menu" type="button" aria-label="Cerrar menú"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="sidebar-section-title">MENÚ</div>
+  <nav class="sidebar-nav">
+    <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-grid"></i></span><span>Dashboard</span></a>
+    <a href="index.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-people"></i></span><span>Clientes</span></a>
+    <a href="productos.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-box-seam"></i></span><span>Productos</span></a>
+    <a href="proveedores.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-truck"></i></span><span>Proveedores</span></a>
+    <a href="categorias.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-tags"></i></span><span>Categorías</span></a>
+    <a href="pedidos.html" class="sidebar-link active"><span class="sidebar-icon"><i class="bi bi-receipt"></i></span><span>Pedidos</span></a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="storage-card">
+      <div class="storage-icon"><i class="bi bi-database-check"></i></div>
+      <div><strong>LocalStorage activo</strong><small>Pedidos guardados en el navegador</small></div>
+    </div>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<div class="app-shell">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn menu-button" id="btn-abrir-menu" type="button" aria-label="Abrir menú"><i class="bi bi-list"></i></button>
+      <div class="breadcrumb-block"><span>Administración</span><strong>Pedidos</strong></div>
+    </div>
+    <div class="topbar-actions">
+      <button id="btn-modo-oscuro" class="theme-button" type="button"><i class="bi bi-moon-stars"></i><span>Modo oscuro</span></button>
+    </div>
+  </header>
+
+  <main class="page-content">
+    <section class="page-heading">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-icon"><i class="bi bi-receipt"></i></span>VENTAS</div>
+        <h1>Pedidos</h1>
+        <p>Relaciona clientes, productos y proveedores en una sola operación.</p>
+      </div>
+      <div class="heading-actions">
+        <button type="button" class="secondary-action" id="btn-exportar-pedidos"><i class="bi bi-download"></i> Exportar CSV</button>
+        <button type="button" class="secondary-action" id="btn-exportar-pedidos-pdf"><i class="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
+        <a href="#formulario-pedidos" class="primary-action"><i class="bi bi-plus-lg"></i> Nuevo pedido</a>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="metric-card"><div class="metric-icon bg-blue"><i class="bi bi-receipt"></i></div><div class="metric-content"><span>Total pedidos</span><strong id="resumen-total-pedidos">0</strong><small>Pedidos registrados</small></div></article>
+      <article class="metric-card"><div class="metric-icon bg-orange"><i class="bi bi-hourglass-split"></i></div><div class="metric-content"><span>Pendientes</span><strong id="resumen-pedidos-pendientes">0</strong><small>Esperando procesamiento</small></div></article>
+      <article class="metric-card"><div class="metric-icon bg-purple"><i class="bi bi-arrow-repeat"></i></div><div class="metric-content"><span>En proceso</span><strong id="resumen-pedidos-proceso">0</strong><small>Pedidos activos</small></div></article>
+      <article class="metric-card"><div class="metric-icon bg-green"><i class="bi bi-check2-circle"></i></div><div class="metric-content"><span>Entregados</span><strong id="resumen-pedidos-entregados">0</strong><small>Pedidos completados</small></div></article>
+    </section>
+
+    <section class="analytics-grid analytics-grid-two">
+      <article class="analytics-card"><div class="analytics-header"><div><span class="section-kicker">DISTRIBUCIÓN</span><h2>Pedidos por estado</h2></div></div><div class="chart-area" id="chart-pedidos-estado"></div></article>
+      <article class="analytics-card"><div class="analytics-header"><div><span class="section-kicker">VENTAS</span><h2>Total por cliente</h2></div></div><div class="chart-area" id="chart-pedidos-clientes"></div></article>
+    </section>
+
+    <section class="content-card order-form-card" id="formulario-pedidos">
+      <div class="card-header-custom">
+        <div><span class="section-kicker">PEDIDO</span><h2 id="titulo-formulario-pedido">Crear pedido</h2><p>Los precios se obtienen automáticamente de los productos registrados.</p></div>
+        <span class="relation-badge">Cliente → Producto → Proveedor</span>
+      </div>
+      <form id="form-pedido">
+        <input type="hidden" id="pedido-id">
+        <div class="order-client-grid">
+          <div class="form-field">
+            <label for="pedido-cliente">Cliente</label>
+            <select id="pedido-cliente" required><option value="">Seleccione un cliente</option></select>
+            <small>Datos leídos desde LocalStorage["clientes_sistema"].</small>
+          </div>
+          <div class="form-field order-status-readonly">
+            <label>Estado inicial</label>
+            <div class="status-preview"><span class="status-dot status-pendiente"></span>Pendiente</div>
+            <small>El estado puede cambiarse desde el Dashboard.</small>
+          </div>
+        </div>
+
+        <div class="product-picker">
+          <div class="form-field">
+            <label for="pedido-producto">Producto</label>
+            <select id="pedido-producto"><option value="">Seleccione un producto</option></select>
+          </div>
+          <div class="form-field">
+            <label for="pedido-cantidad">Cantidad</label>
+            <input type="number" id="pedido-cantidad" min="1" step="1" value="1" inputmode="numeric">
+          </div>
+          <button type="button" class="primary-action add-product-button" id="btn-agregar-producto-pedido"><i class="bi bi-cart-plus"></i> Agregar producto</button>
+        </div>
+
+        <div class="availability-message" id="mensaje-disponibilidad-pedido"></div>
+
+        <div class="order-items-wrap">
+          <div class="order-items-heading">
+            <div><span class="section-kicker">DETALLE</span><h3>Productos del pedido</h3></div>
+            <span class="items-counter" id="contador-lineas-pedido">0 productos diferentes</span>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Producto</th><th>Proveedor</th><th>Precio unitario</th><th>Cantidad</th><th>Subtotal</th><th class="text-end">Acción</th></tr></thead>
+              <tbody id="tabla-items-pedido-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="order-summary-grid">
+          <article class="order-summary-box"><span>Cantidad de artículos</span><strong id="pedido-cantidad-articulos">0</strong></article>
+          <article class="order-summary-box"><span>Subtotal</span><strong id="pedido-subtotal">₡0</strong></article>
+          <article class="order-summary-box order-total-box"><span>Total del pedido</span><strong id="pedido-total">₡0</strong></article>
+        </div>
+
+        <div id="mensaje-pedido" class="form-message" role="alert"></div>
+        <div class="form-actions">
+          <button type="submit" class="btn-main" id="btn-guardar-pedido"><i class="bi bi-floppy"></i> Guardar pedido</button>
+          <button type="button" class="btn-secondary-custom" id="btn-cancelar-pedido" style="display:none;"><i class="bi bi-x-circle"></i> Cancelar edición</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="content-card">
+      <div class="table-toolbar">
+        <div><span class="section-kicker">HISTORIAL</span><h2>Pedidos registrados</h2><p>Consulta cliente, artículos, total y estado.</p></div>
+        <div class="search-box"><i class="bi bi-search"></i><input type="search" id="buscador-pedido" maxlength="120" autocomplete="off" placeholder="Buscar pedido, cliente o estado..."></div>
+      </div>
+      <div class="table-scroll">
+        <table class="data-table">
+          <thead><tr><th>Pedido</th><th>Fecha</th><th>Cliente</th><th>Artículos</th><th>Total</th><th>Estado</th><th class="text-end">Acciones</th></tr></thead>
+          <tbody id="tabla-pedidos-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
+<script defer src="../src/js/pdf-export.js"></script>
+<script defer src="../src/js/pedidos.js"></script>
+</body>
+</html>

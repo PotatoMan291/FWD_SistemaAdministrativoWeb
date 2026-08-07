@@ -60,6 +60,11 @@
                     <span class="sidebar-icon"><i class="bi bi-tags"></i></span>
                     <span>Categorías</span>
                 </a>
+
+                <a href="pedidos.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
+                    <span>Pedidos</span>
+                </a>
         </nav>
 
         <div class="sidebar-bottom">
@@ -140,6 +145,11 @@
                     <button type="button" class="secondary-action" id="btn-exportar-productos">
                         <i class="bi bi-download"></i>
                         Exportar CSV
+                    </button>
+
+                    <button type="button" class="secondary-action" id="btn-exportar-productos-pdf">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Exportar PDF
                     </button>
 
                     <a href="#formulario-productos" class="primary-action">
@@ -494,6 +504,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js"></script>
     <script defer src="../src/js/productos.js"></script>
+    <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/productos-enhancements.js"></script>
 
 </body>

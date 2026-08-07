@@ -59,6 +59,11 @@
                     <span class="sidebar-icon"><i class="bi bi-tags"></i></span>
                     <span>Categorías</span>
                 </a>
+
+                <a href="pedidos.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
+                    <span>Pedidos</span>
+                </a>
         </nav>
 
         <div class="sidebar-bottom">
@@ -139,6 +144,11 @@
                     <button type="button" class="secondary-action" id="btn-exportar-categorias">
                         <i class="bi bi-download"></i>
                         Exportar CSV
+                    </button>
+
+                    <button type="button" class="secondary-action" id="btn-exportar-categorias-pdf">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Exportar PDF
                     </button>
 
                     <a href="#formulario-categorias" class="primary-action">
@@ -362,6 +372,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
     <script defer src="../src/js/categorias.js"></script>
+    <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/categorias-enhancements.js"></script>
 
 </body>

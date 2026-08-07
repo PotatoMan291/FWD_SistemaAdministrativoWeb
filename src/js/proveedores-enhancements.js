@@ -843,6 +843,219 @@ function exportarProveedoresCSV() {
 
 
 // ------------------------------------------------------
+// Exportar reporte PDF
+// ------------------------------------------------------
+async function exportarProveedoresPDF() {
+
+    const proveedores =
+        obtenerProveedores();
+
+    if (proveedores.length === 0) {
+
+        mostrarToast(
+            "No hay proveedores para exportar.",
+            "info"
+        );
+
+        return;
+    }
+
+    if (
+        typeof PDFReporte ===
+        "undefined"
+    ) {
+
+        mostrarToast(
+            "El módulo PDF no está disponible.",
+            "error"
+        );
+
+        return;
+    }
+
+    const productos =
+        obtenerProductos();
+
+    const empresas =
+        new Set();
+
+    let conProductos = 0;
+    let sinProductos = 0;
+    let mejorProveedor = null;
+    let mejorCantidad = -1;
+
+    proveedores.forEach(
+        function(proveedor) {
+
+            empresas.add(
+                String(
+                    proveedor.empresa ||
+                    ""
+                )
+                .trim()
+                .toLowerCase()
+            );
+
+            const cantidad =
+                productos.filter(
+                    function(producto) {
+
+                        return (
+                            String(
+                                producto.proveedorId
+                            ) ===
+                            String(
+                                proveedor.id
+                            )
+                        );
+                    }
+                ).length;
+
+            if (cantidad > 0) {
+                conProductos++;
+            } else {
+                sinProductos++;
+            }
+
+            if (
+                cantidad >
+                mejorCantidad
+            ) {
+
+                mejorCantidad =
+                    cantidad;
+
+                mejorProveedor =
+                    proveedor;
+            }
+        }
+    );
+
+    empresas.delete("");
+
+    const filas =
+        proveedores.map(
+            function(proveedor) {
+
+                const asociados =
+                    productos.filter(
+                        function(producto) {
+
+                            return (
+                                String(
+                                    producto.proveedorId
+                                ) ===
+                                String(
+                                    proveedor.id
+                                )
+                            );
+                        }
+                    ).length;
+
+                return [
+                    proveedor.id,
+                    proveedor.nombre,
+                    proveedor.empresa,
+                    proveedor.telefono,
+                    proveedor.correo,
+                    proveedor.direccion,
+                    asociados
+                ];
+            }
+        );
+
+    await PDFReporte.generarReporte({
+        titulo:
+            "Reporte de Proveedores",
+        subtitulo:
+            "Directorio y relación con inventario",
+        nombreArchivo:
+            "reporte_proveedores",
+        fondoGraficosOscuro:
+            document.documentElement
+                .getAttribute(
+                    "data-theme"
+                ) === "dark",
+        metricas: [
+            {
+                etiqueta:
+                    "Total de proveedores",
+                valor:
+                    proveedores.length
+            },
+            {
+                etiqueta:
+                    "Empresas únicas",
+                valor:
+                    empresas.size
+            },
+            {
+                etiqueta:
+                    "Con productos",
+                valor:
+                    conProductos
+            },
+            {
+                etiqueta:
+                    "Sin productos",
+                valor:
+                    sinProductos
+            },
+            {
+                etiqueta:
+                    "Productos asociados",
+                valor:
+                    productos.length
+            },
+            {
+                etiqueta:
+                    "Proveedor con más productos",
+                valor:
+                    mejorProveedor
+                        ? (
+                            mejorProveedor.nombre +
+                            " (" +
+                            mejorCantidad +
+                            ")"
+                        )
+                        : "Sin datos"
+            }
+        ],
+        graficos: [
+            {
+                titulo:
+                    "Productos por proveedor",
+                chart:
+                    chartProductosProveedor
+            }
+        ],
+        tabla: {
+            titulo:
+                "Listado completo de proveedores",
+            columnas: [
+                "ID",
+                "Nombre",
+                "Empresa",
+                "Teléfono",
+                "Correo",
+                "Dirección",
+                "Productos"
+            ],
+            filas: filas
+        },
+        alFinalizar:
+            function() {
+
+                mostrarToast(
+                    "Reporte PDF de proveedores generado.",
+                    "success"
+                );
+            }
+    });
+}
+
+
+// ------------------------------------------------------
 // Detectar cambios reales en LocalStorage
 // ------------------------------------------------------
 function obtenerFirmaDatosProveedores() {
@@ -909,6 +1122,15 @@ document.getElementById(
             "click",
             exportarProveedoresCSV
         );
+
+        document
+            .getElementById(
+                "btn-exportar-proveedores-pdf"
+            )
+            .addEventListener(
+                "click",
+                exportarProveedoresPDF
+            );
 
         document.getElementById(
             "btn-vista-tabla-proveedores"

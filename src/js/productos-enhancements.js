@@ -1462,6 +1462,244 @@ function exportarProductosCSV() {
 
 
 // ------------------------------------------------------
+// Exportar reporte PDF
+// ------------------------------------------------------
+async function exportarProductosPDF() {
+
+    const productos =
+        obtenerProductos();
+
+    if (productos.length === 0) {
+
+        mostrarToast(
+            "No hay productos para exportar.",
+            "info"
+        );
+
+        return;
+    }
+
+    if (
+        typeof PDFReporte ===
+        "undefined"
+    ) {
+
+        mostrarToast(
+            "El módulo PDF no está disponible.",
+            "error"
+        );
+
+        return;
+    }
+
+    const categorias =
+        obtenerCategorias();
+
+    const proveedores =
+        obtenerProveedores();
+
+    const estadoStock =
+        obtenerEstadoStock();
+
+    const stockTotal =
+        productos.reduce(
+            function(total, producto) {
+
+                return (
+                    total +
+                    Number(
+                        producto.stock
+                    )
+                );
+            },
+            0
+        );
+
+    const valorInventario =
+        productos.reduce(
+            function(total, producto) {
+
+                return (
+                    total +
+                    (
+                        Number(
+                            producto.precio
+                        ) *
+                        Number(
+                            producto.stock
+                        )
+                    )
+                );
+            },
+            0
+        );
+
+    const promedioPrecio =
+        productos.reduce(
+            function(total, producto) {
+
+                return (
+                    total +
+                    Number(
+                        producto.precio
+                    )
+                );
+            },
+            0
+        ) /
+        productos.length;
+
+    const filas =
+        productos.map(
+            function(producto) {
+
+                const categoria =
+                    obtenerCategoria(
+                        producto.categoriaId
+                    );
+
+                const proveedor =
+                    obtenerProveedor(
+                        producto.proveedorId
+                    );
+
+                return [
+                    producto.id,
+                    producto.nombre,
+                    categoria
+                        ? categoria.nombre
+                        : (
+                            producto.categoria ||
+                            "Sin categoría"
+                        ),
+                    "CRC " +
+                    Number(
+                        producto.precio
+                    ).toLocaleString(
+                        "es-CR",
+                        {
+                            maximumFractionDigits:
+                                2
+                        }
+                    ),
+                    producto.stock,
+                    proveedor
+                        ? (
+                            proveedor.nombre +
+                            " - " +
+                            proveedor.empresa
+                        )
+                        : "Sin proveedor"
+                ];
+            }
+        );
+
+    await PDFReporte.generarReporte({
+        titulo:
+            "Reporte de Productos",
+        subtitulo:
+            "Inventario general",
+        nombreArchivo:
+            "reporte_productos",
+        fondoGraficosOscuro:
+            document.documentElement
+                .getAttribute(
+                    "data-theme"
+                ) === "dark",
+        metricas: [
+            {
+                etiqueta:
+                    "Total de productos",
+                valor:
+                    productos.length
+            },
+            {
+                etiqueta:
+                    "Stock total",
+                valor:
+                    stockTotal
+            },
+            {
+                etiqueta:
+                    "Stock bajo",
+                valor:
+                    estadoStock.bajo
+            },
+            {
+                etiqueta:
+                    "Sin stock",
+                valor:
+                    estadoStock.sinStock
+            },
+            {
+                etiqueta:
+                    "Valor del inventario",
+                valor:
+                    "CRC " +
+                    valorInventario
+                        .toLocaleString(
+                            "es-CR",
+                            {
+                                maximumFractionDigits:
+                                    2
+                            }
+                        )
+            },
+            {
+                etiqueta:
+                    "Precio promedio",
+                valor:
+                    "CRC " +
+                    promedioPrecio
+                        .toLocaleString(
+                            "es-CR",
+                            {
+                                maximumFractionDigits:
+                                    2
+                            }
+                        )
+            }
+        ],
+        graficos: [
+            {
+                titulo:
+                    "Productos por categoría",
+                chart:
+                    chartProductosCategoria
+            },
+            {
+                titulo:
+                    "Estado del inventario",
+                chart:
+                    chartEstadoStock
+            }
+        ],
+        tabla: {
+            titulo:
+                "Listado completo de productos",
+            columnas: [
+                "ID",
+                "Producto",
+                "Categoría",
+                "Precio",
+                "Stock",
+                "Proveedor"
+            ],
+            filas: filas
+        },
+        alFinalizar:
+            function() {
+
+                mostrarToast(
+                    "Reporte PDF de productos generado.",
+                    "success"
+                );
+            }
+    });
+}
+
+
+// ------------------------------------------------------
 // Detectar si los datos reales cambiaron
 // ------------------------------------------------------
 function obtenerFirmaDatosProductos() {
@@ -1566,6 +1804,15 @@ document
             .addEventListener(
                 "click",
                 exportarProductosCSV
+            );
+
+        document
+            .getElementById(
+                "btn-exportar-productos-pdf"
+            )
+            .addEventListener(
+                "click",
+                exportarProductosPDF
             );
 
         document
