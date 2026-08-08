@@ -2,12 +2,133 @@
 <html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net data:; img-src 'self' data: blob:; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="no-referrer">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Productos | Sistema Administrativo</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/styles/choices.min.css">
     <link rel="stylesheet" href="../src/css/productos.css">
+
+    <style>
+        .product-image-field {
+            grid-column: 1 / -1;
+        }
+
+        .product-image-uploader {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 180px;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .product-image-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-image-dropzone {
+            min-height: 118px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 1px dashed var(--border, #d0d5dd);
+            border-radius: 10px;
+            background: var(--surface, #fff);
+        }
+
+        .product-image-dropzone i {
+            font-size: 28px;
+            color: var(--brand-500, #465fff);
+        }
+
+        .product-image-dropzone input[type="file"] {
+            width: 100%;
+        }
+
+        .product-image-dropzone small {
+            display: block;
+            margin-top: 6px;
+            color: var(--text-secondary, #667085);
+            line-height: 1.45;
+        }
+
+        .product-image-preview {
+            min-height: 150px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid var(--border, #d0d5dd);
+            border-radius: 10px;
+            background: var(--surface-subtle, #f9fafb);
+        }
+
+        .product-image-preview img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            display: none;
+        }
+
+        .product-image-preview img.show {
+            display: block;
+        }
+
+        .product-image-placeholder {
+            padding: 15px;
+            color: var(--text-secondary, #667085);
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .product-image-preview.has-image .product-image-placeholder {
+            display: none;
+        }
+
+        .product-image-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .product-thumb {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            object-fit: contain;
+            border: 1px solid var(--border, #e4e7ec);
+            border-radius: 8px;
+            background: #fff;
+        }
+
+        .product-name-with-image {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @media (max-width: 760px) {
+            .product-image-uploader {
+                grid-template-columns: 1fr;
+            }
+        }
+    
+        .product-description-textarea {
+            width: 100%;
+            min-height: 105px;
+            padding: 12px 14px;
+            resize: vertical;
+            border: 0;
+            outline: 0;
+            color: inherit;
+            background: transparent;
+            font: inherit;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -57,6 +178,11 @@
                 <a href="categorias.html" class="sidebar-link">
                     <span class="sidebar-icon"><i class="bi bi-tags"></i></span>
                     <span>Categorías</span>
+                </a>
+
+                <a href="pedidos.html" class="sidebar-link">
+                    <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
+                    <span>Pedidos</span>
                 </a>
         </nav>
 
@@ -135,9 +261,25 @@
                 </div>
 
                 <div class="heading-actions">
+                    <button type="button" class="secondary-action import-action" id="btn-importar-productos">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                        Importar CSV
+                    </button>
+
+                    <input
+                        type="file"
+                        id="input-importar-productos"
+                        accept=".csv,text/csv,application/vnd.ms-excel"
+                        hidden>
+
                     <button type="button" class="secondary-action" id="btn-exportar-productos">
                         <i class="bi bi-download"></i>
                         Exportar CSV
+                    </button>
+
+                    <button type="button" class="secondary-action" id="btn-exportar-productos-pdf">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Exportar PDF
                     </button>
 
                     <a href="#formulario-productos" class="primary-action">
@@ -304,8 +446,29 @@
                                         type="text"
                                         id="producto-nombre"
                                         placeholder="Ej. Laptop Lenovo"
+                                        maxlength="120"
+                                        autocomplete="off"
                                         required>
                                 </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label for="producto-marca">Marca</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-badge-tm"></i>
+
+                                    <input
+                                        type="text"
+                                        id="producto-marca"
+                                        placeholder="Ej. NVIDIA, ASUS, Logitech"
+                                        maxlength="80"
+                                        autocomplete="off">
+                                </div>
+
+                                <small class="field-note">
+                                    Opcional. Si se deja vacío, la tienda utilizará el proveedor como referencia de marca.
+                                </small>
                             </div>
 
                             <div class="form-field">
@@ -334,7 +497,9 @@
                                         type="number"
                                         id="producto-precio"
                                         min="0.01"
+                                        max="999999999.99"
                                         step="0.01"
+                                        inputmode="decimal"
                                         placeholder="0"
                                         required>
                                 </div>
@@ -350,10 +515,30 @@
                                         type="number"
                                         id="producto-stock"
                                         min="0"
+                                        max="10000000"
                                         step="1"
+                                        inputmode="numeric"
                                         placeholder="0"
                                         required>
                                 </div>
+                            </div>
+
+                            <div class="form-field form-field-full">
+                                <label for="producto-descripcion">Descripción</label>
+
+                                <div class="input-shell">
+                                    <i class="bi bi-card-text"></i>
+
+                                    <textarea
+                                        id="producto-descripcion"
+                                        class="product-description-textarea"
+                                        maxlength="300"
+                                        placeholder="Describe brevemente el producto, sus características o uso recomendado."></textarea>
+                                </div>
+
+                                <small class="field-note">
+                                    Esta descripción aparecerá en las tarjetas y en el detalle del producto de NEXUS.
+                                </small>
                             </div>
 
                             <div class="form-field form-field-full">
@@ -368,9 +553,67 @@
                                 </div>
                             </div>
 
+                            <div class="form-field form-field-full product-image-field">
+                                <label for="producto-imagen">Imagen del producto</label>
+
+                                <div class="product-image-uploader">
+
+                                    <div class="product-image-controls">
+
+                                        <div class="product-image-dropzone">
+                                            <i class="bi bi-image"></i>
+
+                                            <div>
+                                                <input
+                                                    type="file"
+                                                    id="producto-imagen"
+                                                    accept="image/png,image/jpeg,image/webp">
+
+                                                <small>
+                                                    Selecciona una imagen PNG, JPG o WebP. Se comprimirá automáticamente
+                                                    antes de guardarse en LocalStorage.
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <div class="product-image-actions">
+                                            <button
+                                                type="button"
+                                                id="btn-quitar-imagen-producto"
+                                                class="btn btn-secondary"
+                                                style="display:none;">
+                                                <i class="bi bi-trash3 me-1"></i>
+                                                Quitar imagen
+                                            </button>
+                                        </div>
+
+                                        <small class="field-note">
+                                            Tamaño máximo recomendado: 8 MB. La imagen se redimensiona a un máximo de 900 × 700 px.
+                                        </small>
+
+                                    </div>
+
+                                    <div
+                                        class="product-image-preview"
+                                        id="producto-imagen-preview-box">
+
+                                        <img
+                                            id="producto-imagen-preview"
+                                            alt="Vista previa de la imagen del producto">
+
+                                        <div class="product-image-placeholder">
+                                            <i class="bi bi-image"></i>
+                                            <div>Vista previa</div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
                         </div>
 
-                        <div id="mensaje-producto" class="form-message" role="alert"></div>
+                        <div id="mensaje-producto" class="form-message" role="alert" aria-live="polite"></div>
 
                         <div class="form-actions">
 
@@ -415,6 +658,8 @@
                             <input
                                 type="search"
                                 id="buscador-producto"
+                                maxlength="120"
+                                autocomplete="off"
                                 placeholder="Buscar producto...">
                         </div>
 
@@ -479,11 +724,13 @@
 
     </div>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/choices.js@11.1.0/public/assets/scripts/choices.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.7/Sortable.min.js"></script>
+    <script defer src="../src/js/csv-import.js"></script>
     <script defer src="../src/js/productos.js"></script>
+    <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/productos-enhancements.js"></script>
 
 </body>

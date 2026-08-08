@@ -10,10 +10,20 @@ const CLAVE_CATEGORIAS = "categorias";
 const formProducto = document.getElementById("form-producto");
 const productoId = document.getElementById("producto-id");
 const productoNombre = document.getElementById("producto-nombre");
+const productoMarca = document.getElementById("producto-marca");
+const productoDescripcion = document.getElementById("producto-descripcion");
 const productoCategoria = document.getElementById("producto-categoria");
 const productoPrecio = document.getElementById("producto-precio");
 const productoStock = document.getElementById("producto-stock");
 const productoProveedor = document.getElementById("producto-proveedor");
+
+const productoImagen = document.getElementById("producto-imagen");
+const productoImagenPreview = document.getElementById("producto-imagen-preview");
+const productoImagenPreviewBox = document.getElementById("producto-imagen-preview-box");
+const btnQuitarImagenProducto = document.getElementById("btn-quitar-imagen-producto");
+
+let imagenProductoActual = "";
+let procesandoImagenProducto = false;
 
 const btnGuardarProducto = document.getElementById("btn-guardar-producto");
 const btnCancelarProducto = document.getElementById("btn-cancelar-producto");
@@ -304,16 +314,372 @@ function numeroSeguro(
 }
 
 
+function normalizarImagenProducto(valor) {
+
+    const imagen =
+        typeof valor === "string"
+            ? valor.trim()
+            : "";
+
+    if (imagen === "") {
+        return "";
+    }
+
+    const formatosPermitidos = [
+        "data:image/webp;base64,",
+        "data:image/jpeg;base64,",
+        "data:image/png;base64,"
+    ];
+
+    const esBase64Permitido =
+        formatosPermitidos.some(
+            function(prefijo) {
+                return imagen.startsWith(prefijo);
+            }
+        );
+
+    const esRutaLocalPermitida =
+        imagen.startsWith("../src/imgs/") ||
+        imagen.startsWith("./");
+
+    const esHttps =
+        imagen.startsWith("https://");
+
+    if (
+        esBase64Permitido ||
+        esRutaLocalPermitida ||
+        esHttps
+    ) {
+        return imagen;
+    }
+
+    return "";
+}
+
+
+function mostrarPreviewImagenProducto(imagen = "") {
+
+    imagenProductoActual =
+        normalizarImagenProducto(
+            imagen
+        );
+
+    if (imagenProductoActual) {
+
+        productoImagenPreview.src =
+            imagenProductoActual;
+
+        productoImagenPreview.classList.add(
+            "show"
+        );
+
+        productoImagenPreviewBox.classList.add(
+            "has-image"
+        );
+
+        btnQuitarImagenProducto.style.display =
+            "inline-flex";
+
+        return;
+    }
+
+    productoImagenPreview.removeAttribute(
+        "src"
+    );
+
+    productoImagenPreview.classList.remove(
+        "show"
+    );
+
+    productoImagenPreviewBox.classList.remove(
+        "has-image"
+    );
+
+    btnQuitarImagenProducto.style.display =
+        "none";
+}
+
+
+function cargarImagenComoElemento(archivo) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            const url =
+                URL.createObjectURL(
+                    archivo
+                );
+
+            const imagen =
+                new Image();
+
+            imagen.onload =
+                function() {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                    resolve(
+                        imagen
+                    );
+                };
+
+            imagen.onerror =
+                function() {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                    reject(
+                        new Error(
+                            "No se pudo leer la imagen."
+                        )
+                    );
+                };
+
+            imagen.src =
+                url;
+        }
+    );
+}
+
+
+async function comprimirImagenProducto(archivo) {
+
+    const TAMANO_MAXIMO_ARCHIVO =
+        8 * 1024 * 1024;
+
+    const ANCHO_MAXIMO =
+        900;
+
+    const ALTO_MAXIMO =
+        700;
+
+    const CALIDAD =
+        0.82;
+
+    const tiposPermitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (
+        !tiposPermitidos.includes(
+            archivo.type
+        )
+    ) {
+
+        throw new Error(
+            "Solo se permiten imágenes PNG, JPG o WebP."
+        );
+    }
+
+    if (
+        archivo.size >
+        TAMANO_MAXIMO_ARCHIVO
+    ) {
+
+        throw new Error(
+            "La imagen no puede superar 8 MB."
+        );
+    }
+
+    const imagen =
+        await cargarImagenComoElemento(
+            archivo
+        );
+
+    const escala =
+        Math.min(
+            1,
+            ANCHO_MAXIMO /
+                imagen.naturalWidth,
+            ALTO_MAXIMO /
+                imagen.naturalHeight
+        );
+
+    const ancho =
+        Math.max(
+            1,
+            Math.round(
+                imagen.naturalWidth *
+                escala
+            )
+        );
+
+    const alto =
+        Math.max(
+            1,
+            Math.round(
+                imagen.naturalHeight *
+                escala
+            )
+        );
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width =
+        ancho;
+
+    canvas.height =
+        alto;
+
+    const contexto =
+        canvas.getContext(
+            "2d"
+        );
+
+    if (!contexto) {
+
+        throw new Error(
+            "El navegador no pudo procesar la imagen."
+        );
+    }
+
+    contexto.drawImage(
+        imagen,
+        0,
+        0,
+        ancho,
+        alto
+    );
+
+    let resultado =
+        canvas.toDataURL(
+            "image/webp",
+            CALIDAD
+        );
+
+    if (
+        !resultado.startsWith(
+            "data:image/webp"
+        )
+    ) {
+
+        resultado =
+            canvas.toDataURL(
+                "image/jpeg",
+                CALIDAD
+            );
+    }
+
+    return resultado;
+}
+
+
+productoImagen.addEventListener(
+    "change",
+    async function() {
+
+        const archivo =
+            productoImagen.files &&
+            productoImagen.files[0];
+
+        if (!archivo) {
+            return;
+        }
+
+        procesandoImagenProducto =
+            true;
+
+        productoImagen.disabled =
+            true;
+
+        mensajeProducto.textContent =
+            "Procesando imagen...";
+
+        try {
+
+            const imagenComprimida =
+                await comprimirImagenProducto(
+                    archivo
+                );
+
+            mostrarPreviewImagenProducto(
+                imagenComprimida
+            );
+
+            mensajeProducto.textContent =
+                "";
+
+            mostrarToast(
+                "Imagen preparada correctamente.",
+                "success"
+            );
+
+        } catch (error) {
+
+            productoImagen.value =
+                "";
+
+            mensajeProducto.textContent =
+                error.message ||
+                "No se pudo procesar la imagen.";
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    title:
+                        "Imagen no válida",
+                    text:
+                        mensajeProducto.textContent,
+                    icon:
+                        "warning",
+                    confirmButtonText:
+                        "Entendido"
+                });
+            }
+
+        } finally {
+
+            procesandoImagenProducto =
+                false;
+
+            productoImagen.disabled =
+                false;
+        }
+    }
+);
+
+
+btnQuitarImagenProducto.addEventListener(
+    "click",
+    function() {
+
+        productoImagen.value =
+            "";
+
+        mostrarPreviewImagenProducto(
+            ""
+        );
+
+        mostrarToast(
+            "Imagen eliminada del producto.",
+            "info"
+        );
+    }
+);
+
+
 function normalizarProductoGuardado(producto) {
 
     return {
         id: textoSeguro(producto.id, 100),
         nombre: textoSeguro(producto.nombre, 120),
+        marca: textoSeguro(producto.marca, 80),
+        descripcion: textoSeguro(producto.descripcion, 300),
         categoriaId: textoSeguro(producto.categoriaId, 100),
         categoria: textoSeguro(producto.categoria, 80),
         precio: numeroSeguro(producto.precio, 0),
         stock: numeroSeguro(producto.stock, 0),
-        proveedorId: textoSeguro(producto.proveedorId, 100)
+        proveedorId: textoSeguro(producto.proveedorId, 100),
+        imagen: normalizarImagenProducto(producto.imagen)
     };
 }
 
@@ -586,58 +952,6 @@ function crearBoton(
         accion(idProducto);
     });
 
-    const descripcionPermiso =
-        String(
-            titulo ||
-            ""
-        )
-            .toLowerCase();
-
-    if (
-        descripcionPermiso.includes(
-            "editar"
-        )
-    ) {
-
-        boton.dataset.permiso =
-            "editar";
-
-
-        if (
-            window.Permisos &&
-            !Permisos.puedeEditar()
-        ) {
-
-            boton.hidden =
-                true;
-        }
-    }
-
-
-    if (
-        descripcionPermiso.includes(
-            "eliminar"
-        ) ||
-        descripcionPermiso.includes(
-            "borrar"
-        )
-    ) {
-
-        boton.dataset.permiso =
-            "eliminar";
-
-
-        if (
-            window.Permisos &&
-            !Permisos.puedeEliminar()
-        ) {
-
-            boton.hidden =
-                true;
-        }
-    }
-
-
     return boton;
 }
 
@@ -723,6 +1037,35 @@ function mostrarProductos(listaProductos) {
 
         const celdaNombre = document.createElement("td");
 
+        const productoNombreWrap =
+            document.createElement("div");
+
+        productoNombreWrap.className =
+            "product-name-with-image";
+
+        if (producto.imagen) {
+
+            const miniatura =
+                document.createElement("img");
+
+            miniatura.className =
+                "product-thumb";
+
+            miniatura.src =
+                producto.imagen;
+
+            miniatura.alt =
+                "Imagen de " +
+                producto.nombre;
+
+            productoNombreWrap.appendChild(
+                miniatura
+            );
+        }
+
+        const datosNombreProducto =
+            document.createElement("div");
+
         const nombre = document.createElement("div");
         nombre.className = "table-primary-text";
         nombre.textContent = producto.nombre;
@@ -736,8 +1079,21 @@ function mostrarProductos(listaProductos) {
         categoriaSecundaria.textContent =
             "Producto registrado";
 
-        celdaNombre.appendChild(nombre);
-        celdaNombre.appendChild(categoriaSecundaria);
+        datosNombreProducto.appendChild(
+            nombre
+        );
+
+        datosNombreProducto.appendChild(
+            categoriaSecundaria
+        );
+
+        productoNombreWrap.appendChild(
+            datosNombreProducto
+        );
+
+        celdaNombre.appendChild(
+            productoNombreWrap
+        );
 
         const celdaCategoria = document.createElement("td");
 
@@ -1013,35 +1369,25 @@ formProducto.addEventListener(
 
         event.preventDefault();
 
+        if (procesandoImagenProducto) {
+
+            mensajeProducto.textContent =
+                "Espere a que termine de procesarse la imagen.";
+
+            return;
+        }
+
         const id =
             productoId.value;
 
-        if (
-            id === "" &&
-            window.Permisos &&
-            !Permisos.exigir(
-                "crear"
-            )
-        ) {
-
-            return;
-        }
-
-
-        if (
-            id !== "" &&
-            window.Permisos &&
-            !Permisos.exigir(
-                "editar"
-            )
-        ) {
-
-            return;
-        }
-
-
         const nombre =
             productoNombre.value.trim();
+
+        const marca =
+            productoMarca.value.trim();
+
+        const descripcion =
+            productoDescripcion.value.trim();
 
         const categoriaId =
             productoCategoria.value;
@@ -1104,10 +1450,13 @@ formProducto.addEventListener(
 
                 id: generarIdSeguro(),
                 nombre: nombre,
+                marca: marca,
+                descripcion: descripcion,
                 categoriaId: categoriaId,
                 precio: Number(precio),
                 stock: Number(stock),
-                proveedorId: proveedorId
+                proveedorId: proveedorId,
+                imagen: imagenProductoActual
             };
 
             productos.push(
@@ -1161,10 +1510,13 @@ formProducto.addEventListener(
                                 return {
                                     id: producto.id,
                                     nombre: nombre,
+                                    marca: marca,
+                                    descripcion: descripcion,
                                     categoriaId: categoriaId,
                                     precio: Number(precio),
                                     stock: Number(stock),
-                                    proveedorId: proveedorId
+                                    proveedorId: proveedorId,
+                                    imagen: imagenProductoActual
                                 };
                             }
 
@@ -1200,17 +1552,6 @@ formProducto.addEventListener(
 // Cargar producto para editar
 // ------------------------------------------------------
 function editarProducto(id) {
-
-    if (
-        window.Permisos &&
-        !Permisos.exigir(
-            "editar"
-        )
-    ) {
-
-        return;
-    }
-
 
     const productos =
         obtenerProductos();
@@ -1249,6 +1590,14 @@ function editarProducto(id) {
 
     cargarProveedoresEnSelect(
         productoEncontrado.proveedorId
+    );
+
+    productoImagen.value =
+        "";
+
+    mostrarPreviewImagenProducto(
+        productoEncontrado.imagen ||
+        ""
     );
 
     btnGuardarProducto.innerHTML =
@@ -1306,17 +1655,6 @@ function obtenerPedidosAsociadosProducto(idProducto) {
 // Eliminar producto
 // ------------------------------------------------------
 function eliminarProducto(id) {
-
-    if (
-        window.Permisos &&
-        !Permisos.exigir(
-            "eliminar"
-        )
-    ) {
-
-        return;
-    }
-
 
     const pedidosAsociados =
         obtenerPedidosAsociadosProducto(
@@ -1411,6 +1749,13 @@ function limpiarFormularioProducto() {
     formProducto.reset();
 
     productoId.value = "";
+
+    productoImagen.value =
+        "";
+
+    mostrarPreviewImagenProducto(
+        ""
+    );
 
     btnGuardarProducto.innerHTML =
         '<i class="bi bi-floppy me-1"></i> Guardar Producto';
@@ -1580,21 +1925,290 @@ sidebarOverlay.addEventListener(
 );
 
 
+
+
+(function () {
+    "use strict";
+
+// ------------------------------------------------------
+// Importación masiva de productos desde CSV
+// ------------------------------------------------------
+const btnImportarProductosCSV = document.getElementById("btn-importar-productos");
+const inputImportarProductosCSV = document.getElementById("input-importar-productos");
+
+
+function construirDetalleImportacionCSV(archivo, total, validos, duplicados, errores, advertencias, detalles) {
+    let texto =
+        "Archivo: " + archivo.name + "\n\n" +
+        "Filas encontradas: " + total + "\n" +
+        "Registros válidos: " + validos + "\n" +
+        "Duplicados omitidos: " + duplicados + "\n" +
+        "Filas con error: " + errores + "\n" +
+        "Advertencias: " + advertencias;
+
+    if (detalles.length > 0) {
+        texto += "\n\nPrimeros detalles:\n" + detalles.slice(0, 5).join("\n");
+    }
+
+    return texto;
+}
+
+async function confirmarImportacionCSV(titulo, detalle, cantidad) {
+    if (cantidad <= 0) {
+        if (window.Swal) {
+            await Swal.fire({
+                title: "Nada para importar",
+                text: detalle,
+                icon: "warning",
+                confirmButtonText: "Entendido"
+            });
+        } else {
+            alert(detalle);
+        }
+        return false;
+    }
+
+    if (window.Swal) {
+        const resultado = await Swal.fire({
+            title: titulo,
+            text: detalle,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Importar " + cantidad,
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        });
+        return resultado.isConfirmed;
+    }
+
+    return confirm(detalle + "\n\n¿Desea continuar?");
+}
+
+
+function categoriaPorNombreCSV(nombre, categorias) {
+    const buscado = normalizarTextoComparacion(nombre);
+    return categorias.find(function (categoria) {
+        return normalizarTextoComparacion(categoria.nombre) === buscado;
+    });
+}
+
+function proveedorPorNombreCSV(nombre, proveedores) {
+    const buscado = normalizarTextoComparacion(nombre);
+    return proveedores.find(function (proveedor) {
+        return (
+            normalizarTextoComparacion(proveedor.empresa) === buscado ||
+            normalizarTextoComparacion(proveedor.nombre) === buscado
+        );
+    });
+}
+
+async function importarProductosCSV(archivo) {
+    if (!window.NexusCSV) {
+        throw new Error("No se cargó el módulo de importación CSV.");
+    }
+
+    const texto = await NexusCSV.leerArchivo(archivo);
+    const datos = NexusCSV.parsear(texto);
+
+    const columnasObligatorias = [
+        ["nombre", "producto"],
+        ["categoria", "categoría"],
+        ["precio"],
+        ["stock", "existencias"],
+        ["proveedor", "fabricante", "empresa"]
+    ];
+
+    const faltantes = columnasObligatorias.filter(function (alias) {
+        return !NexusCSV.tieneColumna(datos.encabezados, alias);
+    }).map(function (alias) {
+        return alias[0];
+    });
+
+    if (faltantes.length > 0) {
+        throw new Error("Faltan columnas obligatorias: " + faltantes.join(", ") + ".");
+    }
+
+    const categorias = obtenerCategorias();
+    const proveedores = obtenerProveedores();
+    const productos = obtenerProductos();
+
+    if (categorias.length === 0) {
+        throw new Error("No hay categorías registradas. Importe primero categorias_nexus.csv.");
+    }
+
+    if (proveedores.length === 0) {
+        throw new Error("No hay proveedores registrados. Importe primero proveedores_nexus.csv.");
+    }
+
+    const validos = [];
+    const detalles = [];
+    let duplicados = 0;
+    let errores = 0;
+    let advertencias = 0;
+
+    datos.filas.forEach(function (fila) {
+        const linea = fila.__linea;
+        const nombre = NexusCSV.valor(fila, ["nombre", "producto"]).trim();
+        const categoriaNombre = NexusCSV.valor(fila, ["categoria", "categoría"]).trim();
+        const proveedorNombre = NexusCSV.valor(fila, ["proveedor", "fabricante", "empresa"]).trim();
+        const marcaEntrada = NexusCSV.valor(fila, ["marca", "brand"]).trim();
+        const descripcion = NexusCSV.valor(fila, ["descripcion", "descripción", "description"]).trim();
+        const precio = NexusCSV.numero(NexusCSV.valor(fila, ["precio", "price"]));
+        const stock = NexusCSV.numero(NexusCSV.valor(fila, ["stock", "existencias"]));
+        const imagenEntrada = NexusCSV.valor(fila, ["imagen", "image", "url_imagen"]).trim();
+
+        if (!nombre || !categoriaNombre || !proveedorNombre) {
+            errores++;
+            detalles.push("Línea " + linea + ": faltan nombre, categoría o proveedor.");
+            return;
+        }
+
+        if (nombre.length > 120) {
+            errores++;
+            detalles.push("Línea " + linea + ": el nombre supera 120 caracteres.");
+            return;
+        }
+
+        if (marcaEntrada.length > 80) {
+            errores++;
+            detalles.push("Línea " + linea + ": la marca supera 80 caracteres.");
+            return;
+        }
+
+        if (descripcion.length > 300) {
+            errores++;
+            detalles.push("Línea " + linea + ": la descripción supera 300 caracteres.");
+            return;
+        }
+
+        if (!Number.isFinite(precio) || precio <= 0 || precio > 999999999.99) {
+            errores++;
+            detalles.push("Línea " + linea + ": precio inválido.");
+            return;
+        }
+
+        if (!Number.isFinite(stock) || stock < 0 || stock > 10000000 || !Number.isInteger(stock)) {
+            errores++;
+            detalles.push("Línea " + linea + ": stock inválido; debe ser un entero mayor o igual a 0.");
+            return;
+        }
+
+        const categoria = categoriaPorNombreCSV(categoriaNombre, categorias);
+        if (!categoria) {
+            errores++;
+            detalles.push("Línea " + linea + ": no existe la categoría ‘" + categoriaNombre + "’.");
+            return;
+        }
+
+        const proveedor = proveedorPorNombreCSV(proveedorNombre, proveedores);
+        if (!proveedor) {
+            errores++;
+            detalles.push("Línea " + linea + ": no existe el proveedor/fabricante ‘" + proveedorNombre + "’.");
+            return;
+        }
+
+        const yaExiste = productoDuplicado(
+            productos.concat(validos),
+            "",
+            nombre,
+            categoria.id,
+            proveedor.id
+        );
+
+        if (yaExiste) {
+            duplicados++;
+            return;
+        }
+
+        let imagen = "";
+        if (imagenEntrada) {
+            imagen = normalizarImagenProducto(imagenEntrada);
+            if (!imagen) {
+                advertencias++;
+                detalles.push("Línea " + linea + ": imagen no válida; se importará sin imagen.");
+            }
+        }
+
+        validos.push({
+            id: generarIdSeguro(),
+            nombre: nombre,
+            marca: marcaEntrada || proveedor.empresa || proveedor.nombre,
+            descripcion: descripcion,
+            categoriaId: categoria.id,
+            precio: precio,
+            stock: stock,
+            proveedorId: proveedor.id,
+            imagen: imagen
+        });
+    });
+
+    const detalle = construirDetalleImportacionCSV(
+        archivo,
+        datos.filas.length,
+        validos.length,
+        duplicados,
+        errores,
+        advertencias,
+        detalles
+    );
+
+    const confirmar = await confirmarImportacionCSV(
+        "Importar productos",
+        detalle,
+        validos.length
+    );
+
+    if (!confirmar) {
+        return;
+    }
+
+    if (!guardarProductos(productos.concat(validos))) {
+        throw new Error("No fue posible guardar los productos importados.");
+    }
+
+    cargarCategoriasEnSelect();
+    cargarProveedoresEnSelect();
+    mostrarProductos();
+    mostrarToast(validos.length + " productos importados correctamente.", "success");
+}
+
+if (btnImportarProductosCSV && inputImportarProductosCSV) {
+    btnImportarProductosCSV.addEventListener("click", function () {
+        inputImportarProductosCSV.click();
+    });
+
+    inputImportarProductosCSV.addEventListener("change", async function () {
+        const archivo = inputImportarProductosCSV.files && inputImportarProductosCSV.files[0];
+        if (!archivo) return;
+
+        try {
+            await importarProductosCSV(archivo);
+        } catch (error) {
+            console.error("Error al importar productos:", error);
+            if (window.Swal) {
+                Swal.fire({
+                    title: "No se pudo importar el CSV",
+                    text: error.message || "Revise el formato del archivo.",
+                    icon: "error",
+                    confirmButtonText: "Entendido"
+                });
+            } else {
+                alert(error.message || "No se pudo importar el CSV.");
+            }
+        } finally {
+            inputImportarProductosCSV.value = "";
+        }
+    });
+}
+
+})();
+
 // ------------------------------------------------------
 // Inicialización
 // ------------------------------------------------------
 document.addEventListener(
     "DOMContentLoaded",
     function() {
-
-        if (
-            window.Permisos &&
-            !Permisos.verificarSesion()
-        ) {
-
-            return;
-        }
-
 
         aplicarTemaGuardado();
         cargarCategoriasEnSelect();

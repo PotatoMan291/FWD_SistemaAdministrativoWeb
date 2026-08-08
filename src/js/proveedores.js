@@ -1557,6 +1557,211 @@ sidebarOverlay.addEventListener(
 );
 
 
+
+
+(function () {
+    "use strict";
+
+// ------------------------------------------------------
+// Importación masiva de proveedores desde CSV
+// ------------------------------------------------------
+const btnImportarProveedoresCSV = document.getElementById("btn-importar-proveedores");
+const inputImportarProveedoresCSV = document.getElementById("input-importar-proveedores");
+
+
+function construirDetalleImportacionCSV(archivo, total, validos, duplicados, errores, advertencias, detalles) {
+    let texto =
+        "Archivo: " + archivo.name + "\n\n" +
+        "Filas encontradas: " + total + "\n" +
+        "Registros válidos: " + validos + "\n" +
+        "Duplicados omitidos: " + duplicados + "\n" +
+        "Filas con error: " + errores + "\n" +
+        "Advertencias: " + advertencias;
+
+    if (detalles.length > 0) {
+        texto += "\n\nPrimeros detalles:\n" + detalles.slice(0, 5).join("\n");
+    }
+
+    return texto;
+}
+
+async function confirmarImportacionCSV(titulo, detalle, cantidad) {
+    if (cantidad <= 0) {
+        if (window.Swal) {
+            await Swal.fire({
+                title: "Nada para importar",
+                text: detalle,
+                icon: "warning",
+                confirmButtonText: "Entendido"
+            });
+        } else {
+            alert(detalle);
+        }
+        return false;
+    }
+
+    if (window.Swal) {
+        const resultado = await Swal.fire({
+            title: titulo,
+            text: detalle,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Importar " + cantidad,
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        });
+        return resultado.isConfirmed;
+    }
+
+    return confirm(detalle + "\n\n¿Desea continuar?");
+}
+
+
+async function importarProveedoresCSV(archivo) {
+    if (!window.NexusCSV) {
+        throw new Error("No se cargó el módulo de importación CSV.");
+    }
+
+    const texto = await NexusCSV.leerArchivo(archivo);
+    const datos = NexusCSV.parsear(texto);
+
+    const requeridas = [
+        ["nombre", "contacto"],
+        ["empresa", "proveedor", "fabricante"],
+        ["telefono", "teléfono"],
+        ["correo", "email"],
+        ["direccion", "dirección"]
+    ];
+
+    const faltantes = requeridas.filter(function (alias) {
+        return !NexusCSV.tieneColumna(datos.encabezados, alias);
+    }).map(function (alias) {
+        return alias[0];
+    });
+
+    if (faltantes.length > 0) {
+        throw new Error("Faltan columnas obligatorias: " + faltantes.join(", ") + ".");
+    }
+
+    const proveedores = obtenerProveedores();
+    const validos = [];
+    const detalles = [];
+    let duplicados = 0;
+    let errores = 0;
+
+    datos.filas.forEach(function (fila) {
+        const linea = fila.__linea;
+        const nombre = NexusCSV.valor(fila, ["nombre", "contacto"]).trim();
+        const empresa = NexusCSV.valor(fila, ["empresa", "proveedor", "fabricante"]).trim();
+        const telefono = NexusCSV.valor(fila, ["telefono", "teléfono"]).trim();
+        const correo = NexusCSV.valor(fila, ["correo", "email"]).trim().toLowerCase();
+        const direccion = NexusCSV.valor(fila, ["direccion", "dirección"]).trim();
+
+        if (!nombre || !empresa || !telefono || !correo || !direccion) {
+            errores++;
+            detalles.push("Línea " + linea + ": todos los campos son obligatorios.");
+            return;
+        }
+
+        if (nombre.length > 100 || empresa.length > 100 || direccion.length > 200) {
+            errores++;
+            detalles.push("Línea " + linea + ": uno de los textos excede la longitud permitida.");
+            return;
+        }
+
+        if (!telefonoValido(telefono)) {
+            errores++;
+            detalles.push("Línea " + linea + ": teléfono inválido.");
+            return;
+        }
+
+        if (!correoValido(correo)) {
+            errores++;
+            detalles.push("Línea " + linea + ": correo inválido.");
+            return;
+        }
+
+        const duplicado = buscarProveedorDuplicado(
+            proveedores.concat(validos),
+            "",
+            nombre,
+            empresa,
+            telefono,
+            correo
+        );
+
+        if (duplicado) {
+            duplicados++;
+            return;
+        }
+
+        validos.push({
+            id: generarIdSeguro(),
+            nombre: nombre,
+            empresa: empresa,
+            telefono: telefono,
+            correo: correo,
+            direccion: direccion
+        });
+    });
+
+    const detalle = construirDetalleImportacionCSV(
+        archivo,
+        datos.filas.length,
+        validos.length,
+        duplicados,
+        errores,
+        0,
+        detalles
+    );
+
+    const confirmar = await confirmarImportacionCSV(
+        "Importar proveedores",
+        detalle,
+        validos.length
+    );
+
+    if (!confirmar) return;
+
+    if (!guardarProveedores(proveedores.concat(validos))) {
+        throw new Error("No fue posible guardar los proveedores importados.");
+    }
+
+    mostrarProveedores();
+    mostrarToast(validos.length + " proveedores importados correctamente.", "success");
+}
+
+if (btnImportarProveedoresCSV && inputImportarProveedoresCSV) {
+    btnImportarProveedoresCSV.addEventListener("click", function () {
+        inputImportarProveedoresCSV.click();
+    });
+
+    inputImportarProveedoresCSV.addEventListener("change", async function () {
+        const archivo = inputImportarProveedoresCSV.files && inputImportarProveedoresCSV.files[0];
+        if (!archivo) return;
+
+        try {
+            await importarProveedoresCSV(archivo);
+        } catch (error) {
+            console.error("Error al importar proveedores:", error);
+            if (window.Swal) {
+                Swal.fire({
+                    title: "No se pudo importar el CSV",
+                    text: error.message || "Revise el formato del archivo.",
+                    icon: "error",
+                    confirmButtonText: "Entendido"
+                });
+            } else {
+                alert(error.message || "No se pudo importar el CSV.");
+            }
+        } finally {
+            inputImportarProveedoresCSV.value = "";
+        }
+    });
+}
+
+})();
+
 // ------------------------------------------------------
 // Inicialización
 // ------------------------------------------------------

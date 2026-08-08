@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 132" role="img" aria-labelledby="title">
+<title id="title">NEXUS</title>
+<defs>
+  <linearGradient id="nexusGrad" x1="0" x2="1">
+    <stop offset="0" stop-color="#F7F8FC"/>
+    <stop offset="1" stop-color="#C8CEDA"/>
+  </linearGradient>
+</defs>
+<g transform="translate(18 20)">
+  <path d="M10 64 38 12h28L94 64 66 104H38Z" fill="none" stroke="#7C5CFC" stroke-width="6"/>
+  <path d="M34 64 50 34l16 30-16 18Z" fill="#7C5CFC" opacity=".95"/>
+</g>
+<text x="132" y="84" font-family="Arial, sans-serif" font-size="68" font-weight="800" letter-spacing="11" fill="url(#nexusGrad)">NEXUS</text>
+</svg>

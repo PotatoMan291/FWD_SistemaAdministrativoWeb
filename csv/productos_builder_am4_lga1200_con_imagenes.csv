@@ -1,0 +1,56 @@
+﻿nombre,marca,categoria,precio,stock,proveedor,descripcion,imagen
+Ryzen 5 5500,AMD,Procesadores,55900,18,AMD,Procesador AM4 de 6 núcleos para equipos gaming y de uso general de gama de entrada.,../src/imgs/productos/ryzen-5-5500.webp
+Ryzen 5 5600G,AMD,Procesadores,69900,14,AMD,"Procesador AM4 de 6 núcleos con gráficos Radeon integrados, ideal para una PC económica sin GPU dedicada.",../src/imgs/productos/ryzen-5-5600g.webp
+Ryzen 5 5600,AMD,Procesadores,64900,20,AMD,Procesador AM4 Zen 3 de 6 núcleos para gaming 1080p y equipos de gran relación precio-rendimiento.,../src/imgs/productos/ryzen-5-5600.webp
+Ryzen 7 5700X,AMD,Procesadores,99900,12,AMD,"Procesador AM4 Zen 3 de 8 núcleos para gaming, multitarea y productividad.",../src/imgs/productos/ryzen-7-5700x.webp
+Ryzen 7 5700X3D,AMD,Procesadores,149900,10,AMD,Procesador AM4 de 8 núcleos con 3D V-Cache orientado a gaming y actualización de plataformas AM4.,../src/imgs/productos/ryzen-7-5700x3d.webp
+Ryzen 5 7600,AMD,Procesadores,124900,14,AMD,Procesador AM5 de 6 núcleos y 65 W para equipos gaming modernos de gama media.,../src/imgs/productos/ryzen-5-7600.webp
+Ryzen 5 8600G,AMD,Procesadores,129900,10,AMD,APU AM5 para equipos compactos y gaming de entrada con gráficos integrados.,../src/imgs/productos/ryzen-5-8600g.webp
+Core i3-14100F,Intel,Procesadores,69900,16,Intel,Procesador Intel LGA1700 de entrada para gaming y productividad diaria con GPU dedicada.,../src/imgs/productos/core-i3-14100f.webp
+Core i5-14400F,Intel,Procesadores,119900,14,Intel,"Procesador Intel LGA1700 de gama media para gaming, multitarea y creación.",../src/imgs/productos/core-i5-14400f.webp
+Core i5-14600K,Intel,Procesadores,179900,9,Intel,Procesador Intel LGA1700 de gama media-alta para gaming y productividad exigente.,../src/imgs/productos/core-i5-14600k.webp
+PRIME A520M-A II,ASUS,Placas madre,54900,16,ASUS,Motherboard micro-ATX AM4 con DDR4 y ranura M.2 para builds económicas.,../src/imgs/productos/prime-a520m-a-ii.webp
+B550M DS3H AC,Gigabyte,Placas madre,74900,14,Gigabyte,"Motherboard micro-ATX AM4 B550 con DDR4, Wi-Fi y soporte M.2.",../src/imgs/productos/b550m-ds3h-ac.webp
+B550-A PRO,MSI,Placas madre,89900,12,MSI,Motherboard ATX AM4 B550 con DDR4 y PCIe 4.0 para equipos de gama media.,../src/imgs/productos/b550-a-pro.webp
+TUF GAMING B550-PLUS WIFI II,ASUS,Placas madre,109900,9,ASUS,Motherboard ATX AM4 B550 con DDR4 y conectividad Wi-Fi para gaming.,../src/imgs/productos/tuf-gaming-b550-plus-wifi-ii.webp
+PRO B650M-A WIFI,MSI,Placas madre,99900,12,MSI,Motherboard micro-ATX AM5 B650 con DDR5 y Wi-Fi para builds modernas de gama media.,../src/imgs/productos/pro-b650m-a-wifi.webp
+B650 EAGLE AX,Gigabyte,Placas madre,119900,10,Gigabyte,Motherboard ATX AM5 B650 con DDR5 y conectividad inalámbrica.,../src/imgs/productos/b650-eagle-ax.webp
+TUF GAMING B760-PLUS WIFI D4,ASUS,Placas madre,119900,9,ASUS,"Motherboard ATX LGA1700 B760 con memoria DDR4 para Intel 12ª, 13ª y 14ª generación.",../src/imgs/productos/tuf-gaming-b760-plus-wifi-d4.webp
+B760M DS3H DDR4,Gigabyte,Placas madre,84900,12,Gigabyte,Motherboard micro-ATX LGA1700 B760 con DDR4 para builds Intel de entrada y gama media.,../src/imgs/productos/b760m-ds3h-ddr4.webp
+PRO B760M-A WIFI DDR4,MSI,Placas madre,104900,10,MSI,Motherboard micro-ATX LGA1700 B760 con DDR4 y Wi-Fi para equipos Intel.,../src/imgs/productos/pro-b760m-a-wifi-ddr4.webp
+Vengeance LPX DDR4 16GB 3200MT/s,Corsair,Memoria RAM,22900,25,Corsair,Kit DDR4 de 16 GB para plataformas AM4 e Intel DDR4 de gama de entrada.,../src/imgs/productos/vengeance-lpx-ddr4-16gb-3200mt-s.webp
+Vengeance LPX DDR4 32GB 3200MT/s,Corsair,Memoria RAM,39900,20,Corsair,Kit DDR4 de 32 GB para gaming y multitarea en plataformas compatibles.,../src/imgs/productos/vengeance-lpx-ddr4-32gb-3200mt-s.webp
+FURY Beast DDR4 16GB 3200MT/s,Kingston,Memoria RAM,24900,24,Kingston,Memoria DDR4 de 16 GB orientada a builds económicas y gaming 1080p.,../src/imgs/productos/fury-beast-ddr4-16gb-3200mt-s.webp
+FURY Beast DDR4 32GB 3200MT/s,Kingston,Memoria RAM,44900,18,Kingston,Memoria DDR4 de 32 GB para equipos gaming y productividad de gama media.,../src/imgs/productos/fury-beast-ddr4-32gb-3200mt-s.webp
+FURY Beast DDR5 16GB 5600MT/s,Kingston,Memoria RAM,34900,20,Kingston,Memoria DDR5 de 16 GB para plataformas AM5 e Intel DDR5 de entrada.,../src/imgs/productos/fury-beast-ddr5-16gb-5600mt-s.webp
+GeForce RTX 4060 8GB,NVIDIA,Tarjetas gráficas,219900,12,NVIDIA,GPU GeForce de entrada para gaming 1080p con DLSS y ray tracing.,../src/imgs/productos/geforce-rtx-4060-8gb.webp
+Radeon RX 6600 8GB,AMD,Tarjetas gráficas,139900,14,AMD,GPU Radeon de bajo consumo para gaming 1080p de gama de entrada.,../src/imgs/productos/radeon-rx-6600-8gb.webp
+Radeon RX 7600 8GB,AMD,Tarjetas gráficas,179900,16,AMD,GPU RDNA 3 diseñada para gaming 1080p y streaming.,../src/imgs/productos/radeon-rx-7600-8gb.webp
+Radeon RX 7600 XT 16GB,AMD,Tarjetas gráficas,229900,11,AMD,GPU Radeon de gama media con 16 GB para 1080p de alta calidad y 1440p.,../src/imgs/productos/radeon-rx-7600-xt-16gb.webp
+Radeon RX 7700 XT 12GB,AMD,Tarjetas gráficas,319900,9,AMD,GPU RDNA 3 de gama media orientada a gaming 1440p.,../src/imgs/productos/radeon-rx-7700-xt-12gb.webp
+Arc A750 8GB,Intel,Tarjetas gráficas,149900,10,Intel,GPU Intel Arc para gaming 1080p y creación con aceleración Xe.,../src/imgs/productos/arc-a750-8gb.webp
+NV3 1TB,Kingston,Almacenamiento,39900,24,Kingston,SSD NVMe de 1 TB para sistemas y juegos de gama de entrada.,../src/imgs/productos/nv3-1tb.webp
+P3 Plus 1TB,Crucial,Almacenamiento,44900,20,Crucial,SSD NVMe PCIe de 1 TB para equipos de uso general y gaming.,../src/imgs/productos/p3-plus-1tb.webp
+990 EVO Plus 1TB,Samsung,Almacenamiento,59900,16,Samsung,"SSD NVMe de 1 TB de alto rendimiento para sistema, aplicaciones y juegos.",../src/imgs/productos/990-evo-plus-1tb.webp
+MAG A550BN 550W,MSI,Fuentes de poder,39900,18,MSI,Fuente de 550 W para builds de entrada con GPUs de consumo moderado.,../src/imgs/productos/mag-a550bn-550w.webp
+MAG A650BN 650W,MSI,Fuentes de poder,49900,18,MSI,Fuente de 650 W para builds gaming de entrada y gama media.,../src/imgs/productos/mag-a650bn-650w.webp
+CX650 650W,Corsair,Fuentes de poder,59900,14,Corsair,Fuente Corsair de 650 W para configuraciones gaming de gama media.,../src/imgs/productos/cx650-650w.webp
+RM750e 750W,Corsair,Fuentes de poder,79900,12,Corsair,Fuente modular de 750 W para equipos gaming de gama media y media-alta.,../src/imgs/productos/rm750e-750w.webp
+H5 Flow,NZXT,Gabinetes,69900,12,NZXT,Gabinete ATX con enfoque en flujo de aire para builds de gama media.,../src/imgs/productos/h5-flow.webp
+3000D AIRFLOW,Corsair,Gabinetes,49900,15,Corsair,Gabinete ATX de entrada con panel frontal orientado al flujo de aire.,../src/imgs/productos/3000d-airflow.webp
+Core i3-10100F,Intel,Procesadores,44900,14,Intel,Procesador Intel de 10ª generación con socket LGA1200 para builds económicas con GPU dedicada.,../src/imgs/productos/core-i3-10100f.webp
+Core i3-10105F,Intel,Procesadores,47900,12,Intel,"Procesador LGA1200 de entrada para equipos de oficina, estudio y gaming económico con tarjeta gráfica dedicada.",../src/imgs/productos/core-i3-10105f.webp
+Core i5-10400F,Intel,Procesadores,62900,14,Intel,Procesador Intel LGA1200 de 6 núcleos y 65 W para gaming y uso general.,../src/imgs/productos/core-i5-10400f.webp
+Core i5-10600K,Intel,Procesadores,84900,9,Intel,Procesador Intel LGA1200 desbloqueado para equipos de gama media y gaming.,../src/imgs/productos/core-i5-10600k.webp
+Core i7-10700,Intel,Procesadores,109900,8,Intel,"Procesador Intel LGA1200 de 8 núcleos para multitarea, productividad y gaming.",../src/imgs/productos/core-i7-10700.webp
+Core i9-10900K,Intel,Procesadores,159900,5,Intel,Procesador Intel LGA1200 de gama alta de la 10ª generación para equipos de alto rendimiento.,../src/imgs/productos/core-i9-10900k.webp
+Core i5-11400F,Intel,Procesadores,74900,13,Intel,"Procesador Intel de 11ª generación, socket LGA1200, 6 núcleos y DDR4 para gaming de gama de entrada/media.",../src/imgs/productos/core-i5-11400f.webp
+Core i5-11600K,Intel,Procesadores,99900,8,Intel,Procesador Intel LGA1200 desbloqueado de 11ª generación para gaming y productividad.,../src/imgs/productos/core-i5-11600k.webp
+Core i7-11700F,Intel,Procesadores,129900,7,Intel,"Procesador Intel LGA1200 de 8 núcleos para gaming, streaming y trabajo multitarea.",../src/imgs/productos/core-i7-11700f.webp
+Core i9-11900K,Intel,Procesadores,169900,4,Intel,Procesador Intel LGA1200 de gama alta de 11ª generación para configuraciones exigentes.,../src/imgs/productos/core-i9-11900k.webp
+PRIME H510M-E,ASUS,Placas madre,49900,14,ASUS,Motherboard micro-ATX LGA1200 H510 con DDR4 y M.2 para procesadores Intel de 10ª y 11ª generación.,../src/imgs/productos/prime-h510m-e.webp
+B560M PRO-VDH WIFI,MSI,Placas madre,69900,12,MSI,"Motherboard micro-ATX LGA1200 B560 con DDR4, M.2 y conectividad Wi-Fi.",../src/imgs/productos/b560m-pro-vdh-wifi.webp
+B560M DS3H,Gigabyte,Placas madre,64900,12,Gigabyte,"Motherboard micro-ATX LGA1200 B560 con DDR4, M.2 y soporte para Intel Core de 10ª y 11ª generación.",../src/imgs/productos/b560m-ds3h.webp
+TUF GAMING B560-PLUS WIFI,ASUS,Placas madre,89900,8,ASUS,"Motherboard ATX LGA1200 B560 con DDR4, Wi-Fi y enfoque gaming.",../src/imgs/productos/tuf-gaming-b560-plus-wifi.webp
+PRIME Z590-P,ASUS,Placas madre,104900,7,ASUS,"Motherboard ATX LGA1200 Z590 con DDR4, múltiples M.2 y opciones de expansión para equipos de gama media/alta.",../src/imgs/productos/prime-z590-p.webp
+MAG Z590 TOMAHAWK WIFI,MSI,Placas madre,129900,6,MSI,"Motherboard ATX LGA1200 Z590 con DDR4, Wi-Fi y diseño orientado a equipos de alto rendimiento.",../src/imgs/productos/mag-z590-tomahawk-wifi.webp

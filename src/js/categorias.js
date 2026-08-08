@@ -17,6 +17,21 @@ const categoriaNombre =
 const categoriaDescripcion =
     document.getElementById("categoria-descripcion");
 
+const categoriaImagen =
+    document.getElementById("categoria-imagen");
+
+const categoriaImagenPreview =
+    document.getElementById("categoria-imagen-preview");
+
+const categoriaImagenPreviewBox =
+    document.getElementById("categoria-imagen-preview-box");
+
+const btnQuitarImagenCategoria =
+    document.getElementById("btn-quitar-imagen-categoria");
+
+let imagenCategoriaActual = "";
+let procesandoImagenCategoria = false;
+
 const btnGuardarCategoria =
     document.getElementById("btn-guardar-categoria");
 
@@ -346,12 +361,376 @@ function normalizarProveedorGuardado(proveedor) {
 }
 
 
+function normalizarImagenCategoria(valor) {
+
+    const imagen =
+        typeof valor === "string"
+            ? valor.trim()
+            : "";
+
+    if (imagen === "") {
+        return "";
+    }
+
+    const formatosPermitidos = [
+        "data:image/webp;base64,",
+        "data:image/jpeg;base64,",
+        "data:image/png;base64,"
+    ];
+
+    const esBase64 =
+        formatosPermitidos.some(
+            function(prefijo) {
+                return imagen.startsWith(
+                    prefijo
+                );
+            }
+        );
+
+    const esRutaLocal =
+        imagen.startsWith(
+            "../src/imgs/"
+        ) ||
+        imagen.startsWith("./");
+
+    const esHttps =
+        imagen.startsWith(
+            "https://"
+        );
+
+    return (
+        esBase64 ||
+        esRutaLocal ||
+        esHttps
+    )
+        ? imagen
+        : "";
+}
+
+
+function mostrarPreviewImagenCategoria(
+    imagen = ""
+) {
+
+    imagenCategoriaActual =
+        normalizarImagenCategoria(
+            imagen
+        );
+
+    if (imagenCategoriaActual) {
+
+        categoriaImagenPreview.src =
+            imagenCategoriaActual;
+
+        categoriaImagenPreview.classList.add(
+            "show"
+        );
+
+        categoriaImagenPreviewBox.classList.add(
+            "has-image"
+        );
+
+        btnQuitarImagenCategoria.style.display =
+            "inline-flex";
+
+        return;
+    }
+
+    categoriaImagenPreview.removeAttribute(
+        "src"
+    );
+
+    categoriaImagenPreview.classList.remove(
+        "show"
+    );
+
+    categoriaImagenPreviewBox.classList.remove(
+        "has-image"
+    );
+
+    btnQuitarImagenCategoria.style.display =
+        "none";
+}
+
+
+function cargarImagenCategoriaComoElemento(
+    archivo
+) {
+
+    return new Promise(
+        function(resolve, reject) {
+
+            const url =
+                URL.createObjectURL(
+                    archivo
+                );
+
+            const imagen =
+                new Image();
+
+            imagen.onload =
+                function() {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                    resolve(
+                        imagen
+                    );
+                };
+
+            imagen.onerror =
+                function() {
+
+                    URL.revokeObjectURL(
+                        url
+                    );
+
+                    reject(
+                        new Error(
+                            "No se pudo leer la imagen."
+                        )
+                    );
+                };
+
+            imagen.src =
+                url;
+        }
+    );
+}
+
+
+async function comprimirImagenCategoria(
+    archivo
+) {
+
+    const TAMANO_MAXIMO =
+        8 * 1024 * 1024;
+
+    const ANCHO_MAXIMO =
+        900;
+
+    const ALTO_MAXIMO =
+        700;
+
+    const CALIDAD =
+        0.82;
+
+    const tiposPermitidos = [
+        "image/jpeg",
+        "image/png",
+        "image/webp"
+    ];
+
+    if (
+        !tiposPermitidos.includes(
+            archivo.type
+        )
+    ) {
+
+        throw new Error(
+            "Solo se permiten imágenes PNG, JPG o WebP."
+        );
+    }
+
+    if (
+        archivo.size >
+        TAMANO_MAXIMO
+    ) {
+
+        throw new Error(
+            "La imagen no puede superar 8 MB."
+        );
+    }
+
+    const imagen =
+        await cargarImagenCategoriaComoElemento(
+            archivo
+        );
+
+    const escala =
+        Math.min(
+            1,
+            ANCHO_MAXIMO /
+                imagen.naturalWidth,
+            ALTO_MAXIMO /
+                imagen.naturalHeight
+        );
+
+    const ancho =
+        Math.max(
+            1,
+            Math.round(
+                imagen.naturalWidth *
+                escala
+            )
+        );
+
+    const alto =
+        Math.max(
+            1,
+            Math.round(
+                imagen.naturalHeight *
+                escala
+            )
+        );
+
+    const canvas =
+        document.createElement(
+            "canvas"
+        );
+
+    canvas.width =
+        ancho;
+
+    canvas.height =
+        alto;
+
+    const contexto =
+        canvas.getContext(
+            "2d"
+        );
+
+    if (!contexto) {
+
+        throw new Error(
+            "El navegador no pudo procesar la imagen."
+        );
+    }
+
+    contexto.drawImage(
+        imagen,
+        0,
+        0,
+        ancho,
+        alto
+    );
+
+    let resultado =
+        canvas.toDataURL(
+            "image/webp",
+            CALIDAD
+        );
+
+    if (
+        !resultado.startsWith(
+            "data:image/webp"
+        )
+    ) {
+
+        resultado =
+            canvas.toDataURL(
+                "image/jpeg",
+                CALIDAD
+            );
+    }
+
+    return resultado;
+}
+
+
+categoriaImagen.addEventListener(
+    "change",
+    async function() {
+
+        const archivo =
+            categoriaImagen.files &&
+            categoriaImagen.files[0];
+
+        if (!archivo) {
+            return;
+        }
+
+        procesandoImagenCategoria =
+            true;
+
+        categoriaImagen.disabled =
+            true;
+
+        mensajeCategoria.textContent =
+            "Procesando imagen...";
+
+        try {
+
+            const imagenComprimida =
+                await comprimirImagenCategoria(
+                    archivo
+                );
+
+            mostrarPreviewImagenCategoria(
+                imagenComprimida
+            );
+
+            mensajeCategoria.textContent =
+                "";
+
+            mostrarToast(
+                "Imagen de categoría preparada.",
+                "success"
+            );
+
+        } catch (error) {
+
+            categoriaImagen.value =
+                "";
+
+            mensajeCategoria.textContent =
+                error.message ||
+                "No se pudo procesar la imagen.";
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    title:
+                        "Imagen no válida",
+                    text:
+                        mensajeCategoria.textContent,
+                    icon:
+                        "warning",
+                    confirmButtonText:
+                        "Entendido"
+                });
+            }
+
+        } finally {
+
+            procesandoImagenCategoria =
+                false;
+
+            categoriaImagen.disabled =
+                false;
+        }
+    }
+);
+
+
+btnQuitarImagenCategoria.addEventListener(
+    "click",
+    function() {
+
+        categoriaImagen.value =
+            "";
+
+        mostrarPreviewImagenCategoria(
+            ""
+        );
+
+        mostrarToast(
+            "Imagen eliminada de la categoría.",
+            "info"
+        );
+    }
+);
+
+
 function normalizarCategoriaGuardada(categoria) {
 
     return {
         id: textoSeguro(categoria.id, 100),
         nombre: textoSeguro(categoria.nombre, 80),
-        descripcion: textoSeguro(categoria.descripcion, 250)
+        descripcion: textoSeguro(categoria.descripcion, 250),
+        imagen: normalizarImagenCategoria(categoria.imagen)
     };
 }
 
@@ -561,6 +940,32 @@ function mostrarCategorias(listaCategorias) {
         const celdaNombre =
             document.createElement("td");
 
+        const categoriaNombreWrap =
+            document.createElement("div");
+
+        categoriaNombreWrap.className =
+            "category-table-name";
+
+        if (categoria.imagen) {
+
+            const miniatura =
+                document.createElement("img");
+
+            miniatura.className =
+                "category-thumb";
+
+            miniatura.src =
+                categoria.imagen;
+
+            miniatura.alt =
+                "Imagen de " +
+                categoria.nombre;
+
+            categoriaNombreWrap.appendChild(
+                miniatura
+            );
+        }
+
         const badge =
             document.createElement("span");
 
@@ -578,7 +983,13 @@ function mostrarCategorias(listaCategorias) {
 
         badge.appendChild(textoNombre);
 
-        celdaNombre.appendChild(badge);
+        categoriaNombreWrap.appendChild(
+            badge
+        );
+
+        celdaNombre.appendChild(
+            categoriaNombreWrap
+        );
 
         const celdaDescripcion =
             document.createElement("td");
@@ -707,6 +1118,14 @@ formCategoria.addEventListener(
 
         event.preventDefault();
 
+        if (procesandoImagenCategoria) {
+
+            mensajeCategoria.textContent =
+                "Espere a que termine de procesarse la imagen.";
+
+            return;
+        }
+
         const id =
             categoriaId.value;
 
@@ -762,7 +1181,8 @@ formCategoria.addEventListener(
 
                 id: generarIdSeguro(),
                 nombre: nombre,
-                descripcion: descripcion
+                descripcion: descripcion,
+                imagen: imagenCategoriaActual
             };
 
             categorias.push(
@@ -818,7 +1238,8 @@ formCategoria.addEventListener(
                                 return {
                                     id: categoria.id,
                                     nombre: nombre,
-                                    descripcion: descripcion
+                                    descripcion: descripcion,
+                                    imagen: imagenCategoriaActual
                                 };
                             }
 
@@ -880,6 +1301,14 @@ function editarCategoria(id) {
 
     categoriaDescripcion.value =
         categoria.descripcion;
+
+    categoriaImagen.value =
+        "";
+
+    mostrarPreviewImagenCategoria(
+        categoria.imagen ||
+        ""
+    );
 
     btnGuardarCategoria.innerHTML =
         '<i class="bi bi-check2-circle me-1"></i> Actualizar Categoría';
@@ -985,6 +1414,13 @@ function limpiarFormularioCategoria() {
     formCategoria.reset();
 
     categoriaId.value = "";
+
+    categoriaImagen.value =
+        "";
+
+    mostrarPreviewImagenCategoria(
+        ""
+    );
 
     btnGuardarCategoria.innerHTML =
         '<i class="bi bi-floppy me-1"></i> Guardar Categoría';
@@ -1177,6 +1613,190 @@ sidebarOverlay.addEventListener(
     cerrarMenu
 );
 
+
+
+
+(function () {
+    "use strict";
+
+// ------------------------------------------------------
+// Importación masiva de categorías desde CSV
+// ------------------------------------------------------
+const btnImportarCategoriasCSV = document.getElementById("btn-importar-categorias");
+const inputImportarCategoriasCSV = document.getElementById("input-importar-categorias");
+
+
+function construirDetalleImportacionCSV(archivo, total, validos, duplicados, errores, advertencias, detalles) {
+    let texto =
+        "Archivo: " + archivo.name + "\n\n" +
+        "Filas encontradas: " + total + "\n" +
+        "Registros válidos: " + validos + "\n" +
+        "Duplicados omitidos: " + duplicados + "\n" +
+        "Filas con error: " + errores + "\n" +
+        "Advertencias: " + advertencias;
+
+    if (detalles.length > 0) {
+        texto += "\n\nPrimeros detalles:\n" + detalles.slice(0, 5).join("\n");
+    }
+
+    return texto;
+}
+
+async function confirmarImportacionCSV(titulo, detalle, cantidad) {
+    if (cantidad <= 0) {
+        if (window.Swal) {
+            await Swal.fire({
+                title: "Nada para importar",
+                text: detalle,
+                icon: "warning",
+                confirmButtonText: "Entendido"
+            });
+        } else {
+            alert(detalle);
+        }
+        return false;
+    }
+
+    if (window.Swal) {
+        const resultado = await Swal.fire({
+            title: titulo,
+            text: detalle,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Importar " + cantidad,
+            cancelButtonText: "Cancelar",
+            reverseButtons: true
+        });
+        return resultado.isConfirmed;
+    }
+
+    return confirm(detalle + "\n\n¿Desea continuar?");
+}
+
+
+async function importarCategoriasCSV(archivo) {
+    if (!window.NexusCSV) {
+        throw new Error("No se cargó el módulo de importación CSV.");
+    }
+
+    const texto = await NexusCSV.leerArchivo(archivo);
+    const datos = NexusCSV.parsear(texto);
+
+    const faltantes = [];
+    if (!NexusCSV.tieneColumna(datos.encabezados, ["nombre", "categoria", "categoría"])) faltantes.push("nombre");
+    if (!NexusCSV.tieneColumna(datos.encabezados, ["descripcion", "descripción"])) faltantes.push("descripcion");
+
+    if (faltantes.length > 0) {
+        throw new Error("Faltan columnas obligatorias: " + faltantes.join(", ") + ".");
+    }
+
+    const categorias = obtenerCategorias();
+    const validas = [];
+    const detalles = [];
+    let duplicados = 0;
+    let errores = 0;
+    let advertencias = 0;
+
+    datos.filas.forEach(function (fila) {
+        const linea = fila.__linea;
+        const nombre = NexusCSV.valor(fila, ["nombre", "categoria", "categoría"]).trim();
+        const descripcion = NexusCSV.valor(fila, ["descripcion", "descripción"]).trim();
+        const imagenEntrada = NexusCSV.valor(fila, ["imagen", "image", "url_imagen"]).trim();
+
+        if (!nombre || !descripcion) {
+            errores++;
+            detalles.push("Línea " + linea + ": nombre y descripción son obligatorios.");
+            return;
+        }
+
+        if (nombre.length > 80 || descripcion.length > 250) {
+            errores++;
+            detalles.push("Línea " + linea + ": nombre o descripción excede la longitud permitida.");
+            return;
+        }
+
+        const repetida = categorias.concat(validas).some(function (categoria) {
+            return normalizarTextoComparacion(categoria.nombre) === normalizarTextoComparacion(nombre);
+        });
+
+        if (repetida) {
+            duplicados++;
+            return;
+        }
+
+        let imagen = "";
+        if (imagenEntrada) {
+            imagen = normalizarImagenCategoria(imagenEntrada);
+            if (!imagen) {
+                advertencias++;
+                detalles.push("Línea " + linea + ": imagen no válida; se importará sin imagen.");
+            }
+        }
+
+        validas.push({
+            id: generarIdSeguro(),
+            nombre: nombre,
+            descripcion: descripcion,
+            imagen: imagen
+        });
+    });
+
+    const detalle = construirDetalleImportacionCSV(
+        archivo,
+        datos.filas.length,
+        validas.length,
+        duplicados,
+        errores,
+        advertencias,
+        detalles
+    );
+
+    const confirmar = await confirmarImportacionCSV(
+        "Importar categorías",
+        detalle,
+        validas.length
+    );
+
+    if (!confirmar) return;
+
+    if (!guardarCategorias(categorias.concat(validas))) {
+        throw new Error("No fue posible guardar las categorías importadas.");
+    }
+
+    mostrarCategorias();
+    mostrarToast(validas.length + " categorías importadas correctamente.", "success");
+}
+
+if (btnImportarCategoriasCSV && inputImportarCategoriasCSV) {
+    btnImportarCategoriasCSV.addEventListener("click", function () {
+        inputImportarCategoriasCSV.click();
+    });
+
+    inputImportarCategoriasCSV.addEventListener("change", async function () {
+        const archivo = inputImportarCategoriasCSV.files && inputImportarCategoriasCSV.files[0];
+        if (!archivo) return;
+
+        try {
+            await importarCategoriasCSV(archivo);
+        } catch (error) {
+            console.error("Error al importar categorías:", error);
+            if (window.Swal) {
+                Swal.fire({
+                    title: "No se pudo importar el CSV",
+                    text: error.message || "Revise el formato del archivo.",
+                    icon: "error",
+                    confirmButtonText: "Entendido"
+                });
+            } else {
+                alert(error.message || "No se pudo importar el CSV.");
+            }
+        } finally {
+            inputImportarCategoriasCSV.value = "";
+        }
+    });
+}
+
+})();
 
 // ------------------------------------------------------
 // Inicialización

@@ -9,6 +9,120 @@
     <title>Categorías | Sistema Administrativo</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../src/css/categorias.css">
+
+    <style>
+        .category-image-field {
+            grid-column: 1 / -1;
+        }
+
+        .category-image-uploader {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 190px;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .category-image-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .category-image-dropzone {
+            min-height: 118px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px;
+            border: 1px dashed var(--border, #d0d5dd);
+            border-radius: 10px;
+            background: var(--surface, #fff);
+        }
+
+        .category-image-dropzone > i {
+            flex: 0 0 auto;
+            font-size: 30px;
+            color: var(--brand-500, #465fff);
+        }
+
+        .category-image-dropzone input[type="file"] {
+            width: 100%;
+        }
+
+        .category-image-dropzone small {
+            display: block;
+            margin-top: 7px;
+            color: var(--text-secondary, #667085);
+            line-height: 1.45;
+        }
+
+        .category-image-preview {
+            min-height: 158px;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            border: 1px solid var(--border, #d0d5dd);
+            border-radius: 10px;
+            background: var(--surface-subtle, #f9fafb);
+        }
+
+        .category-image-preview img {
+            width: 100%;
+            height: 158px;
+            display: none;
+            object-fit: contain;
+        }
+
+        .category-image-preview img.show {
+            display: block;
+        }
+
+        .category-image-placeholder {
+            padding: 16px;
+            color: var(--text-secondary, #667085);
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .category-image-placeholder i {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 26px;
+        }
+
+        .category-image-preview.has-image .category-image-placeholder {
+            display: none;
+        }
+
+        .category-image-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .category-table-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .category-thumb {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            object-fit: contain;
+            border: 1px solid var(--border, #e4e7ec);
+            border-radius: 9px;
+            background: var(--surface-subtle, #f9fafb);
+        }
+
+        @media (max-width: 760px) {
+            .category-image-uploader {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -39,11 +153,11 @@
 
         <nav class="sidebar-nav">
             
-                <a href="../pages/dashboard.html" class="sidebar-link">
+                <a href="dashboard.html" class="sidebar-link">
                     <span class="sidebar-icon"><i class="bi bi-grid"></i></span>
                     <span>Dashboard</span>
                 </a>
-                <a href="../pages/clientes.html" class="sidebar-link">
+                <a href="clientes.html" class="sidebar-link">
                     <span class="sidebar-icon"><i class="bi bi-people"></i></span>
                     <span>Clientes</span>
                 </a>
@@ -141,6 +255,17 @@
                 </div>
 
                 <div class="heading-actions">
+                    <button type="button" class="secondary-action import-action" id="btn-importar-categorias">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                        Importar CSV
+                    </button>
+
+                    <input
+                        type="file"
+                        id="input-importar-categorias"
+                        accept=".csv,text/csv,application/vnd.ms-excel"
+                        hidden>
+
                     <button type="button" class="secondary-action" id="btn-exportar-categorias">
                         <i class="bi bi-download"></i>
                         Exportar CSV
@@ -290,6 +415,61 @@
                                 </div>
                             </div>
 
+                            <div class="form-field form-field-full category-image-field">
+                                <label for="categoria-imagen">Imagen de la categoría</label>
+
+                                <div class="category-image-uploader">
+
+                                    <div class="category-image-controls">
+
+                                        <div class="category-image-dropzone">
+                                            <i class="bi bi-image"></i>
+
+                                            <div>
+                                                <input
+                                                    type="file"
+                                                    id="categoria-imagen"
+                                                    accept="image/png,image/jpeg,image/webp">
+
+                                                <small>
+                                                    Selecciona PNG, JPG o WebP. La imagen se comprimirá
+                                                    automáticamente antes de guardarse.
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <div class="category-image-actions">
+                                            <button
+                                                type="button"
+                                                id="btn-quitar-imagen-categoria"
+                                                class="btn btn-secondary"
+                                                style="display:none;">
+                                                <i class="bi bi-trash3 me-1"></i>
+                                                Quitar imagen
+                                            </button>
+                                        </div>
+
+                                        <small class="field-note">
+                                            Máximo recomendado: 8 MB. Se redimensiona hasta 900 × 700 px.
+                                        </small>
+                                    </div>
+
+                                    <div
+                                        class="category-image-preview"
+                                        id="categoria-imagen-preview-box">
+
+                                        <img
+                                            id="categoria-imagen-preview"
+                                            alt="Vista previa de la categoría">
+
+                                        <div class="category-image-placeholder">
+                                            <i class="bi bi-image"></i>
+                                            <div>Vista previa</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
 
                         <div id="mensaje-categoria" class="form-message" role="alert" aria-live="polite"></div>
@@ -371,6 +551,7 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
+    <script defer src="../src/js/csv-import.js"></script>
     <script defer src="../src/js/categorias.js"></script>
     <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/categorias-enhancements.js"></script>
