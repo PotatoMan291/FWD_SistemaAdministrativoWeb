@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexus CR Admin - Gestión de Roles</title>
+  <link rel="stylesheet" href="/FWD_SistemaAdministrativoWeb/src/css/roles.css">
+</head>
+<body>
+
+  <!-- Encabezado del Dashboard -->
+  <header class="dashboard-header">
+   
+  </header>
+
+  <main class="dashboard-main">
+    
+    <!-- SECCIÓN 1: Gestión / CRUD de Roles del Sistema -->
+    <section class="modulo-container" style="margin-bottom: 30px;">
+      <h2>Crear y Gestionar Roles del Sistema</h2>
+      <form id="formRol" class="form-pedido" style="margin-bottom: 20px;">
+        <input type="hidden" id="editIndexRol" value="-1">
+        <div class="form-group">
+          <label for="inputNombreRol">Nombre del Rol (Ej: Supervisor, Auditor):</label>
+          <input type="text" id="inputNombreRol" placeholder="Ingrese el nombre del rol" required>
+        </div>
+        <div class="form-group">
+          <label for="inputDescRol">Descripción:</label>
+          <input type="text" id="inputDescRol" placeholder="Breve descripción de permisos" required>
+        </div>
+        <button type="submit" class="btn-principal" id="btnGuardarRol">Guardar Nuevo Rol</button>
+      </form>
+
+      <div class="tabla-container">
+        <h3>Roles Creados</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Rol</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaRolesBody">
+            <!-- Se llena con JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECCIÓN 2: Asignación de Roles a Clientes -->
+    <section class="modulo-container">
+      <h2>Asignación de Roles a Clientes</h2>
+      <div class="tabla-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Cliente</th>
+              <th>Nombre de Cliente / Empresa</th>
+              <th>Rol Asignado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="tablaClientesRolesBody">
+            <!-- Se llena con JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+<!-- Formulario para crear/editar rol -->
+<form id="formRol">
+    <input type="hidden" id="editIndexRol" value="-1">
+    <input type="text" id="inputNombreRol" placeholder="Nombre del rol" required>
+    <input type="text" id="inputDescRol" placeholder="Descripción" required>
+    <button type="submit" id="btnGuardarRol">Guardar Nuevo Rol</button>
+</form>
+<div class="modulo-container" style="margin-top: 30px;">
+    <h2>Permisos por Rol</h2>
+    <p style="margin-bottom: 15px; color: #64748b;">Selecciona qué acciones puede realizar cada rol en el sistema:</p>
+    
+    <div class="tabla-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Módulo / Acción</th>
+                    <th>Operador</th>
+                    <th>Administrador</th>
+                </tr>
+            </thead>
+            <tbody id="tablaPermisosBody">
+                <!-- Se llena dinámicamente con JS -->
+            </tbody>
+        </table>
+    </div>
+    
+    <button type="button" id="btnGuardarPermisos" class="btn-guardar" onclick="guardarPermisosSistema()" style="margin-top: 15px; padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 6px; cursor: pointer;">
+        Guardar Cambios de Permisos
+    </button>
+</div>
+
+
+
+
+ 
+  <script src="/FWD_SistemaAdministrativoWeb/src/js/roles.js"></script>
+</body>
+</html>
