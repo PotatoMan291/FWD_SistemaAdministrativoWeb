@@ -1,0 +1,15 @@
+{
+  "name": "nexus-ai-curso",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Servidor local sin dependencias para NEXUS AI usando Gemini API.",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node --watch server/server.js",
+    "check": "node --check server/server.js && node --check src/js/tienda.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

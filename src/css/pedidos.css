@@ -2402,3 +2402,18 @@ html[data-theme="dark"] .product-picker {
         min-height: auto;
     }
 }
+
+
+/* ======================================================
+   USUARIO Y CIERRE DE SESIÓN EN PEDIDOS
+   ====================================================== */
+.user-info{display:flex;align-items:center;gap:8px;padding-right:4px;}
+.user-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;color:var(--brand-500);background:var(--brand-50);font-size:18px;}
+html[data-theme="dark"] .user-icon{background:rgba(70,95,255,.12);}
+.user-text{display:flex;flex-direction:column;line-height:1.2;}
+.user-text small{color:var(--text-secondary);font-size:9px;}
+.user-text strong{color:var(--text);font-size:11px;font-weight:600;}
+.logout-button{min-height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 12px;border:1px solid #fecdca;border-radius:8px;color:#d92d20;background:#fef3f2;cursor:pointer;font-size:12px;font-weight:600;}
+.logout-button:hover{background:#fee4e2;}
+html[data-theme="dark"] .logout-button{color:#f97066;border-color:var(--border);background:var(--surface-subtle);}
+@media(max-width:760px){.user-info{display:none;}.theme-button span,.logout-button span{display:none;}.theme-button,.logout-button{width:38px;justify-content:center;padding:0;}}

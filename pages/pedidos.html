@@ -21,11 +21,14 @@
   <div class="sidebar-section-title">MENÚ</div>
   <nav class="sidebar-nav">
     <a href="dashboard.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-grid"></i></span><span>Dashboard</span></a>
-    <a href="index.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-people"></i></span><span>Clientes</span></a>
+    <a href="clientes.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-people"></i></span><span>Clientes</span></a>
     <a href="productos.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-box-seam"></i></span><span>Productos</span></a>
     <a href="proveedores.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-truck"></i></span><span>Proveedores</span></a>
     <a href="categorias.html" class="sidebar-link"><span class="sidebar-icon"><i class="bi bi-tags"></i></span><span>Categorías</span></a>
     <a href="pedidos.html" class="sidebar-link active"><span class="sidebar-icon"><i class="bi bi-receipt"></i></span><span>Pedidos</span></a>
+
+              
+
   </nav>
   <div class="sidebar-bottom">
     <div class="storage-card">
@@ -43,7 +46,12 @@
       <div class="breadcrumb-block"><span>Administración</span><strong>Pedidos</strong></div>
     </div>
     <div class="topbar-actions">
+      <div class="user-info">
+        <span class="user-icon"><i class="bi bi-person-circle"></i></span>
+        <div class="user-text"><small>Usuario</small><strong id="nombreUsuario">Administrador</strong></div>
+      </div>
       <button id="btn-modo-oscuro" class="theme-button" type="button"><i class="bi bi-moon-stars"></i><span>Modo oscuro</span></button>
+      <button id="btn-cerrar-sesion" class="logout-button" type="button"><i class="bi bi-box-arrow-right"></i><span>Cerrar sesión</span></button>
     </div>
   </header>
 
@@ -152,6 +160,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
 <script defer src="../src/js/pdf-export.js"></script>
+<script defer src="../src/js/permisos.js"></script>
 <script defer src="../src/js/pedidos.js"></script>
 </body>
 </html>

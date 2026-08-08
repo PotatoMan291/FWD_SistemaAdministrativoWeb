@@ -1,0 +1,16 @@
+nombre,descripcion,imagen
+Tarjetas gráficas,"GPUs dedicadas para gaming, creación de contenido, renderizado y aceleración gráfica.",../src/imgs/categorias/tarjetas-graficas.webp
+Procesadores,"Procesadores de escritorio para gaming, productividad y estaciones de trabajo.",../src/imgs/categorias/procesadores.webp
+Placas madre,Motherboards para plataformas AMD e Intel con conectividad y expansión modernas.,../src/imgs/categorias/placas-madre.webp
+Memoria RAM,Kits de memoria DDR5 para equipos gaming y de alto rendimiento.,../src/imgs/categorias/memoria-ram.webp
+Almacenamiento,"Unidades SSD NVMe de alta velocidad para sistema, juegos y aplicaciones.",../src/imgs/categorias/almacenamiento.webp
+Fuentes de poder,Fuentes de alimentación para PC con certificaciones de eficiencia y soporte para GPUs modernas.,../src/imgs/categorias/fuentes-de-poder.webp
+Gabinetes,"Chasis para PC con enfoque en flujo de aire, espacio interno y diseño gaming.",../src/imgs/categorias/gabinetes.webp
+Refrigeración,Sistemas de enfriamiento por aire y líquido para procesadores de alto rendimiento.,../src/imgs/categorias/refrigeracion.webp
+Monitores,"Pantallas gaming y profesionales con alta tasa de refresco, OLED y resolución avanzada.",../src/imgs/categorias/monitores.webp
+Teclados,Teclados mecánicos y gaming con conectividad cableada o inalámbrica.,../src/imgs/categorias/teclados.webp
+Mouse,"Mouse gaming de alta precisión, baja latencia y diseños ergonómicos.",../src/imgs/categorias/mouse.webp
+Audífonos,"Headsets y audífonos inalámbricos para gaming, música y comunicación.",../src/imgs/categorias/audifonos.webp
+Laptops,"Computadoras portátiles gaming, profesionales y de uso general.",../src/imgs/categorias/laptops.webp
+Handhelds y consolas,Consolas y equipos portátiles orientados al entretenimiento y gaming.,../src/imgs/categorias/handhelds-y-consolas.webp
+Redes,Routers y sistemas de conectividad Wi-Fi de última generación.,../src/imgs/categorias/redes.webp

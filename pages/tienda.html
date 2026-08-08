@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NEXUS — Tecnología, gaming, componentes, periféricos y equipos de alto rendimiento en Costa Rica.">
+  <meta name="theme-color" content="#080B12">
+  <title>NEXUS | Tecnología y Gaming</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+
+  <!-- Premium UI libraries -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+  <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.25/dist/lenis.css">
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/dist/tippy.css">
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/animations/shift-away.css">
+
+  <link rel="stylesheet" href="../src/css/tienda.css">
+</head>
+<body>
+  <!-- Fondo animado basado en el preset oficial "Links" de tsParticles -->
+  <div id="nexus-particles" class="nexus-particle-background" aria-hidden="true"></div>
+
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c.7-5 3.4-7 8-7s7.3 2 8 7"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 0 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6Z"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 2-1.6L21 7H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></symbol>
+    <symbol id="i-compare" viewBox="0 0 24 24"><path d="M8 7h12M16 3l4 4-4 4M16 17H4M8 13l-4 4 4 4"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3 5h11v11H3zM14 9h4l3 3v4h-7z"/><circle cx="7" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 20 6v5c0 5-3.2 8.4-8 10-4.8-1.6-8-5-8-10V6z"/><path d="m8.5 12 2.2 2.2L15.8 9"/></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><path d="M4 14h4v6H6a2 2 0 0 1-2-2zM20 14h-4v6h2a2 2 0 0 0 2-2z"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></symbol>
+    <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 5h16M7 12h10M10 19h4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3M10 10h4v4h-4z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-game" viewBox="0 0 24 24"><path d="M8 8h8l3 3 2 7-3 2-3-4H9l-3 4-3-2 2-7z"/><path d="M8 11v4M6 13h4M15.5 12h.01M18 14h.01"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24"><path d="m13 2-9 12h7l-1 8 9-12h-7z"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  </svg>
+
+  <header class="site-header">
+
+    <div class="container nexus-header-main">
+
+      <button
+        class="icon-btn nexus-mobile-menu-button"
+        id="btn-menu"
+        type="button"
+        aria-label="Abrir menú">
+        <svg class="icon"><use href="#i-menu"></use></svg>
+      </button>
+
+      <a class="nexus-brand" href="tienda.html" aria-label="NEXUS inicio">
+        <img src="../src/imgs/nexus-logo.svg" alt="NEXUS">
+      </a>
+
+      <div class="search-shell">
+        <form class="search nexus-search" id="form-busqueda" role="search">
+          <label class="sr-only" for="buscador">Buscar productos, categorías o marcas</label>
+          <input
+            id="buscador"
+            type="search"
+            placeholder="Buscar productos, categorías o marcas..."
+            autocomplete="off">
+          <button type="submit" aria-label="Buscar">
+            <svg class="icon"><use href="#i-search"></use></svg>
+          </button>
+        </form>
+        <div class="search-suggestions" id="search-suggestions" hidden></div>
+      </div>
+
+      <div class="nexus-header-actions">
+
+        <button
+          type="button"
+          class="header-link-action"
+          id="btn-comparar-header" data-tippy-content="Comparar productos">
+          <svg class="icon"><use href="#i-compare"></use></svg>
+          <span>Comparar</span>
+          <b id="count-compare" hidden>0</b>
+        </button>
+
+        <a
+          class="header-link-action"
+          id="cuenta-link"
+          href="login.html">
+          <svg class="icon"><use href="#i-user"></use></svg>
+          <span id="cuenta-texto">Mi cuenta</span>
+        </a>
+
+        <button
+          type="button"
+          class="nexus-header-icon"
+          id="btn-tema-tienda" data-tippy-content="Cambiar tema"
+          aria-label="Cambiar tema"
+          title="Cambiar tema">
+          <svg class="icon"><use id="icono-tema-use" href="#i-sun"></use></svg>
+        </button>
+
+        <button
+          type="button"
+          class="nexus-header-icon"
+          id="btn-favoritos" data-tippy-content="Ver favoritos"
+          aria-label="Favoritos">
+          <svg class="icon"><use href="#i-heart"></use></svg>
+          <b id="count-favorites" hidden>0</b>
+        </button>
+
+        <button
+          type="button"
+          class="nexus-header-icon"
+          id="btn-carrito" data-tippy-content="Abrir carrito"
+          aria-label="Carrito">
+          <svg class="icon"><use href="#i-cart"></use></svg>
+          <b id="count-cart" hidden>0</b>
+        </button>
+
+      </div>
+    </div>
+
+    <nav class="nexus-category-nav" aria-label="Navegación de tienda">
+      <div class="container nexus-category-nav-inner">
+
+        <button
+          class="nexus-category-trigger"
+          id="btn-categorias-menu"
+          type="button"
+          aria-expanded="false"
+          aria-controls="mega-menu-categorias">
+          <svg class="icon"><use href="#i-menu"></use></svg>
+          <span>Todas las categorías</span>
+          <span class="nav-caret">⌄</span>
+        </button>
+
+        <div
+          class="nexus-nav-dynamic"
+          id="orbit-nav-categories"
+          aria-label="Categorías registradas">
+        </div>
+
+
+        <span class="shipping-note">
+          <svg class="icon"><use href="#i-truck"></use></svg>
+          Envíos a todo CR
+        </span>
+      </div>
+
+      <div class="mega-menu" id="mega-menu-categorias" hidden>
+        <div class="container mega-menu-grid">
+          <div class="mega-intro">
+            <span class="eyebrow">EXPLORAR NEXUS</span>
+            <h3>Tecnología para cada setup.</h3>
+            <p>Las categorías creadas en el panel administrativo aparecen aquí automáticamente.</p>
+          </div>
+          <div class="mega-category-list" id="mega-category-list"></div>
+        </div>
+      </div>
+    </nav>
+
+    <aside id="mobile-menu" class="mobile-menu" hidden>
+      <div class="mobile-menu-head">
+        <img src="../src/imgs/nexus-logo.svg" alt="NEXUS">
+        <button class="icon-btn" id="btn-menu-close" type="button" aria-label="Cerrar menú">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </div>
+      <a href="#inicio">Inicio</a>
+      <a href="#categorias">Categorías</a>
+      <a href="#catalogo">Productos</a>
+      <a href="#builder">Armá tu PC</a>
+      <a href="#rewards">NEXUS Rewards</a>
+    </aside>
+  </header>
+
+  <main id="inicio">
+
+    <section class="container hero">
+      <div class="hero-copy">
+        <span class="eyebrow">HIGH PERFORMANCE TECHNOLOGY</span>
+        <h1>Potencia tu juego.<br><span>Domina cada partida.</span></h1>
+        <p>Equipos y componentes de alto rendimiento para gamers y entusiastas de la tecnología.</p>
+
+        <div class="hero-actions">
+          <button class="btn primary" type="button" data-scroll="#catalogo">Explorar equipos</button>
+          <button class="btn secondary" type="button" data-scroll="#builder">Armar mi PC</button>
+        </div>
+
+        <div class="hero-meta">
+          <span><i data-lucide="zap" aria-hidden="true"></i> Rendimiento seleccionado</span>
+          <span><i data-lucide="shield-check" aria-hidden="true"></i> Garantía oficial</span>
+          <span><i data-lucide="truck" aria-hidden="true"></i> Envíos a todo CR</span>
+        </div>
+      </div>
+
+      <div class="hero-visual premium-hero-visual">
+        <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
+        <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
+        <div class="hero-particle hero-particle-one" aria-hidden="true"></div>
+        <div class="hero-particle hero-particle-two" aria-hidden="true"></div>
+        <div class="hero-line hero-line-one"></div>
+        <div class="hero-line hero-line-two"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-image-stage">
+          <img class="hero-real-image" src="../src/imgs/nexus-hero-hd.png" alt="PC Gaming NEXUS">
+        </div>
+      </div>
+    </section>
+
+    <section class="container premium-tech-rail" aria-label="Beneficios NEXUS">
+      <article><i data-lucide="cpu" aria-hidden="true"></i><div><strong>Hardware seleccionado</strong><span>Componentes pensados para rendimiento.</span></div></article>
+      <article><i data-lucide="badge-check" aria-hidden="true"></i><div><strong>Compra con confianza</strong><span>Stock, garantía y proveedor visibles.</span></div></article>
+      <article><i data-lucide="sparkles" aria-hidden="true"></i><div><strong>Experiencia premium</strong><span>Interfaz rápida, limpia y responsiva.</span></div></article>
+    </section>
+
+    <section class="container section" id="categorias">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">EXPLORÁ TU SETUP</span>
+          <h2>Categorías destacadas</h2>
+        </div>
+        <button class="text-btn" type="button" data-scroll="#catalogo">Ver catálogo <svg class="icon"><use href="#i-chevron"></use></svg></button>
+      </div>
+      <div class="category-grid" id="category-grid"></div>
+    </section>
+
+    <section class="container section" id="novedades">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">SELECCIÓN NEXUS</span>
+          <h2>Productos destacados</h2>
+        </div>
+        <button class="text-btn" type="button" data-scroll="#catalogo">Ver todos <svg class="icon"><use href="#i-chevron"></use></svg></button>
+      </div>
+      <div class="novelty-grid" id="novelty-grid"></div>
+    </section>
+    <section class="catalog" id="catalogo">
+      <div class="container">
+        <div class="section-head catalog-title">
+          <div>
+            <span class="eyebrow">CATÁLOGO NEXUS</span>
+            <h2>Encuentra tu próxima mejora</h2>
+            <p id="results-text">Productos disponibles en el inventario.</p>
+          </div>
+
+          <button class="btn secondary mobile-only" id="btn-mobile-filters" type="button">
+            <svg class="icon"><use href="#i-filter"></use></svg>
+            Filtros
+          </button>
+        </div>
+
+        <div class="catalog-layout">
+          <aside class="filters desktop-only" id="filters-desktop">
+            <div class="filters-title">
+              <strong>Filtros</strong>
+              <button id="clear-filters" type="button">Limpiar filtros</button>
+            </div>
+
+            <label>
+              Categoría
+              <select id="filter-category">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label>
+              Marca / proveedor
+              <select id="filter-brand">
+                <option value="">Todas</option>
+              </select>
+            </label>
+
+            <label>
+              Precio
+              <select id="filter-price">
+                <option value="">Todos</option>
+                <option value="0-100000">Hasta ₡100.000</option>
+                <option value="100000-300000">₡100.000 – ₡300.000</option>
+                <option value="300000-600000">₡300.000 – ₡600.000</option>
+                <option value="600000-999999999">Más de ₡600.000</option>
+              </select>
+            </label>
+
+            <label>
+              Disponibilidad
+              <select id="filter-stock">
+                <option value="">Todos</option>
+                <option value="available">En stock</option>
+                <option value="low">Últimas unidades</option>
+                <option value="out">Agotado</option>
+              </select>
+            </label>
+
+            <label>
+              Perfil
+              <select id="filter-gaming">
+                <option value="">Todos</option>
+                <option value="gaming">Gaming</option>
+                <option value="general">Tecnología general</option>
+              </select>
+            </label>
+          </aside>
+
+          <div class="catalog-main">
+            <div class="toolbar">
+              <div id="active-filters" class="active-filters"></div>
+
+              <label>
+                Ordenar por:
+                <select id="sort-products">
+                  <option value="relevant">Relevancia</option>
+                  <option value="price-asc">Precio menor</option>
+                  <option value="price-desc">Precio mayor</option>
+                  <option value="new">Más nuevos</option>
+                  <option value="rating">Mejor valorados</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="product-grid" id="product-grid" aria-live="polite"></div>
+
+            <div class="catalog-pagination" id="catalog-pagination" hidden>
+              <div class="catalog-pagination-status">
+                <strong id="catalog-visible-count">Mostrando 0 de 0 productos</strong>
+                <span>Podés cargar más productos sin perder tu posición en el catálogo.</span>
+              </div>
+
+              <div class="catalog-pagination-actions">
+                <button class="btn primary" id="catalog-load-more" type="button">
+                  <svg class="icon"><use href="#i-plus"></use></svg>
+                  Ver 12 más
+                </button>
+
+                <button class="btn secondary" id="catalog-view-all" type="button">
+                  Ver todos
+                </button>
+
+                <button class="catalog-back-top" id="catalog-back-top" type="button" hidden>
+                  ↑ Volver al inicio del catálogo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container post-catalog-experience section" aria-labelledby="nexus-experience-title">
+      <div class="post-catalog-heading">
+        <div>
+          <span class="eyebrow">EXPERIENCIA NEXUS</span>
+          <h2 id="nexus-experience-title">Compra con confianza. Mejora sin complicarte.</h2>
+        </div>
+        <p>
+          Información clara, soporte y herramientas pensadas para que elegir tecnología
+          sea más sencillo desde el primer clic.
+        </p>
+      </div>
+
+      <div class="trust premium-trust">
+        <div class="trust-grid">
+          <article>
+            <span><i data-lucide="truck" aria-hidden="true"></i></span>
+            <div>
+              <small class="trust-kicker">LOGÍSTICA</small>
+              <strong>Envíos a todo Costa Rica</strong>
+              <p>Tu equipo preparado para llegar donde estés.</p>
+            </div>
+          </article>
+
+          <article>
+            <span><i data-lucide="shield-check" aria-hidden="true"></i></span>
+            <div>
+              <small class="trust-kicker">RESPALDO</small>
+              <strong>Garantía visible</strong>
+              <p>Consulta proveedor, disponibilidad y respaldo del producto.</p>
+            </div>
+          </article>
+
+          <article>
+            <span><i data-lucide="badge-check" aria-hidden="true"></i></span>
+            <div>
+              <small class="trust-kicker">INVENTARIO</small>
+              <strong>Stock actualizado</strong>
+              <p>Disponibilidad conectada con el inventario administrativo.</p>
+            </div>
+          </article>
+
+          <article>
+            <span><i data-lucide="sparkles" aria-hidden="true"></i></span>
+            <div>
+              <small class="trust-kicker">ASESORÍA</small>
+              <strong>NEXUS AI</strong>
+              <p>Pregunta por hardware, presupuesto o productos disponibles.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="container builder-section section" id="builder">
+      <div class="builder-intro">
+        <span class="eyebrow">NEXUS PC BUILDER</span>
+        <h2>Tu próxima PC,<br><span>paso a paso.</span></h2>
+        <p>
+          Construye una configuración usando únicamente productos del inventario NEXUS.
+          El sistema valida socket, memoria, espacio de GPU y potencia de la fuente.
+        </p>
+
+        <div class="builder-highlights" aria-label="Características del PC Builder">
+          <span><i data-lucide="layers-3" aria-hidden="true"></i> 7 etapas</span>
+          <span><i data-lucide="shield-check" aria-hidden="true"></i> Compatibilidad real</span>
+          <span><i data-lucide="gauge" aria-hidden="true"></i> Consumo estimado</span>
+        </div>
+
+        <div class="builder-progress-copy">
+          <div>
+            <small>PROGRESO</small>
+            <strong id="builder-main-progress-label">Listo para empezar</strong>
+          </div>
+          <b id="builder-main-progress-count">0 / 7</b>
+        </div>
+        <div class="builder-progress-track" aria-hidden="true">
+          <span id="builder-main-progress-bar" style="width:0%"></span>
+        </div>
+      </div>
+
+      <article class="builder builder-premium">
+        <div class="builder-card-head">
+          <div>
+            <small>CONFIGURACIÓN NEXUS</small>
+            <strong>Selecciona tus componentes</strong>
+          </div>
+          <span class="builder-status-pill" id="builder-main-status">
+            <i data-lucide="circle-dot" aria-hidden="true"></i>
+            <span>Listo para empezar</span>
+          </span>
+        </div>
+
+        <div class="builder-main-grid">
+          <div class="builder-steps-wrap">
+            <ol id="builder-main-steps">
+              <li data-builder-main-step="cpu">
+                <span>01</span><i data-lucide="cpu" aria-hidden="true"></i>
+                <div><strong>Procesador</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="motherboard">
+                <span>02</span><i data-lucide="circuit-board" aria-hidden="true"></i>
+                <div><strong>Motherboard</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="gpu">
+                <span>03</span><i data-lucide="monitor-cog" aria-hidden="true"></i>
+                <div><strong>Tarjeta gráfica</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="ram">
+                <span>04</span><i data-lucide="memory-stick" aria-hidden="true"></i>
+                <div><strong>Memoria RAM</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="storage">
+                <span>05</span><i data-lucide="hard-drive" aria-hidden="true"></i>
+                <div><strong>Almacenamiento</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="psu">
+                <span>06</span><i data-lucide="zap" aria-hidden="true"></i>
+                <div><strong>Fuente</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+              <li data-builder-main-step="case">
+                <span>07</span><i data-lucide="box" aria-hidden="true"></i>
+                <div><strong>Case</strong><small>Pendiente</small></div><b>→</b>
+              </li>
+            </ol>
+          </div>
+
+          <aside class="builder-summary">
+            <div class="builder-summary-label">RESUMEN EN VIVO</div>
+
+            <div class="builder-stat">
+              <span class="builder-stat-icon success"><i data-lucide="shield-check" aria-hidden="true"></i></span>
+              <div>
+                <small>Compatibilidad</small>
+                <strong class="ok" id="builder-main-compatibility">Sin conflictos</strong>
+              </div>
+            </div>
+
+            <div class="builder-stat">
+              <span class="builder-stat-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
+              <div>
+                <small>Consumo estimado</small>
+                <strong id="builder-main-watts">0 W</strong>
+              </div>
+            </div>
+
+            <div class="builder-power-block">
+              <div><span>Carga de la fuente</span><strong id="builder-main-load">—</strong></div>
+              <div class="builder-meter"><span id="builder-main-meter" style="width:0%"></span></div>
+              <small id="builder-main-psu-note">Selecciona componentes para calcular la fuente recomendada.</small>
+            </div>
+
+            <div class="builder-main-total">
+              <span>Total de la configuración</span>
+              <strong id="builder-main-total">₡0</strong>
+            </div>
+
+            <button class="btn primary full" id="btn-builder" type="button">
+              Abrir configurador
+              <i data-lucide="arrow-right" aria-hidden="true"></i>
+            </button>
+          </aside>
+        </div>
+      </article>
+    </section>
+
+    <section class="container rewards-testimonials section premium-community">
+      <article class="rewards" id="rewards">
+        <div class="rewards-glow" aria-hidden="true"></div>
+        <span class="eyebrow">NEXUS REWARDS</span>
+        <h2>Haz que cada compra cuente.</h2>
+        <p>
+          El concepto de recompensas de NEXUS está preparado para convertir tus compras
+          en beneficios para futuras mejoras de tu setup.
+        </p>
+
+        <div class="equation premium-equation">
+          <div>
+            <small>POR CADA</small>
+            <strong>₡1.000</strong>
+          </div>
+          <span>=</span>
+          <div>
+            <small>RECIBES</small>
+            <strong>1 Nexus Point</strong>
+          </div>
+        </div>
+
+        <div class="rewards-benefits">
+          <span><i data-lucide="plus-circle" aria-hidden="true"></i> Acumula puntos</span>
+          <span><i data-lucide="gift" aria-hidden="true"></i> Canje futuro</span>
+          <span><i data-lucide="sparkles" aria-hidden="true"></i> Beneficios NEXUS</span>
+        </div>
+
+        <button type="button" class="btn secondary rewards-button" id="btn-points">
+          Conocer NEXUS Rewards
+        </button>
+      </article>
+
+      <div class="testimonial-zone premium-testimonial-zone">
+        <div class="community-head">
+          <div>
+            <span class="eyebrow">COMUNIDAD NEXUS</span>
+            <h2>Una experiencia que se siente premium.</h2>
+            <p>Opiniones de ejemplo para visualizar cómo se presentaría la experiencia de clientes.</p>
+          </div>
+          <div class="community-badge">
+            <i data-lucide="message-square-heart" aria-hidden="true"></i>
+            <div><strong>Experiencias</strong><small>Diseño de demostración</small></div>
+          </div>
+        </div>
+
+        <div class="swiper testimonial-swiper">
+          <div class="swiper-wrapper testimonials">
+            <article class="swiper-slide">
+              <div class="testimonial-top">
+                <b>★★★★★</b>
+                <span>PC BUILDER</span>
+              </div>
+              <p>“Armar mi PC fue sencillo. Las recomendaciones de compatibilidad me ayudaron a decidir mejor.”</p>
+              <div class="testimonial-user">
+                <span>MR</span>
+                <div><strong>Matías R.</strong><small>Gaming setup</small></div>
+              </div>
+            </article>
+
+            <article class="swiper-slide">
+              <div class="testimonial-top">
+                <b>★★★★★</b>
+                <span>CATÁLOGO</span>
+              </div>
+              <p>“El catálogo es claro, rápido y el stock se entiende de inmediato. Excelente experiencia.”</p>
+              <div class="testimonial-user">
+                <span>CP</span>
+                <div><strong>Camila P.</strong><small>Compra de hardware</small></div>
+              </div>
+            </article>
+
+            <article class="swiper-slide">
+              <div class="testimonial-top">
+                <b>★★★★★</b>
+                <span>PERIFÉRICOS</span>
+              </div>
+              <p>“Encontré periféricos y componentes sin sentir que la página estaba saturada.”</p>
+              <div class="testimonial-user">
+                <span>DL</span>
+                <div><strong>Diego L.</strong><small>Setup personal</small></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="testimonial-controls" aria-hidden="true">
+            <div class="swiper-pagination testimonial-pagination"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container nexus-ai-banner section" aria-labelledby="nexus-ai-cta-title">
+      <div class="nexus-ai-banner-icon">
+        <i data-lucide="bot" aria-hidden="true"></i>
+      </div>
+      <div class="nexus-ai-banner-copy">
+        <span class="eyebrow">NEXUS AI</span>
+        <h2 id="nexus-ai-cta-title">¿No sabes qué componente elegir?</h2>
+        <p>
+          Pregunta por productos disponibles, compara hardware o pide una recomendación
+          según tu presupuesto.
+        </p>
+      </div>
+      <button class="btn primary nexus-ai-banner-button" id="footer-ai-cta" type="button">
+        Hablar con NEXUS AI
+        <i data-lucide="message-circle" aria-hidden="true"></i>
+      </button>
+    </section>
+
+  </main>
+
+  <footer class="nexus-footer">
+    <div class="container footer-brand-row">
+      <div class="footer-brand">
+        <img src="../src/imgs/nexus-logo.svg" alt="NEXUS">
+        <div>
+          <strong>Tecnología para tu próximo nivel.</strong>
+          <p>Gaming, componentes y equipos seleccionados para Costa Rica.</p>
+        </div>
+      </div>
+
+      <div class="footer-location">
+        <i data-lucide="map-pin" aria-hidden="true"></i>
+        <span><small>OPERACIÓN</small><strong>Costa Rica</strong></span>
+      </div>
+    </div>
+
+    <div class="container footer-grid premium-footer-grid">
+      <div class="footer-about">
+        <span class="footer-label">NEXUS</span>
+        <p>
+          Una experiencia de e-commerce tecnológico enfocada en claridad,
+          rendimiento y una estética premium.
+        </p>
+        <div class="footer-mini-badges">
+          <span><i data-lucide="shield-check" aria-hidden="true"></i> Compra informada</span>
+          <span><i data-lucide="truck" aria-hidden="true"></i> Envíos CR</span>
+        </div>
+      </div>
+
+      <div>
+        <h3>Comprar</h3>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#categorias">Categorías</a>
+        <a href="#builder">Armá tu PC</a>
+        <a href="#novedades">Destacados</a>
+      </div>
+
+      <div>
+        <h3>Experiencia</h3>
+        <a href="#rewards">NEXUS Rewards</a>
+        <button type="button" class="footer-link-button" id="footer-ai-link">NEXUS AI</button>
+        <a href="#catalogo">Favoritos</a>
+        <a href="#catalogo">Comparador</a>
+      </div>
+
+      <div>
+        <h3>Cuenta</h3>
+        <a href="login.html">Ingresar</a>
+        <a href="#inicio">Envíos y entregas</a>
+        <a href="#inicio">Garantía</a>
+        <a href="#inicio">Soporte</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© 2026 NEXUS. Proyecto académico de e-commerce tecnológico.</span>
+      <div class="footer-bottom-right">
+        <span>HTML</span>
+        <span>CSS</span>
+        <span>JavaScript</span>
+      </div>
+    </div>
+  </footer>
+
+  <section id="compare-bar" class="compare-bar" hidden>
+    <div>
+      <span class="eyebrow">COMPARAR</span>
+      <strong>Productos seleccionados</strong>
+      <span id="compare-names"></span>
+    </div>
+    <button class="btn primary" id="open-compare" type="button">Comparar</button>
+  </section>
+
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="drawer" id="cart-drawer" aria-hidden="true" data-lenis-prevent>
+    <header>
+      <div>
+        <span class="eyebrow">MINI-CART</span>
+        <h2>Tu carrito <small id="cart-title-count">(0)</small></h2>
+      </div>
+      <button class="icon-btn" id="close-cart" type="button" aria-label="Cerrar carrito">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+
+    <div class="cart-items" id="cart-items"></div>
+
+    <div class="cart-summary">
+      <div><span>Subtotal</span><strong id="cart-subtotal">₡0</strong></div>
+      <div><span>Envío</span><strong>Gratis</strong></div>
+      <button class="btn primary full" id="checkout" type="button">Continuar al checkout</button>
+      <button class="drawer-link" type="button" id="continuar-comprando">Continuar comprando</button>
+    </div>
+  </aside>
+
+  <aside class="drawer left-drawer" id="filter-drawer" aria-hidden="true" data-lenis-prevent>
+    <header>
+      <div>
+        <span class="eyebrow">CATÁLOGO</span>
+        <h2>Filtros</h2>
+      </div>
+      <button class="icon-btn" id="close-filters" type="button" aria-label="Cerrar filtros">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+    <div id="mobile-filter-content"></div>
+  </aside>
+
+  <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-card" data-lenis-prevent>
+      <button class="icon-btn modal-close" id="close-modal" type="button" aria-label="Cerrar">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+
+  <div class="pc-builder-modal" id="pc-builder-modal" hidden role="dialog" aria-modal="true" aria-labelledby="pc-builder-title">
+    <div class="pc-builder-shell" data-lenis-prevent>
+      <header class="pc-builder-header">
+        <div>
+          <span class="eyebrow">NEXUS PC BUILDER</span>
+          <h2 id="pc-builder-title">Configura tu PC</h2>
+          <p>Selecciona productos del inventario y NEXUS comprobará las relaciones técnicas conocidas.</p>
+        </div>
+        <button class="icon-btn" id="pc-builder-close" type="button" aria-label="Cerrar configurador">
+          <svg class="icon"><use href="#i-close"></use></svg>
+        </button>
+      </header>
+
+      <div class="pc-builder-workspace">
+        <aside class="pc-builder-sidebar">
+          <div class="pc-builder-budget-card">
+            <label for="pc-builder-budget">Presupuesto opcional</label>
+            <div class="pc-builder-budget-input">
+              <span>₡</span>
+              <input id="pc-builder-budget" type="number" min="0" step="1000" inputmode="numeric" placeholder="Ej. 900000">
+            </div>
+            <button class="pc-builder-smart-button" id="pc-builder-auto" type="button">
+              <i data-lucide="wand-sparkles" aria-hidden="true"></i>
+              Sugerir build por presupuesto
+            </button>
+          </div>
+
+          <nav class="pc-builder-step-list" id="pc-builder-step-list" aria-label="Etapas del configurador"></nav>
+
+          <button class="pc-builder-clear" id="pc-builder-clear" type="button">
+            <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+            Limpiar configuración
+          </button>
+        </aside>
+
+        <section class="pc-builder-catalog">
+          <div class="pc-builder-catalog-head">
+            <div>
+              <span class="pc-builder-step-kicker" id="pc-builder-step-kicker">PASO 1 DE 7</span>
+              <h3 id="pc-builder-step-title">Procesador</h3>
+              <p id="pc-builder-step-description">Selecciona el procesador que será la base de tu configuración.</p>
+            </div>
+            <div class="pc-builder-catalog-tools">
+              <label class="pc-builder-tier-filter" for="pc-builder-tier">
+                <span>Gama</span>
+                <select id="pc-builder-tier">
+                  <option value="">Todas</option>
+                  <option value="entrada">Entrada</option>
+                  <option value="media">Media</option>
+                  <option value="alta">Alta</option>
+                </select>
+              </label>
+
+              <div class="pc-builder-search">
+                <i data-lucide="search" aria-hidden="true"></i>
+                <input id="pc-builder-search" type="search" placeholder="Buscar en este paso..." autocomplete="off">
+              </div>
+            </div>
+          </div>
+
+          <div class="pc-builder-context-note" id="pc-builder-context-note"></div>
+          <div class="pc-builder-product-grid" id="pc-builder-product-grid"></div>
+        </section>
+
+        <aside class="pc-builder-live-summary">
+          <div class="pc-builder-summary-head">
+            <span>RESUMEN</span>
+            <strong id="pc-builder-summary-status">Sin conflictos</strong>
+          </div>
+
+          <div class="pc-builder-summary-metrics">
+            <article>
+              <i data-lucide="boxes" aria-hidden="true"></i>
+              <div><small>Componentes</small><strong id="pc-builder-summary-count">0 / 7</strong></div>
+            </article>
+            <article>
+              <i data-lucide="activity" aria-hidden="true"></i>
+              <div><small>Consumo</small><strong id="pc-builder-summary-watts">0 W</strong></div>
+            </article>
+            <article>
+              <i data-lucide="zap" aria-hidden="true"></i>
+              <div><small>Fuente recomendada</small><strong id="pc-builder-summary-psu">—</strong></div>
+            </article>
+          </div>
+
+          <div class="pc-builder-selected-list" id="pc-builder-selected-list"></div>
+
+          <div class="pc-builder-budget-summary">
+            <div><span>Total</span><strong id="pc-builder-summary-total">₡0</strong></div>
+            <div id="pc-builder-budget-row" hidden><span>Presupuesto restante</span><strong id="pc-builder-summary-remaining">₡0</strong></div>
+          </div>
+
+          <div class="pc-builder-issues" id="pc-builder-issues"></div>
+
+          <div class="pc-builder-summary-actions">
+            <button class="btn primary full" id="pc-builder-add-cart" type="button" disabled>
+              <i data-lucide="shopping-cart" aria-hidden="true"></i>
+              Agregar PC al carrito
+            </button>
+            <button class="btn secondary full" id="pc-builder-ask-ai" type="button">
+              <i data-lucide="bot" aria-hidden="true"></i>
+              Analizar con NEXUS AI
+            </button>
+          </div>
+
+          <small class="pc-builder-disclaimer">
+            Compatibilidad basada en metadatos locales para este proyecto académico. Para una compra real verifica también las especificaciones oficiales y tolerancias físicas del fabricante.
+          </small>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <button class="chat-button" id="chat-button" data-tippy-content="Abrir NEXUS AI" type="button" aria-label="Abrir NEXUS AI">
+    <svg class="icon"><use href="#i-chat"></use></svg>
+  </button>
+
+  <aside class="chat" id="chat" hidden>
+    <header>
+      <div class="chat-heading">
+        <strong>NEXUS AI</strong>
+        <span class="chat-status checking" id="chat-status">
+          <i aria-hidden="true"></i>
+          <small id="chat-status-text">Verificando IA...</small>
+        </span>
+      </div>
+      <button class="icon-btn" id="close-chat" type="button" aria-label="Cerrar chat">
+        <svg class="icon"><use href="#i-close"></use></svg>
+      </button>
+    </header>
+
+    <div class="chat-messages" id="chat-messages" data-lenis-prevent aria-live="polite">
+      <div class="bot">
+        Soy NEXUS AI. Puedo recomendar productos y también armar una PC compatible según resolución, presupuesto y preferencias usando únicamente el inventario actual.
+      </div>
+    </div>
+
+    <div class="chat-quick-prompts" id="chat-quick-prompts" aria-label="Preguntas sugeridas">
+      <button type="button" data-ai-prompt="Armame una PC para gaming en 1440p usando el inventario actual.">PC para 1440p</button>
+      <button type="button" data-ai-prompt="Armame una PC gaming con un presupuesto máximo de ₡600.000.">PC por ₡600.000</button>
+      <button type="button" data-ai-prompt="Armame una PC AM4 económica para gaming 1080p.">PC AM4 económica</button>
+      <button type="button" data-ai-prompt="¿Qué tarjetas gráficas tienen disponibles y cuál elegirías para 1440p?">Elegir GPU</button>
+    </div>
+
+    <form id="chat-form">
+      <label class="sr-only" for="chat-input">Pregunta</label>
+      <input id="chat-input" maxlength="600" placeholder="Pregúntale a NEXUS AI..." autocomplete="off" required>
+      <button id="chat-submit" type="submit" aria-label="Enviar">→</button>
+    </form>
+  </aside>
+
+  <div id="toast" class="toast" hidden role="status" aria-live="polite"></div>
+
+  <nav class="mobile-bottom mobile-only">
+    <a href="#inicio">Inicio</a>
+    <a href="#categorias">Categorías</a>
+    <button id="mobile-search" type="button">Buscar</button>
+    <button id="mobile-favorites" type="button">Favoritos</button>
+    <a id="mobile-account" href="login.html">Cuenta</a>
+  </nav>
+
+  <!-- tsParticles v4 · engine + slim bundle (official CDN pattern) -->
+  <script src="https://cdn.jsdelivr.net/npm/@tsparticles/engine@4/tsparticles.engine.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tsparticles/slim@4/tsparticles.slim.bundle.min.js"></script>
+  <script src="../src/js/nexus-background.js"></script>
+
+  <!-- Premium interaction libraries: all optional/progressive enhancement -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.3.25/dist/lenis.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/lucide@1.27.0"></script>
+  <script src="https://unpkg.com/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+  <script src="https://unpkg.com/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+
+  <script src="../src/js/tienda.js"></script>
+  <script src="../src/js/pc-builder-data.js"></script>
+  <script src="../src/js/pc-builder.js"></script>
+  <script src="../src/js/nexus-premium.js"></script>
+  <script src="../src/js/nexus-scroll-performance.js"></script>
+</body>
+</html>

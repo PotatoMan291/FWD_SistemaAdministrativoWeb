@@ -1,0 +1,81 @@
+﻿nombre,marca,categoria,precio,stock,proveedor,descripcion,imagen
+GeForce RTX 5090,NVIDIA,Tarjetas gráficas,1699000,3,NVIDIA,"GPU Blackwell de gama entusiasta con 32 GB GDDR7 para gaming 4K, creación y cargas de IA.",../src/imgs/productos/geforce-rtx-5090.webp
+GeForce RTX 5080,NVIDIA,Tarjetas gráficas,899000,5,NVIDIA,Tarjeta gráfica Blackwell de alto rendimiento para gaming 4K y creación de contenido.,../src/imgs/productos/geforce-rtx-5080.webp
+GeForce RTX 5070 Ti,NVIDIA,Tarjetas gráficas,649000,8,NVIDIA,GPU de alto rendimiento orientada a 1440p y 4K con tecnologías RTX y DLSS.,../src/imgs/productos/geforce-rtx-5070-ti.webp
+GeForce RTX 5070,NVIDIA,Tarjetas gráficas,499000,10,NVIDIA,Tarjeta gráfica para gaming de alto rendimiento en 1440p con arquitectura Blackwell.,../src/imgs/productos/geforce-rtx-5070.webp
+GeForce RTX 5060 Ti,NVIDIA,Tarjetas gráficas,329000,12,NVIDIA,GPU de gama media para gaming moderno en 1080p y 1440p.,../src/imgs/productos/geforce-rtx-5060-ti.webp
+Radeon RX 9070 XT,AMD,Tarjetas gráficas,489000,9,AMD,GPU Radeon RX Serie 9000 orientada a gaming 4K y funciones gráficas aceleradas por IA.,../src/imgs/productos/radeon-rx-9070-xt.webp
+Radeon RX 9070,AMD,Tarjetas gráficas,429000,10,AMD,Tarjeta gráfica Radeon de nueva generación para gaming de alto rendimiento.,../src/imgs/productos/radeon-rx-9070.webp
+Radeon RX 7800 XT,AMD,Tarjetas gráficas,369000,8,AMD,GPU RDNA 3 con 16 GB de memoria orientada a gaming 1440p.,../src/imgs/productos/radeon-rx-7800-xt.webp
+Arc B580,Intel,Tarjetas gráficas,179000,14,Intel,"GPU Intel Arc B-Series diseñada para gaming 1440p, creación de contenido y aceleración de IA.",../src/imgs/productos/arc-b580.webp
+Arc B570,Intel,Tarjetas gráficas,139000,12,Intel,Tarjeta gráfica Intel Arc B-Series para gaming moderno con soporte XeSS.,../src/imgs/productos/arc-b570.webp
+Ryzen 9 9950X3D,AMD,Procesadores,469000,6,AMD,Procesador Ryzen 9 para gaming y productividad con tecnología AMD 3D V-Cache.,../src/imgs/productos/ryzen-9-9950x3d.webp
+Ryzen 9 9900X3D,AMD,Procesadores,389000,7,AMD,CPU Ryzen 9 de alto rendimiento con 3D V-Cache para gaming y creación.,../src/imgs/productos/ryzen-9-9900x3d.webp
+Ryzen 7 9800X3D,AMD,Procesadores,319000,10,AMD,Procesador Zen 5 de 8 núcleos y 16 hilos con 2nd Gen AMD 3D V-Cache.,../src/imgs/productos/ryzen-7-9800x3d.webp
+Ryzen 7 9700X,AMD,Procesadores,229000,12,AMD,Procesador Ryzen 7 Zen 5 para gaming y productividad general.,../src/imgs/productos/ryzen-7-9700x.webp
+Ryzen 5 9600X,AMD,Procesadores,159000,15,AMD,Procesador Ryzen 5 Zen 5 de escritorio para gaming y equipos de alto rendimiento.,../src/imgs/productos/ryzen-5-9600x.webp
+Core Ultra 9 285K,Intel,Procesadores,399000,7,Intel,"Procesador Intel Core Ultra de escritorio para cargas exigentes, gaming y creación.",../src/imgs/productos/core-ultra-9-285k.webp
+Core Ultra 7 265K,Intel,Procesadores,279000,10,Intel,"CPU Intel Core Ultra para gaming, multitarea y productividad avanzada.",../src/imgs/productos/core-ultra-7-265k.webp
+Core Ultra 5 245K,Intel,Procesadores,199000,12,Intel,Procesador Intel Core Ultra de gama media-alta para equipos modernos.,../src/imgs/productos/core-ultra-5-245k.webp
+Core i9-14900K,Intel,Procesadores,359000,5,Intel,Procesador Intel Core de 14ª generación para gaming y productividad intensiva.,../src/imgs/productos/core-i9-14900k.webp
+Core i7-14700K,Intel,Procesadores,249000,9,Intel,Procesador Intel Core i7 de 14ª generación para gaming y creación de contenido.,../src/imgs/productos/core-i7-14700k.webp
+ROG Strix X870E-E Gaming WiFi,ASUS ROG,Placas madre,329000,6,ASUS,Placa madre AM5 X870E con Wi-Fi y conectividad de alto rendimiento para Ryzen.,../src/imgs/productos/rog-strix-x870e-e-gaming-wifi.webp
+MAG X870 TOMAHAWK WIFI,MSI,Placas madre,219000,8,MSI,Motherboard AMD X870 para Ryzen con Wi-Fi y amplio soporte de expansión.,../src/imgs/productos/mag-x870-tomahawk-wifi.webp
+X870E AORUS ELITE WIFI7,Gigabyte,Placas madre,249000,7,Gigabyte,Placa madre X870E con Wi-Fi 7 y plataforma AM5 para equipos de alto rendimiento.,../src/imgs/productos/x870e-aorus-elite-wifi7.webp
+ROG Strix Z890-E Gaming WiFi,ASUS ROG,Placas madre,339000,5,ASUS,Motherboard Intel Z890 orientada a gaming premium y conectividad avanzada.,../src/imgs/productos/rog-strix-z890-e-gaming-wifi.webp
+MPG Z890 CARBON WIFI,MSI,Placas madre,329000,5,MSI,Placa madre Intel Z890 de gama alta para Core Ultra de escritorio.,../src/imgs/productos/mpg-z890-carbon-wifi.webp
+Z890 AORUS ELITE WIFI7,Gigabyte,Placas madre,239000,7,Gigabyte,Motherboard Z890 con Wi-Fi 7 y opciones avanzadas de expansión.,../src/imgs/productos/z890-aorus-elite-wifi7.webp
+Vengeance RGB DDR5 32GB 6000MT/s,Corsair,Memoria RAM,89900,18,Corsair,Kit DDR5 de 32 GB con iluminación RGB y velocidad de 6000 MT/s.,../src/imgs/productos/vengeance-rgb-ddr5-32gb-6000mt-s.webp
+Dominator Titanium RGB DDR5 32GB 6000MT/s,Corsair,Memoria RAM,139900,10,Corsair,Memoria DDR5 premium de 32 GB con disipación e iluminación RGB.,../src/imgs/productos/dominator-titanium-rgb-ddr5-32gb-6000mt-s.webp
+FURY Beast DDR5 32GB 6000MT/s,Kingston,Memoria RAM,79900,20,Kingston,Kit Kingston FURY Beast DDR5 de 32 GB para gaming y productividad.,../src/imgs/productos/fury-beast-ddr5-32gb-6000mt-s.webp
+FURY Renegade RGB DDR5 32GB 7200MT/s,Kingston,Memoria RAM,129900,12,Kingston,Kit DDR5 de alta frecuencia con iluminación RGB para plataformas entusiastas.,../src/imgs/productos/fury-renegade-rgb-ddr5-32gb-7200mt-s.webp
+Crucial Pro DDR5 32GB 6000MT/s,Crucial,Memoria RAM,74900,18,Crucial,Memoria DDR5 de 32 GB orientada a estabilidad y rendimiento.,../src/imgs/productos/crucial-pro-ddr5-32gb-6000mt-s.webp
+Trident Z5 RGB DDR5 32GB 7200MT/s,G.SKILL,Memoria RAM,124900,10,G.SKILL,Kit DDR5 Trident Z5 RGB de alta frecuencia para gaming y overclocking.,../src/imgs/productos/trident-z5-rgb-ddr5-32gb-7200mt-s.webp
+990 PRO 2TB,Samsung,Almacenamiento,119900,18,Samsung,"SSD NVMe PCIe 4.0 de 2 TB para gaming, creación y cargas intensivas.",../src/imgs/productos/990-pro-2tb.webp
+990 EVO Plus 2TB,Samsung,Almacenamiento,94900,16,Samsung,SSD NVMe de 2 TB para almacenamiento rápido y equipos modernos.,../src/imgs/productos/990-evo-plus-2tb.webp
+WD_BLACK SN850X 2TB,WD_BLACK,Almacenamiento,109900,20,Western Digital,SSD NVMe PCIe 4.0 de 2 TB orientado a gaming de alto rendimiento.,../src/imgs/productos/wd-black-sn850x-2tb.webp
+WD_BLACK SN850X 4TB,WD_BLACK,Almacenamiento,219900,8,Western Digital,SSD NVMe de 4 TB para bibliotecas de juegos y aplicaciones exigentes.,../src/imgs/productos/wd-black-sn850x-4tb.webp
+T705 2TB,Crucial,Almacenamiento,169900,10,Crucial,SSD NVMe PCIe 5.0 de 2 TB para estaciones y PCs de alto rendimiento.,../src/imgs/productos/t705-2tb.webp
+T500 2TB,Crucial,Almacenamiento,104900,15,Crucial,SSD NVMe PCIe 4.0 de 2 TB para gaming y productividad.,../src/imgs/productos/t500-2tb.webp
+KC3000 2TB,Kingston,Almacenamiento,99900,14,Kingston,SSD NVMe PCIe 4.0 de 2 TB para sistemas de alto rendimiento.,../src/imgs/productos/kc3000-2tb.webp
+NV3 2TB,Kingston,Almacenamiento,74900,22,Kingston,SSD NVMe de 2 TB para almacenamiento rápido de uso diario.,../src/imgs/productos/nv3-2tb.webp
+RM1000x SHIFT,Corsair,Fuentes de poder,119900,9,Corsair,Fuente modular de 1000 W con conectores laterales para facilitar el armado.,../src/imgs/productos/rm1000x-shift.webp
+RM850x,Corsair,Fuentes de poder,89900,12,Corsair,Fuente modular de 850 W para PCs gaming de alto rendimiento.,../src/imgs/productos/rm850x.webp
+MPG A1000G PCIE5,MSI,Fuentes de poder,109900,10,MSI,Fuente de 1000 W compatible con plataformas y tarjetas gráficas modernas.,../src/imgs/productos/mpg-a1000g-pcie5.webp
+UD1000GM PG5,Gigabyte,Fuentes de poder,99900,8,Gigabyte,Fuente modular de 1000 W diseñada para equipos gaming de alto consumo.,../src/imgs/productos/ud1000gm-pg5.webp
+H9 Flow,NZXT,Gabinetes,109900,8,NZXT,Gabinete de doble cámara con amplio espacio y enfoque en flujo de aire.,../src/imgs/productos/h9-flow.webp
+H7 Flow,NZXT,Gabinetes,84900,10,NZXT,Chasis ATX con diseño limpio y ventilación optimizada.,../src/imgs/productos/h7-flow.webp
+5000D AIRFLOW,Corsair,Gabinetes,99900,9,Corsair,Gabinete ATX espacioso con paneles orientados a flujo de aire.,../src/imgs/productos/5000d-airflow.webp
+4000D AIRFLOW,Corsair,Gabinetes,69900,14,Corsair,Gabinete ATX de tamaño medio con frontal de alto flujo de aire.,../src/imgs/productos/4000d-airflow.webp
+NH-D15 G2,Noctua,Refrigeración,109900,10,Noctua,Disipador de doble torre de segunda generación con ocho heatpipes y dos ventiladores.,../src/imgs/productos/nh-d15-g2.webp
+NH-U12A,Noctua,Refrigeración,89900,10,Noctua,Disipador por aire compacto de alto rendimiento con ventiladores de 120 mm.,../src/imgs/productos/nh-u12a.webp
+Kraken Elite 360 RGB,NZXT,Refrigeración,169900,7,NZXT,Refrigeración líquida AIO de 360 mm con pantalla e iluminación RGB.,../src/imgs/productos/kraken-elite-360-rgb.webp
+iCUE LINK H150i LCD,Corsair,Refrigeración,179900,6,Corsair,AIO de 360 mm con pantalla LCD e integración iCUE LINK.,../src/imgs/productos/icue-link-h150i-lcd.webp
+ROG Swift OLED PG32UCDP,ASUS ROG,Monitores,699000,5,ASUS,Monitor WOLED de 32 pulgadas con modo dual 4K 240 Hz y FHD 480 Hz.,../src/imgs/productos/rog-swift-oled-pg32ucdp.webp
+Odyssey OLED G8 32 G80SD,Samsung,Monitores,599000,6,Samsung,Monitor OLED gaming de 32 pulgadas con resolución 4K y alta tasa de refresco.,../src/imgs/productos/odyssey-oled-g8-32-g80sd.webp
+UltraGear OLED 32GS95UE-B,LG,Monitores,649000,5,LG,Monitor OLED gaming de 32 pulgadas con modo dual de alta frecuencia.,../src/imgs/productos/ultragear-oled-32gs95ue-b.webp
+Alienware AW3225QF,Alienware,Monitores,579000,6,Dell,Monitor QD-OLED curvo de 32 pulgadas y 4K para gaming de alta gama.,../src/imgs/productos/alienware-aw3225qf.webp
+MPG 321URX QD-OLED,MSI,Monitores,549000,7,MSI,Monitor QD-OLED 4K de 32 pulgadas orientado a gaming competitivo y premium.,../src/imgs/productos/mpg-321urx-qd-oled.webp
+AORUS FO32U2P,Gigabyte,Monitores,589000,5,Gigabyte,Monitor QD-OLED 4K de 32 pulgadas con conectividad de alto rendimiento.,../src/imgs/productos/aorus-fo32u2p.webp
+G915 X LIGHTSPEED,Logitech G,Teclados,139900,12,Logitech,Teclado gaming inalámbrico de perfil bajo con conectividad LIGHTSPEED.,../src/imgs/productos/g915-x-lightspeed.webp
+BlackWidow V4 75%,Razer,Teclados,119900,10,Razer,Teclado mecánico gaming compacto de formato 75 por ciento.,../src/imgs/productos/blackwidow-v4-75.webp
+Apex Pro TKL Wireless,SteelSeries,Teclados,149900,9,SteelSeries,Teclado TKL inalámbrico con switches ajustables para gaming competitivo.,../src/imgs/productos/apex-pro-tkl-wireless.webp
+K70 MAX RGB,Corsair,Teclados,129900,11,Corsair,Teclado mecánico gaming con switches magnéticos ajustables y RGB.,../src/imgs/productos/k70-max-rgb.webp
+G PRO X SUPERLIGHT 2,Logitech G,Mouse,94900,18,Logitech,Mouse inalámbrico ultraligero para esports con conectividad LIGHTSPEED.,../src/imgs/productos/g-pro-x-superlight-2.webp
+G502 X PLUS,Logitech G,Mouse,89900,16,Logitech,Mouse gaming inalámbrico con iluminación RGB y múltiples controles programables.,../src/imgs/productos/g502-x-plus.webp
+DeathAdder V3 Pro,Razer,Mouse,89900,14,Razer,Mouse inalámbrico ergonómico y ligero orientado a esports.,../src/imgs/productos/deathadder-v3-pro.webp
+Viper V3 Pro,Razer,Mouse,99900,12,Razer,Mouse inalámbrico ultraligero para gaming competitivo.,../src/imgs/productos/viper-v3-pro.webp
+G PRO X 2 LIGHTSPEED,Logitech G,Audífonos,139900,12,Logitech,Headset gaming inalámbrico con conectividad LIGHTSPEED y audio de alto rendimiento.,../src/imgs/productos/g-pro-x-2-lightspeed.webp
+Arctis Nova Pro Wireless,SteelSeries,Audífonos,219900,8,SteelSeries,Headset gaming inalámbrico premium con estación base y cancelación de ruido.,../src/imgs/productos/arctis-nova-pro-wireless.webp
+Cloud III Wireless,HyperX,Audífonos,99900,14,HyperX,Headset gaming inalámbrico orientado a comodidad y autonomía prolongada.,../src/imgs/productos/cloud-iii-wireless.webp
+HS80 MAX Wireless,Corsair,Audífonos,94900,13,Corsair,Headset inalámbrico para gaming con audio espacial y micrófono integrado.,../src/imgs/productos/hs80-max-wireless.webp
+WH-1000XM6,Sony,Audífonos,249900,9,Sony,Audífonos inalámbricos premium con cancelación activa de ruido y enfoque en música.,../src/imgs/productos/wh-1000xm6.webp
+ROG Zephyrus G14,ASUS ROG,Laptops,1249000,4,ASUS,Laptop gaming compacta de 14 pulgadas orientada a alto rendimiento y movilidad.,../src/imgs/productos/rog-zephyrus-g14.webp
+Legion Pro 7i,Lenovo,Laptops,1399000,4,Lenovo,Laptop gaming de alto rendimiento de la familia Lenovo Legion Pro.,../src/imgs/productos/legion-pro-7i.webp
+Predator Helios 16,Acer,Laptops,1199000,5,Acer,Laptop gaming Acer Predator de 16 pulgadas para juegos y creación.,../src/imgs/productos/predator-helios-16.webp
+MacBook Pro 14 M4 Pro,Apple,Laptops,1499000,5,Apple,Portátil profesional de 14 pulgadas con chip Apple M4 Pro.,../src/imgs/productos/macbook-pro-14-m4-pro.webp
+ROG Ally X,ASUS ROG,Handhelds y consolas,549000,7,ASUS,PC gaming portátil con Windows diseñado para jugar en movilidad.,../src/imgs/productos/rog-ally-x.webp
+Steam Deck OLED,Valve,Handhelds y consolas,459000,8,Valve,PC gaming portátil con pantalla OLED y biblioteca compatible de Steam.,../src/imgs/productos/steam-deck-oled.webp
+PlayStation 5 Slim,Sony,Handhelds y consolas,349000,10,Sony,Consola PlayStation 5 en formato Slim para juegos de nueva generación.,../src/imgs/productos/playstation-5-slim.webp
+Archer BE550,TP-Link,Redes,159900,9,TP-Link,Router Wi-Fi 7 multigigabit para hogares con múltiples dispositivos.,../src/imgs/productos/archer-be550.webp
+Deco BE65,TP-Link,Redes,229900,7,TP-Link,Sistema mesh Wi-Fi 7 para ampliar cobertura y capacidad de red en el hogar.,../src/imgs/productos/deco-be65.webp

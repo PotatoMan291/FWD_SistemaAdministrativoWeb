@@ -141,6 +141,17 @@
                 </div>
 
                 <div class="heading-actions">
+                    <button type="button" class="secondary-action import-action" id="btn-importar-proveedores">
+                        <i class="bi bi-file-earmark-arrow-up"></i>
+                        Importar CSV
+                    </button>
+
+                    <input
+                        type="file"
+                        id="input-importar-proveedores"
+                        accept=".csv,text/csv,application/vnd.ms-excel"
+                        hidden>
+
                     <button type="button" class="secondary-action" id="btn-exportar-proveedores">
                         <i class="bi bi-download"></i>
                         Exportar CSV
@@ -462,6 +473,7 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
+    <script defer src="../src/js/csv-import.js"></script>
     <script defer src="../src/js/proveedores.js"></script>
     <script defer src="../src/js/pdf-export.js"></script>
     <script defer src="../src/js/proveedores-enhancements.js"></script>

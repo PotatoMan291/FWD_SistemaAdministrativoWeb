@@ -1775,3 +1775,20 @@ html[data-theme="dark"] .choices__item--choice.is-highlighted {
 #formulario-productos .choices.is-open {
     z-index: 1200;
 }
+
+
+/* =========================
+   IMPORTACIÓN CSV
+   ========================= */
+.secondary-action.import-action i {
+    color: var(--success-500);
+}
+
+.secondary-action.import-action:hover {
+    border-color: var(--success-500);
+    background: var(--success-50);
+}
+
+html[data-theme="dark"] .secondary-action.import-action:hover {
+    background: rgba(18, 183, 106, .10);
+}
