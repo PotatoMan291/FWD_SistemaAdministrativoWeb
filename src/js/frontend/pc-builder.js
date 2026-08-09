@@ -34,6 +34,9 @@
     }
   };
 
+  const specCache = new WeakMap();
+  let builderSearchTimer = null;
+
   const $ = id => document.getElementById(id);
 
   function api() {
@@ -58,10 +61,12 @@
   }
 
   function productById(id) {
+    const direct = api()?.getProductById?.(id);
+    if (direct) return direct;
     return products().find(product => String(product.id) === String(id)) || null;
   }
 
-  function specFor(product) {
+  function computeSpecFor(product) {
     if (!product) return null;
 
     const key = normalize(product.nombre);
@@ -165,6 +170,15 @@
     }
 
     return null;
+  }
+
+  function specFor(product) {
+    if (!product || typeof product !== "object") return null;
+    if (specCache.has(product)) return specCache.get(product);
+
+    const spec = computeSpecFor(product);
+    specCache.set(product, spec);
+    return spec;
   }
 
   function typeForProduct(product) {
@@ -663,6 +677,8 @@
       return;
     }
 
+    const fragment = document.createDocumentFragment();
+
     list.forEach(product => {
       const relation = candidateRelation(step.key, product);
       const selected = String(state.selections[step.key]) === String(product.id);
@@ -731,8 +747,10 @@
 
       body.append(meta, title, chips, footer, select);
       card.append(media, body);
-      grid.append(card);
+      fragment.append(card);
     });
+
+    grid.append(fragment);
   }
 
   function renderSelectedList() {
@@ -1507,8 +1525,11 @@
 
     $("pc-builder-search")?.addEventListener("input", event => {
       state.search = event.target.value;
-      renderProductGrid();
-      if (window.lucide?.createIcons) window.lucide.createIcons();
+      window.clearTimeout(builderSearchTimer);
+      builderSearchTimer = window.setTimeout(() => {
+        renderProductGrid();
+        if (window.lucide?.createIcons) window.lucide.createIcons();
+      }, 80);
     });
 
     $("pc-builder-tier")?.addEventListener("change", event => {

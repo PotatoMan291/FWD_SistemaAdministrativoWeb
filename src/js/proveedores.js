@@ -420,70 +420,40 @@ function obtenerProductos() {
 // ------------------------------------------------------
 // Actualizar tarjetas de resumen
 // ------------------------------------------------------
-function actualizarResumenProveedores() {
+function actualizarResumenProveedores(
+    proveedores = obtenerProveedores(),
+    productos = obtenerProductos()
+) {
 
-    const proveedores =
-        obtenerProveedores();
+    const empresas = new Set();
 
-    const productos =
-        obtenerProductos();
-
-    const empresas = [];
-
-    proveedores.forEach(
-        function(proveedor) {
-
-            const empresa =
-                proveedor.empresa
-                    .trim()
-                    .toLowerCase();
-
-            if (
-                empresa !== "" &&
-                !empresas.includes(empresa)
-            ) {
-
-                empresas.push(
-                    empresa
-                );
-            }
+    proveedores.forEach(function(proveedor) {
+        const empresa = proveedor.empresa.trim().toLowerCase();
+        if (empresa !== "") {
+            empresas.add(empresa);
         }
+    });
+
+    const proveedoresConProductosIds = new Set(
+        productos
+            .map(function(producto) {
+                return String(producto.proveedorId || "");
+            })
+            .filter(Boolean)
     );
 
     let proveedoresConProductos = 0;
 
-    proveedores.forEach(
-        function(proveedor) {
-
-            const tieneProductos =
-                productos.some(
-                    function(producto) {
-
-                        return (
-                            String(producto.proveedorId) ===
-                            String(proveedor.id)
-                        );
-                    }
-                );
-
-            if (tieneProductos) {
-
-                proveedoresConProductos++;
-            }
+    proveedores.forEach(function(proveedor) {
+        if (proveedoresConProductosIds.has(String(proveedor.id))) {
+            proveedoresConProductos++;
         }
-    );
+    });
 
-    resumenTotalProveedores.textContent =
-        proveedores.length;
-
-    resumenEmpresas.textContent =
-        empresas.length;
-
-    resumenConProductos.textContent =
-        proveedoresConProductos;
-
-    resumenProductosAsociados.textContent =
-        productos.length;
+    resumenTotalProveedores.textContent = proveedores.length;
+    resumenEmpresas.textContent = empresas.size;
+    resumenConProductos.textContent = proveedoresConProductos;
+    resumenProductosAsociados.textContent = productos.length;
 }
 
 
@@ -536,236 +506,130 @@ function crearBoton(
 // ------------------------------------------------------
 // Mostrar proveedores
 // ------------------------------------------------------
-function mostrarProveedores(
-    listaProveedores
-) {
+function mostrarProveedores(listaProveedores) {
 
-    let proveedores;
+    const proveedores = listaProveedores || obtenerProveedores();
+    const todosProveedores = listaProveedores
+        ? obtenerProveedores()
+        : proveedores;
 
-    if (listaProveedores) {
+    // Leemos los productos una sola vez para el resumen.
+    const productos = obtenerProductos();
 
-        proveedores =
-            listaProveedores;
-
-    } else {
-
-        proveedores =
-            obtenerProveedores();
-    }
-
-    tablaProveedoresBody.innerHTML =
-        "";
+    tablaProveedoresBody.textContent = "";
 
     if (proveedores.length === 0) {
-
-        const fila =
-            document.createElement("tr");
-
-        const celda =
-            document.createElement("td");
+        const fila = document.createElement("tr");
+        const celda = document.createElement("td");
 
         celda.colSpan = 7;
-        celda.className =
-            "empty-state";
-
+        celda.className = "empty-state";
         celda.innerHTML =
             '<i class="bi bi-person-x"></i>' +
             '<strong>No hay proveedores para mostrar</strong>' +
             '<div class="small mt-1">Registra un proveedor o cambia el criterio de búsqueda.</div>';
 
         fila.appendChild(celda);
-
-        tablaProveedoresBody
-            .appendChild(fila);
-
-        actualizarResumenProveedores();
-
+        tablaProveedoresBody.appendChild(fila);
+        actualizarResumenProveedores(todosProveedores, productos);
         return;
     }
 
-    proveedores.forEach(
-        function(proveedor) {
+    const fragmento = document.createDocumentFragment();
 
-            const fila =
-                document.createElement("tr");
+    proveedores.forEach(function(proveedor) {
+        const fila = document.createElement("tr");
 
-            const celdaId =
-                document.createElement("td");
+        const celdaId = document.createElement("td");
+        celdaId.className = "id-chip";
+        celdaId.textContent = proveedor.id;
 
-            celdaId.className =
-                "id-chip";
+        const celdaNombre = document.createElement("td");
+        const nombreWrapper = document.createElement("div");
+        nombreWrapper.className = "d-flex align-items-center gap-2";
 
-            celdaId.textContent =
-                proveedor.id;
+        const avatar = document.createElement("span");
+        avatar.className = "provider-avatar";
+        avatar.innerHTML = '<i class="bi bi-person"></i>';
 
-            const celdaNombre =
-                document.createElement("td");
+        const datosNombre = document.createElement("div");
+        const nombre = document.createElement("div");
+        nombre.className = "table-primary-text";
+        nombre.textContent = proveedor.nombre;
 
-            const nombreWrapper =
-                document.createElement("div");
+        const subtitulo = document.createElement("span");
+        subtitulo.className = "table-secondary-text";
+        subtitulo.textContent = "Proveedor registrado";
 
-            nombreWrapper.className =
-                "d-flex align-items-center gap-2";
+        datosNombre.appendChild(nombre);
+        datosNombre.appendChild(subtitulo);
+        nombreWrapper.appendChild(avatar);
+        nombreWrapper.appendChild(datosNombre);
+        celdaNombre.appendChild(nombreWrapper);
 
-            const avatar =
-                document.createElement("span");
+        const celdaEmpresa = document.createElement("td");
+        const empresaBadge = document.createElement("span");
+        empresaBadge.className = "badge border text-body category-badge";
+        empresaBadge.textContent = proveedor.empresa;
+        celdaEmpresa.appendChild(empresaBadge);
 
-            avatar.className =
-                "provider-avatar";
+        const celdaTelefono = document.createElement("td");
+        celdaTelefono.innerHTML =
+            '<i class="bi bi-telephone me-2 text-body-secondary"></i>';
+        celdaTelefono.append(proveedor.telefono);
 
-            avatar.innerHTML =
-                '<i class="bi bi-person"></i>';
+        const celdaCorreo = document.createElement("td");
 
-            const datosNombre =
-                document.createElement("div");
-
-            const nombre =
-                document.createElement("div");
-
-            nombre.className =
-                "table-primary-text";
-
-            nombre.textContent =
-                proveedor.nombre;
-
-            const subtitulo =
-                document.createElement("span");
-
-            subtitulo.className =
-                "table-secondary-text";
-
-            subtitulo.textContent =
-                "Proveedor registrado";
-
-            datosNombre.appendChild(
-                nombre
-            );
-
-            datosNombre.appendChild(
-                subtitulo
-            );
-
-            nombreWrapper.appendChild(
-                avatar
-            );
-
-            nombreWrapper.appendChild(
-                datosNombre
-            );
-
-            celdaNombre.appendChild(
-                nombreWrapper
-            );
-
-            const celdaEmpresa =
-                document.createElement("td");
-
-            celdaEmpresa.innerHTML =
-                '<span class="badge border text-body category-badge"></span>';
-
-            celdaEmpresa
-                .querySelector("span")
-                .textContent =
-                    proveedor.empresa;
-
-            const celdaTelefono =
-                document.createElement("td");
-
-            celdaTelefono.innerHTML =
-                '<i class="bi bi-telephone me-2 text-body-secondary"></i>';
-
-            celdaTelefono.append(
-                proveedor.telefono
-            );
-
-            const celdaCorreo =
-                document.createElement("td");
-
-            if (correoValido(proveedor.correo)) {
-
-                const enlaceCorreo =
-                    document.createElement("a");
-
-                enlaceCorreo.href =
-                    "mailto:" +
-                    proveedor.correo;
-
-                enlaceCorreo.className =
-                    "text-decoration-none";
-
-                enlaceCorreo.textContent =
-                    proveedor.correo;
-
-                celdaCorreo.appendChild(
-                    enlaceCorreo
-                );
-
-            } else {
-
-                celdaCorreo.textContent =
-                    proveedor.correo ||
-                    "Correo no disponible";
-            }
-
-            const celdaDireccion =
-                document.createElement("td");
-
-            celdaDireccion.textContent =
-                proveedor.direccion;
-
-            const celdaAcciones =
-                document.createElement("td");
-
-            const grupoAcciones =
-                document.createElement("div");
-
-            grupoAcciones.className =
-                "action-group";
-
-            const botonEditar =
-                crearBoton(
-                    "Editar proveedor",
-                    "btn btn-outline-primary btn-action",
-                    "bi bi-pencil",
-                    proveedor.id,
-                    editarProveedor
-                );
-
-            const botonEliminar =
-                crearBoton(
-                    "Eliminar proveedor",
-                    "btn btn-outline-danger btn-action",
-                    "bi bi-trash3",
-                    proveedor.id,
-                    eliminarProveedor
-                );
-
-            grupoAcciones.appendChild(
-                botonEditar
-            );
-
-            grupoAcciones.appendChild(
-                botonEliminar
-            );
-
-            celdaAcciones.appendChild(
-                grupoAcciones
-            );
-
-            fila.appendChild(celdaId);
-            fila.appendChild(celdaNombre);
-            fila.appendChild(celdaEmpresa);
-            fila.appendChild(celdaTelefono);
-            fila.appendChild(celdaCorreo);
-            fila.appendChild(celdaDireccion);
-            fila.appendChild(celdaAcciones);
-
-            tablaProveedoresBody
-                .appendChild(fila);
+        if (correoValido(proveedor.correo)) {
+            const enlaceCorreo = document.createElement("a");
+            enlaceCorreo.href = "mailto:" + proveedor.correo;
+            enlaceCorreo.className = "text-decoration-none";
+            enlaceCorreo.textContent = proveedor.correo;
+            celdaCorreo.appendChild(enlaceCorreo);
+        } else {
+            celdaCorreo.textContent = proveedor.correo || "Correo no disponible";
         }
-    );
 
-    actualizarResumenProveedores();
+        const celdaDireccion = document.createElement("td");
+        celdaDireccion.textContent = proveedor.direccion;
+
+        const celdaAcciones = document.createElement("td");
+        const grupoAcciones = document.createElement("div");
+        grupoAcciones.className = "action-group";
+
+        grupoAcciones.appendChild(
+            crearBoton(
+                "Editar proveedor",
+                "btn btn-outline-primary btn-action",
+                "bi bi-pencil",
+                proveedor.id,
+                editarProveedor
+            )
+        );
+
+        grupoAcciones.appendChild(
+            crearBoton(
+                "Eliminar proveedor",
+                "btn btn-outline-danger btn-action",
+                "bi bi-trash3",
+                proveedor.id,
+                eliminarProveedor
+            )
+        );
+
+        celdaAcciones.appendChild(grupoAcciones);
+        fila.appendChild(celdaId);
+        fila.appendChild(celdaNombre);
+        fila.appendChild(celdaEmpresa);
+        fila.appendChild(celdaTelefono);
+        fila.appendChild(celdaCorreo);
+        fila.appendChild(celdaDireccion);
+        fila.appendChild(celdaAcciones);
+        fragmento.appendChild(fila);
+    });
+
+    tablaProveedoresBody.appendChild(fragmento);
+    actualizarResumenProveedores(todosProveedores, productos);
 }
 
 

@@ -773,19 +773,19 @@ function obtenerProveedores() {
 // ------------------------------------------------------
 // Actualizar tarjetas de resumen
 // ------------------------------------------------------
-function actualizarResumenProductos() {
-
-    const productos = obtenerProductos();
-    const proveedores = obtenerProveedores();
+function actualizarResumenProductos(
+    productos = obtenerProductos(),
+    proveedores = obtenerProveedores()
+) {
 
     let stockTotal = 0;
     let stockBajo = 0;
 
     productos.forEach(function(producto) {
+        const stock = Number(producto.stock) || 0;
+        stockTotal += stock;
 
-        stockTotal += Number(producto.stock);
-
-        if (Number(producto.stock) <= 5) {
+        if (stock <= 5) {
             stockBajo++;
         }
     });
@@ -993,27 +993,39 @@ function crearBadgeStock(stock) {
 // ------------------------------------------------------
 function mostrarProductos(listaProductos) {
 
-    let productos;
+    const productos = listaProductos || obtenerProductos();
 
-    if (listaProductos) {
+    // Si estamos mostrando una búsqueda/filtro, el resumen debe seguir
+    // representando el inventario completo, no solo las filas visibles.
+    const todosProductos = listaProductos
+        ? obtenerProductos()
+        : productos;
 
-        productos = listaProductos;
+    // Una sola lectura de LocalStorage por render. Antes se volvía a leer
+    // categorías y proveedores por cada fila de la tabla.
+    const categorias = obtenerCategorias();
+    const proveedores = obtenerProveedores();
 
-    } else {
+    const categoriasPorId = new Map(
+        categorias.map(function(categoria) {
+            return [String(categoria.id), categoria];
+        })
+    );
 
-        productos = obtenerProductos();
-    }
+    const proveedoresPorId = new Map(
+        proveedores.map(function(proveedor) {
+            return [String(proveedor.id), proveedor];
+        })
+    );
 
-    tablaProductosBody.innerHTML = "";
+    tablaProductosBody.textContent = "";
 
     if (productos.length === 0) {
-
         const fila = document.createElement("tr");
         const celda = document.createElement("td");
 
         celda.colSpan = 7;
         celda.className = "empty-state";
-
         celda.innerHTML =
             '<i class="bi bi-inbox"></i>' +
             '<strong>No hay productos para mostrar</strong>' +
@@ -1021,14 +1033,13 @@ function mostrarProductos(listaProductos) {
 
         fila.appendChild(celda);
         tablaProductosBody.appendChild(fila);
-
-        actualizarResumenProductos();
-
+        actualizarResumenProductos(todosProductos, proveedores);
         return;
     }
 
-    productos.forEach(function(producto) {
+    const fragmento = document.createDocumentFragment();
 
+    productos.forEach(function(producto) {
         const fila = document.createElement("tr");
 
         const celdaId = document.createElement("td");
@@ -1036,189 +1047,97 @@ function mostrarProductos(listaProductos) {
         celdaId.textContent = producto.id;
 
         const celdaNombre = document.createElement("td");
-
-        const productoNombreWrap =
-            document.createElement("div");
-
-        productoNombreWrap.className =
-            "product-name-with-image";
+        const productoNombreWrap = document.createElement("div");
+        productoNombreWrap.className = "product-name-with-image";
 
         if (producto.imagen) {
-
-            const miniatura =
-                document.createElement("img");
-
-            miniatura.className =
-                "product-thumb";
-
-            miniatura.src =
-                producto.imagen;
-
-            miniatura.alt =
-                "Imagen de " +
-                producto.nombre;
-
-            productoNombreWrap.appendChild(
-                miniatura
-            );
+            const miniatura = document.createElement("img");
+            miniatura.className = "product-thumb";
+            miniatura.src = producto.imagen;
+            miniatura.alt = "Imagen de " + producto.nombre;
+            miniatura.loading = "lazy";
+            miniatura.decoding = "async";
+            productoNombreWrap.appendChild(miniatura);
         }
 
-        const datosNombreProducto =
-            document.createElement("div");
-
+        const datosNombreProducto = document.createElement("div");
         const nombre = document.createElement("div");
         nombre.className = "table-primary-text";
         nombre.textContent = producto.nombre;
 
-        const categoriaSecundaria =
-            document.createElement("span");
+        const categoriaSecundaria = document.createElement("span");
+        categoriaSecundaria.className = "table-secondary-text";
+        categoriaSecundaria.textContent = "Producto registrado";
 
-        categoriaSecundaria.className =
-            "table-secondary-text";
-
-        categoriaSecundaria.textContent =
-            "Producto registrado";
-
-        datosNombreProducto.appendChild(
-            nombre
-        );
-
-        datosNombreProducto.appendChild(
-            categoriaSecundaria
-        );
-
-        productoNombreWrap.appendChild(
-            datosNombreProducto
-        );
-
-        celdaNombre.appendChild(
-            productoNombreWrap
-        );
+        datosNombreProducto.appendChild(nombre);
+        datosNombreProducto.appendChild(categoriaSecundaria);
+        productoNombreWrap.appendChild(datosNombreProducto);
+        celdaNombre.appendChild(productoNombreWrap);
 
         const celdaCategoria = document.createElement("td");
+        const badgeCategoria = document.createElement("span");
+        badgeCategoria.className = "badge border text-body category-badge";
 
-        const badgeCategoria =
-            document.createElement("span");
-
-        badgeCategoria.className =
-            "badge border text-body category-badge";
-
-        const categoria =
-            obtenerCategoria(producto.categoriaId);
-
-        if (categoria) {
-
-            badgeCategoria.textContent =
-                categoria.nombre;
-
-        } else {
-
-            // Compatibilidad con productos antiguos
-            badgeCategoria.textContent =
-                producto.categoria ||
-                "Categoría no disponible";
-        }
-
+        const categoria = categoriasPorId.get(String(producto.categoriaId));
+        badgeCategoria.textContent = categoria
+            ? categoria.nombre
+            : (producto.categoria || "Categoría no disponible");
         celdaCategoria.appendChild(badgeCategoria);
 
         const celdaPrecio = document.createElement("td");
         celdaPrecio.className = "fw-semibold";
-
         celdaPrecio.textContent =
-            "₡" +
-            Number(producto.precio)
-                .toLocaleString("es-CR");
+            "₡" + Number(producto.precio).toLocaleString("es-CR");
 
         const celdaStock = document.createElement("td");
-
-        celdaStock.appendChild(
-            crearBadgeStock(producto.stock)
-        );
+        celdaStock.appendChild(crearBadgeStock(producto.stock));
 
         const celdaProveedor = document.createElement("td");
-
-        const proveedor =
-            obtenerProveedor(producto.proveedorId);
+        const proveedor = proveedoresPorId.get(String(producto.proveedorId));
 
         if (proveedor) {
+            const proveedorNombre = document.createElement("div");
+            proveedorNombre.className = "table-primary-text";
+            proveedorNombre.textContent = proveedor.nombre;
 
-            const proveedorNombre =
-                document.createElement("div");
+            const proveedorEmpresa = document.createElement("span");
+            proveedorEmpresa.className = "table-secondary-text";
+            proveedorEmpresa.textContent = proveedor.empresa;
 
-            proveedorNombre.className =
-                "table-primary-text";
-
-            proveedorNombre.textContent =
-                proveedor.nombre;
-
-            const proveedorEmpresa =
-                document.createElement("span");
-
-            proveedorEmpresa.className =
-                "table-secondary-text";
-
-            proveedorEmpresa.textContent =
-                proveedor.empresa;
-
-            celdaProveedor.appendChild(
-                proveedorNombre
-            );
-
-            celdaProveedor.appendChild(
-                proveedorEmpresa
-            );
-
+            celdaProveedor.appendChild(proveedorNombre);
+            celdaProveedor.appendChild(proveedorEmpresa);
         } else {
-
-            const badge =
-                document.createElement("span");
-
-            badge.className =
-                "badge text-bg-secondary";
-
-            badge.textContent =
-                "Proveedor no disponible";
-
+            const badge = document.createElement("span");
+            badge.className = "badge text-bg-secondary";
+            badge.textContent = "Proveedor no disponible";
             celdaProveedor.appendChild(badge);
         }
 
-        const celdaAcciones =
-            document.createElement("td");
+        const celdaAcciones = document.createElement("td");
+        const grupoAcciones = document.createElement("div");
+        grupoAcciones.className = "action-group";
 
-        const grupoAcciones =
-            document.createElement("div");
-
-        grupoAcciones.className =
-            "action-group";
-
-        const botonEditar = crearBoton(
-            "Editar producto",
-            "btn btn-outline-primary btn-action",
-            "bi bi-pencil",
-            producto.id,
-            editarProducto
-        );
-
-        const botonEliminar = crearBoton(
-            "Eliminar producto",
-            "btn btn-outline-danger btn-action",
-            "bi bi-trash3",
-            producto.id,
-            eliminarProducto
+        grupoAcciones.appendChild(
+            crearBoton(
+                "Editar producto",
+                "btn btn-outline-primary btn-action",
+                "bi bi-pencil",
+                producto.id,
+                editarProducto
+            )
         );
 
         grupoAcciones.appendChild(
-            botonEditar
+            crearBoton(
+                "Eliminar producto",
+                "btn btn-outline-danger btn-action",
+                "bi bi-trash3",
+                producto.id,
+                eliminarProducto
+            )
         );
 
-        grupoAcciones.appendChild(
-            botonEliminar
-        );
-
-        celdaAcciones.appendChild(
-            grupoAcciones
-        );
-
+        celdaAcciones.appendChild(grupoAcciones);
         fila.appendChild(celdaId);
         fila.appendChild(celdaNombre);
         fila.appendChild(celdaCategoria);
@@ -1226,11 +1145,11 @@ function mostrarProductos(listaProductos) {
         fila.appendChild(celdaStock);
         fila.appendChild(celdaProveedor);
         fila.appendChild(celdaAcciones);
-
-        tablaProductosBody.appendChild(fila);
+        fragmento.appendChild(fila);
     });
 
-    actualizarResumenProductos();
+    tablaProductosBody.appendChild(fragmento);
+    actualizarResumenProductos(todosProductos, proveedores);
 }
 
 

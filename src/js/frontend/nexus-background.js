@@ -64,7 +64,7 @@
         opacity: {
           value: {
             min: light ? 0.28 : 0.40,
-            max: light ? 0.48 : 0.72
+            max: light ? 0.50 : 0.78
           }
         },
 
@@ -79,7 +79,7 @@
           enable: true,
           distance: mobile ? 115 : 155,
           color: light ? "#7860DF" : "#8067F0",
-          opacity: light ? 0.15 : 0.26,
+          opacity: light ? 0.16 : 0.30,
           width: 1
         },
 
