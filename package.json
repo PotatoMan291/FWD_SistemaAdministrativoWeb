@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "node --watch server/server.js",
-    "check": "node --check server/server.js && node --check src/js/tienda.js"
+    "check": "node --check server/server.js && node --check src/js/login/auth.js && node --check src/js/login/login-react.js && node --check src/js/backend/permisos.js && node --check src/js/backend/roles.js && node --check src/js/backend/dashboard.js && node --check src/js/backend/clientes.js && node --check src/js/backend/productos.js && node --check src/js/backend/proveedores.js && node --check src/js/backend/categorias.js && node --check src/js/backend/pedidos.js && node --check src/js/frontend/tienda.js"
   },
   "engines": {
     "node": ">=18"

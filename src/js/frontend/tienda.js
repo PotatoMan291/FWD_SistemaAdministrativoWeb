@@ -56,6 +56,12 @@ let nexusAIRequestInProgress = false;
 let nexusAIHealthChecked = false;
 let nexusAILastBuild = null;
 
+// Índices en memoria para evitar búsquedas lineales repetidas.
+let categoryIndex = new Map();
+let supplierIndex = new Map();
+let productIndex = new Map();
+let catalogSearchTimer = null;
+
 // ---------- Carga progresiva del catálogo ----------
 // Mantiene el catálogo compacto: 12 productos al inicio y 12 por carga.
 const CATALOG_PAGE_SIZE = 12;
@@ -126,11 +132,11 @@ function makeId() {
 // ---------- Adaptación de datos existentes ----------
 
 function categoryById(id) {
-  return state.categorias.find(item => String(item.id) === String(id)) || null;
+  return categoryIndex.get(String(id)) || null;
 }
 
 function supplierById(id) {
-  return state.proveedores.find(item => String(item.id) === String(id)) || null;
+  return supplierIndex.get(String(id)) || null;
 }
 
 function inferGaming(product) {
@@ -194,6 +200,13 @@ function cargarProductos() {
     }))
     .filter(p => p.id);
 
+  categoryIndex = new Map(
+    state.categorias.map(category => [String(category.id), category])
+  );
+  supplierIndex = new Map(
+    state.proveedores.map(supplier => [String(supplier.id), supplier])
+  );
+
   state.productos = readList(CLAVES.productos)
     .map((p, index) => {
       const category = categoryById(p.categoriaId);
@@ -229,28 +242,50 @@ function cargarProductos() {
         ...product,
         imagen: p.imagen
       });
+      product.categoriaNormalizada = normalize(product.categoria);
+      product.searchIndex = normalize([
+        product.nombre,
+        product.marca,
+        product.categoria,
+        product.descripcion
+      ].join(" "));
       return product;
     })
     .filter(p => p.id && p.nombre);
 
-  state.carrito = readList(CLAVES.carrito);
-  state.favoritos = readList(CLAVES.favoritos).map(String);
-  state.comparador = readList(CLAVES.comparador).map(String).slice(0, 3);
+  productIndex = new Map(
+    state.productos.map(product => [String(product.id), product])
+  );
 
-  const exists = id => state.productos.some(p => String(p.id) === String(id));
+  const carritoGuardado = readList(CLAVES.carrito);
+  const favoritosGuardados = readList(CLAVES.favoritos);
+  const comparadorGuardado = readList(CLAVES.comparador);
+
+  state.carrito = carritoGuardado;
+  state.favoritos = favoritosGuardados.map(String);
+  state.comparador = comparadorGuardado.map(String).slice(0, 3);
+
+  const productIds = new Set(state.productos.map(product => String(product.id)));
+  const exists = id => productIds.has(String(id));
   state.carrito = state.carrito.filter(item => exists(item.productoId));
   state.favoritos = state.favoritos.filter(exists);
   state.comparador = state.comparador.filter(exists);
 
-  writeList(CLAVES.carrito, state.carrito);
-  writeList(CLAVES.favoritos, state.favoritos);
-  writeList(CLAVES.comparador, state.comparador);
+  if (JSON.stringify(carritoGuardado) !== JSON.stringify(state.carrito)) {
+    writeList(CLAVES.carrito, state.carrito);
+  }
+  if (JSON.stringify(favoritosGuardados) !== JSON.stringify(state.favoritos)) {
+    writeList(CLAVES.favoritos, state.favoritos);
+  }
+  if (JSON.stringify(comparadorGuardado) !== JSON.stringify(state.comparador)) {
+    writeList(CLAVES.comparador, state.comparador);
+  }
 }
 
 // ---------- Helpers de producto ----------
 
 function productById(id) {
-  return state.productos.find(p => String(p.id) === String(id)) || null;
+  return productIndex.get(String(id)) || null;
 }
 
 function stockInfo(product) {
@@ -557,6 +592,7 @@ function renderCategories() {
     const img = document.createElement("img");
     img.src = categoryImage(category);
     img.alt = category.nombre;
+    img.decoding = "async";
     media.append(img);
 
     const name = document.createElement("strong");
@@ -603,6 +639,7 @@ function productCard(product) {
   img.src = product.imagen;
   img.alt = product.nombre;
   img.loading = "lazy";
+  img.decoding = "async";
   img.addEventListener("error", () => {
     img.src = IMG.default;
   });
@@ -720,6 +757,7 @@ function noveltyCard(product) {
   img.src = product.imagen;
   img.alt = product.nombre;
   img.loading = "lazy";
+  img.decoding = "async";
 
   const badge = document.createElement("span");
   badge.className = "new-badge";
@@ -793,7 +831,7 @@ function filteredProducts() {
   const query = normalize(state.search);
 
   if (query) {
-    list = list.filter(p => normalize([p.nombre, p.marca, p.categoria, p.descripcion].join(" ")).includes(query));
+    list = list.filter(p => p.searchIndex.includes(query));
   }
 
   if (state.category) {
@@ -841,7 +879,7 @@ function productosDisponiblesParaFiltroMarca() {
       String(producto.categoriaId) === String(state.category) ||
       (
         nombreCategoria &&
-        normalize(producto.categoria) === nombreCategoria
+        producto.categoriaNormalizada === nombreCategoria
       )
     );
   });
@@ -1181,6 +1219,7 @@ function renderCatalog(options = {}) {
     renderCatalogPagination(0, 0);
   } else {
     const visibleList = list.slice(0, catalogVisibleLimit);
+    const fragment = document.createDocumentFragment();
 
     visibleList.forEach((product, index) => {
       const card = productCard(product);
@@ -1193,9 +1232,10 @@ function renderCatalog(options = {}) {
         );
       }
 
-      grid.append(card);
+      fragment.append(card);
     });
 
+    grid.append(fragment);
     renderCatalogPagination(list.length, visibleList.length);
   }
 
@@ -1513,7 +1553,14 @@ function confirmCheckout(event) {
   const clients = oldClients.slice();
   let client = clients.find(c => normalize(c.correo) === normalize(correo));
   if (!client) {
-    client = { id: makeId(), nombre, correo, telefono };
+    client = {
+      id: makeId(),
+      nombre,
+      correo,
+      telefono,
+      rol: "Cliente",
+      rolAsignado: "Cliente"
+    };
     clients.push(client);
   }
 
@@ -1591,9 +1638,12 @@ function renderSession() {
   if (user) {
     const name = safeText(user.nombre || user.usuario || "Usuario", 40).split(" ")[0];
     text.textContent = "Hola, " + name;
-    link.href = "dashboard.html";
-    mobile.href = "dashboard.html";
-    mobile.textContent = "Mi cuenta";
+    const clientRole =
+      String(user.rol || user.rolAsignado || "").toLowerCase() === "cliente";
+
+    link.href = clientRole ? "login.html" : "dashboard.html";
+    mobile.href = clientRole ? "login.html" : "dashboard.html";
+    mobile.textContent = clientRole ? "Mi cuenta" : "Panel";
   } else {
     text.textContent = "Iniciar sesión";
     link.href = "login.html";
@@ -1801,6 +1851,7 @@ function createRelatedProductCard(product) {
   img.src = product.imagen;
   img.alt = "";
   img.loading = "lazy";
+  img.decoding = "async";
   img.addEventListener("error", () => {
     img.src = IMG.default;
   });
@@ -2925,6 +2976,10 @@ window.NEXUS_STORE_API = {
     return state.productos.slice();
   },
 
+  getProductById(id) {
+    return productById(id);
+  },
+
   formatPrice(value) {
     return formatearColones(value);
   },
@@ -3239,6 +3294,13 @@ function alternarMegaMenu() {
 
 // ---------- Eventos ----------
 
+function scheduleCatalogSearchRender() {
+  window.clearTimeout(catalogSearchTimer);
+  catalogSearchTimer = window.setTimeout(function() {
+    renderCatalog({ resetLimit: true });
+  }, 90);
+}
+
 function bindEvents() {
   document
     .getElementById("btn-tema-tienda")
@@ -3273,6 +3335,7 @@ function bindEvents() {
 
   document.getElementById("form-busqueda").addEventListener("submit", e => {
     e.preventDefault();
+    window.clearTimeout(catalogSearchTimer);
     state.search = document.getElementById("buscador").value.trim();
     cerrarSugerenciasBusqueda();
     renderCatalog({ resetLimit: true });
@@ -3281,7 +3344,7 @@ function bindEvents() {
 
   document.getElementById("buscador").addEventListener("input", e => {
     state.search = e.target.value.trim();
-    renderCatalog({ resetLimit: true });
+    scheduleCatalogSearchRender();
     renderSearchSuggestions(state.search);
   });
 

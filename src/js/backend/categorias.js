@@ -1118,6 +1118,20 @@ formCategoria.addEventListener(
 
         event.preventDefault();
 
+        const permisoIdActual =
+            categoriaId.value;
+
+        if (
+            window.Permisos &&
+            !Permisos.exigir(
+                permisoIdActual === ""
+                    ? "crear"
+                    : "editar"
+            )
+        ) {
+            return;
+        }
+
         if (procesandoImagenCategoria) {
 
             mensajeCategoria.textContent =
@@ -1276,6 +1290,13 @@ formCategoria.addEventListener(
 // ------------------------------------------------------
 function editarCategoria(id) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir("editar")
+    ) {
+        return;
+    }
+
     const categorias =
         obtenerCategorias();
 
@@ -1331,6 +1352,13 @@ function editarCategoria(id) {
 // Eliminar categoría
 // ------------------------------------------------------
 function eliminarCategoria(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir("eliminar")
+    ) {
+        return;
+    }
 
     const cantidad =
         cantidadProductosCategoria(id);

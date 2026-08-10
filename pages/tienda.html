@@ -14,11 +14,9 @@
 
   <!-- Premium UI libraries -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.css">
-  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
   <link rel="stylesheet" href="https://unpkg.com/lenis@1.3.25/dist/lenis.css">
-  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/dist/tippy.css">
-  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6.3.7/animations/shift-away.css">
 
+  <link rel="preload" as="image" href="../src/imgs/nexus-hero-wide.webp" type="image/webp">
   <link rel="stylesheet" href="../src/css/tienda.css">
 </head>
 <body>
@@ -87,7 +85,7 @@
         <button
           type="button"
           class="header-link-action"
-          id="btn-comparar-header" data-tippy-content="Comparar productos">
+          id="btn-comparar-header" title="Comparar productos">
           <svg class="icon"><use href="#i-compare"></use></svg>
           <span>Comparar</span>
           <b id="count-compare" hidden>0</b>
@@ -104,7 +102,7 @@
         <button
           type="button"
           class="nexus-header-icon"
-          id="btn-tema-tienda" data-tippy-content="Cambiar tema"
+          id="btn-tema-tienda"
           aria-label="Cambiar tema"
           title="Cambiar tema">
           <svg class="icon"><use id="icono-tema-use" href="#i-sun"></use></svg>
@@ -113,7 +111,7 @@
         <button
           type="button"
           class="nexus-header-icon"
-          id="btn-favoritos" data-tippy-content="Ver favoritos"
+          id="btn-favoritos" title="Ver favoritos"
           aria-label="Favoritos">
           <svg class="icon"><use href="#i-heart"></use></svg>
           <b id="count-favorites" hidden>0</b>
@@ -122,7 +120,7 @@
         <button
           type="button"
           class="nexus-header-icon"
-          id="btn-carrito" data-tippy-content="Abrir carrito"
+          id="btn-carrito" title="Abrir carrito"
           aria-label="Carrito">
           <svg class="icon"><use href="#i-cart"></use></svg>
           <b id="count-cart" hidden>0</b>
@@ -187,7 +185,11 @@
 
   <main id="inicio">
 
-    <section class="container hero">
+    <section class="container hero hero-cinematic">
+      <picture class="hero-cinematic-bg" aria-hidden="true">
+        <source media="(max-width: 700px)" srcset="../src/imgs/nexus-hero-hd.webp">
+        <img src="../src/imgs/nexus-hero-wide.webp" alt="" fetchpriority="high">
+      </picture>
       <div class="hero-copy">
         <span class="eyebrow">HIGH PERFORMANCE TECHNOLOGY</span>
         <h1>Potencia tu juego.<br><span>Domina cada partida.</span></h1>
@@ -202,19 +204,6 @@
           <span><i data-lucide="zap" aria-hidden="true"></i> Rendimiento seleccionado</span>
           <span><i data-lucide="shield-check" aria-hidden="true"></i> Garantía oficial</span>
           <span><i data-lucide="truck" aria-hidden="true"></i> Envíos a todo CR</span>
-        </div>
-      </div>
-
-      <div class="hero-visual premium-hero-visual">
-        <div class="hero-orbit hero-orbit-one" aria-hidden="true"></div>
-        <div class="hero-orbit hero-orbit-two" aria-hidden="true"></div>
-        <div class="hero-particle hero-particle-one" aria-hidden="true"></div>
-        <div class="hero-particle hero-particle-two" aria-hidden="true"></div>
-        <div class="hero-line hero-line-one"></div>
-        <div class="hero-line hero-line-two"></div>
-        <div class="hero-glow"></div>
-        <div class="hero-image-stage">
-          <img class="hero-real-image" src="../src/imgs/nexus-hero-hd.png" alt="PC Gaming NEXUS">
         </div>
       </div>
     </section>
@@ -866,7 +855,7 @@
     </div>
   </div>
 
-  <button class="chat-button" id="chat-button" data-tippy-content="Abrir NEXUS AI" type="button" aria-label="Abrir NEXUS AI">
+  <button class="chat-button" id="chat-button" title="Abrir NEXUS AI" type="button" aria-label="Abrir NEXUS AI">
     <svg class="icon"><use href="#i-chat"></use></svg>
   </button>
 
@@ -917,23 +906,17 @@
   <!-- tsParticles v4 · engine + slim bundle (official CDN pattern) -->
   <script src="https://cdn.jsdelivr.net/npm/@tsparticles/engine@4/tsparticles.engine.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tsparticles/slim@4/tsparticles.slim.bundle.min.js"></script>
-  <script src="../src/js/nexus-background.js"></script>
-
-  <!-- Premium interaction libraries: all optional/progressive enhancement -->
+<!-- Premium interaction libraries: all optional/progressive enhancement -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
   <script src="https://unpkg.com/lenis@1.3.25/dist/lenis.min.js"></script>
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/swiper@14/swiper-bundle.min.js"></script>
   <script src="https://unpkg.com/lucide@1.27.0"></script>
-  <script src="https://unpkg.com/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://unpkg.com/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
 
-  <script src="../src/js/tienda.js"></script>
-  <script src="../src/js/pc-builder-data.js"></script>
-  <script src="../src/js/pc-builder.js"></script>
-  <script src="../src/js/nexus-premium.js"></script>
-  <script src="../src/js/nexus-scroll-performance.js"></script>
+ <script src="../src/js/frontend/tienda.js"></script>
+<script src="../src/js/frontend/pc-builder-data.js"></script>
+<script src="../src/js/frontend/pc-builder.js"></script>
+<script src="../src/js/frontend/nexus-premium.js"></script>
+<script src="../src/js/frontend/nexus-background.js"></script>
+<script src="../src/js/frontend/nexus-custom-selects.js"></script>
 </body>
 </html>

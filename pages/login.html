@@ -1,57 +1,47 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Sistema Administrativo</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Portal de acceso al Sistema Administrativo Web de NEXUS.">
+  <meta name="theme-color" content="#080C14">
 
-    <link rel="stylesheet" href="../src/css/login.css">
+  <title>NEXUS Control | Acceso</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="../src/css/login.css">
 </head>
-
 <body>
-    <div class="login-container">
 
-        <img src="../src/imgs/logo.png" alt="Logo" class="logo">
-
-        <h1>Sistema Administrativo</h1>
-
-        <p class="subtitulo">
-            Inicie sesión para continuar
-        </p>
-
-        <form id="loginForm">
-
-            <label for="usuario">Usuario</label>
-
-            <input
-                type="text"
-                id="usuario"
-                placeholder="Ingrese su usuario"
-                required>
-
-            <label for="password">Contraseña</label>
-
-            <input
-                type="password"
-                id="password"
-                placeholder="Ingrese su contraseña"
-                required>
-
-            <p id="mensajeError"></p>
-
-            <button type="submit">
-
-                Ingresar
-
-            </button>
-
-        </form>
-
+  <div id="login-root">
+    <div class="login-loading-state">
+      <span></span>
+      <strong>Iniciando NEXUS Control…</strong>
     </div>
+  </div>
 
-    <script src="../src/js/login.js"></script>
+  <noscript>
+    <div class="login-noscript">
+      Este portal necesita JavaScript para iniciar sesión.
+    </div>
+  </noscript>
 
+  <!-- React se usa solo en Login. El resto del proyecto continúa en HTML/CSS/JS puro. -->
+  <script
+    crossorigin
+    src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js">
+  </script>
+  <script
+    crossorigin
+    src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js">
+  </script>
+
+  <script src="../src/js/login/auth.js"></script>
+  <script src="../src/js/login/login-react.js"></script>
 </body>
-
 </html>

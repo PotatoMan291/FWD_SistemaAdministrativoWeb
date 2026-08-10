@@ -674,6 +674,10 @@ btnCerrarSesion.addEventListener(
                         CLAVE_USUARIO
                     );
 
+                    localStorage.removeItem(
+                        "usuarioLogueado"
+                    );
+
 
                     window.location.href =
                         "login.html";
@@ -688,6 +692,260 @@ btnCerrarSesion.addEventListener(
 
 );
 
+
+
+
+
+// ------------------------------------------------------
+// Vistas internas del Dashboard
+// Dashboard general / Roles
+// ------------------------------------------------------
+
+function obtenerVistaDashboardActual() {
+
+    return window.location.hash === "#roles"
+        ? "roles"
+        : "dashboard";
+
+}
+
+
+function actualizarVistaDashboard() {
+
+    const vista =
+        obtenerVistaDashboardActual();
+
+    const dashboardView =
+        document.getElementById(
+            "dashboard-view"
+        );
+
+    const rolesView =
+        document.getElementById(
+            "roles-view"
+        );
+
+    const tituloTopbar =
+        document.getElementById(
+            "topbar-section-title"
+        );
+
+
+    if (
+        vista === "roles" &&
+        window.Permisos &&
+        !Permisos.puedeGestionarRoles()
+    ) {
+
+        history.replaceState(
+            null,
+            "",
+            window.location.pathname
+        );
+
+        return actualizarVistaDashboard();
+
+    }
+
+
+    if (dashboardView) {
+
+        dashboardView.hidden =
+            vista !== "dashboard";
+
+    }
+
+
+    if (rolesView) {
+
+        rolesView.hidden =
+            vista !== "roles";
+
+    }
+
+
+    if (tituloTopbar) {
+
+        tituloTopbar.textContent =
+            vista === "roles"
+                ? "Roles y permisos"
+                : "Dashboard";
+
+    }
+
+
+    document
+        .querySelectorAll(
+            ".sidebar-link"
+        )
+        .forEach(
+            function(enlace) {
+
+                enlace.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    const enlaceActivo =
+        vista === "roles"
+            ? document.getElementById(
+                "sidebar-roles-link"
+            )
+            : document.querySelector(
+                '.sidebar-link[href*="dashboard.html"]'
+            );
+
+
+    if (enlaceActivo) {
+
+        enlaceActivo.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if (vista === "roles") {
+
+        if (window.NexusRoles) {
+
+            NexusRoles.init();
+
+            NexusRoles.refresh();
+
+        }
+
+    } else {
+
+        actualizarResumen();
+
+        mostrarPedidosDashboard();
+
+    }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "instant"
+    });
+
+}
+
+
+window.addEventListener(
+    "hashchange",
+    actualizarVistaDashboard
+);
+
+
+const btnRolesDashboard =
+    document.getElementById(
+        "btn-roles-dashboard"
+    );
+
+
+if (btnRolesDashboard) {
+
+    btnRolesDashboard.addEventListener(
+        "click",
+        function() {
+
+            history.pushState(
+                null,
+                "",
+                window.location.pathname
+            );
+
+            actualizarVistaDashboard();
+
+        }
+    );
+
+}
+
+
+// ------------------------------------------------------
+// Sincronizar resumen con cambios de LocalStorage
+// ------------------------------------------------------
+
+function refrescarDashboardSiCorresponde() {
+
+    actualizarResumen();
+
+    if (
+        obtenerVistaDashboardActual() === "roles" &&
+        window.NexusRoles
+    ) {
+
+        NexusRoles.refresh();
+
+    }
+
+}
+
+
+window.addEventListener(
+    "storage",
+    function(evento) {
+
+        if (
+            [
+                CLAVE_CLIENTES,
+                CLAVE_PRODUCTOS,
+                CLAVE_PROVEEDORES,
+                CLAVE_CATEGORIAS,
+                CLAVE_PEDIDOS,
+                "usuarios_sistema",
+                "permisos_roles"
+            ].includes(
+                evento.key
+            )
+        ) {
+
+            refrescarDashboardSiCorresponde();
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "focus",
+    refrescarDashboardSiCorresponde
+);
+
+
+window.addEventListener(
+    "pageshow",
+    refrescarDashboardSiCorresponde
+);
+
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            refrescarDashboardSiCorresponde();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "nexus:data-changed",
+    refrescarDashboardSiCorresponde
+);
 
 
 // ------------------------------------------------------
@@ -723,6 +981,9 @@ document.addEventListener(
 
 
         mostrarPedidosDashboard();
+
+
+        actualizarVistaDashboard();
 
 
     }
