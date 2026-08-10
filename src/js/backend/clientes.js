@@ -390,7 +390,13 @@ formCliente.addEventListener(
                     correo,
 
                 telefono:
-                    telefono
+                    telefono,
+
+                rol:
+                    "Cliente",
+
+                rolAsignado:
+                    "Cliente"
 
             };
 
@@ -470,6 +476,8 @@ formCliente.addEventListener(
 
                                 return {
 
+                                    ...cliente,
+
                                     id:
                                         cliente.id,
 
@@ -480,7 +488,22 @@ formCliente.addEventListener(
                                         correo,
 
                                     telefono:
-                                        telefono
+                                        telefono,
+
+                                    usuario:
+                                        (
+                                            cliente.usuario &&
+                                            String(cliente.usuario).toLowerCase() ===
+                                            String(cliente.correo || "").toLowerCase()
+                                        )
+                                            ? correo
+                                            : cliente.usuario,
+
+                                    rol:
+                                        cliente.rol || cliente.rolAsignado || "Cliente",
+
+                                    rolAsignado:
+                                        cliente.rolAsignado || cliente.rol || "Cliente"
 
                                 };
 

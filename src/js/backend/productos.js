@@ -1288,6 +1288,20 @@ formProducto.addEventListener(
 
         event.preventDefault();
 
+        const permisoIdActual =
+            productoId.value;
+
+        if (
+            window.Permisos &&
+            !Permisos.exigir(
+                permisoIdActual === ""
+                    ? "crear"
+                    : "editar"
+            )
+        ) {
+            return;
+        }
+
         if (procesandoImagenProducto) {
 
             mensajeProducto.textContent =
@@ -1472,6 +1486,13 @@ formProducto.addEventListener(
 // ------------------------------------------------------
 function editarProducto(id) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir("editar")
+    ) {
+        return;
+    }
+
     const productos =
         obtenerProductos();
 
@@ -1574,6 +1595,13 @@ function obtenerPedidosAsociadosProducto(idProducto) {
 // Eliminar producto
 // ------------------------------------------------------
 function eliminarProducto(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir("eliminar")
+    ) {
+        return;
+    }
 
     const pedidosAsociados =
         obtenerPedidosAsociadosProducto(

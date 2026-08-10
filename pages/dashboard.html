@@ -26,6 +26,7 @@
         href="../src/css/dashboard.css?v=2"
     >
 
+  <link rel="stylesheet" href="../src/css/permisos.css">
 </head>
 
 
@@ -198,8 +199,7 @@
 
             <!-- NUEVA OPCIÓN DE ROLES EN EL MENÚ -->
             <a
-                href="roles.html"
-                class="sidebar-link"
+                href="#roles" class="sidebar-link" id="sidebar-roles-link" data-dashboard-view="roles"
             >
 
                 <span class="sidebar-icon">
@@ -292,7 +292,7 @@
                         Administración
                     </span>
 
-                    <strong>
+                    <strong id="topbar-section-title">
                         Dashboard
                     </strong>
 
@@ -379,6 +379,8 @@
              ================================================== -->
 
         <main class="page-content">
+            <div id="dashboard-view" class="dashboard-view">
+
 
 
             <!-- Encabezado -->
@@ -727,8 +729,7 @@
 
                         <!-- NUEVO ACCESO RÁPIDO A ROLES -->
                         <a
-                            href="roles.html"
-                            class="quick-action"
+                            href="#roles" class="quick-action" data-dashboard-view="roles"
                         >
 
                             <span class="quick-action-icon" style="background-color: #f59e0b; color: #fff;">
@@ -916,6 +917,227 @@
             </section>
 
 
+        
+            </div>
+
+            <!-- ==================================================
+                 ROLES Y PERMISOS · VISTA INTEGRADA
+                 ================================================== -->
+            <section
+                id="roles-view"
+                class="dashboard-view dashboard-roles-view"
+                hidden
+                aria-labelledby="roles-view-title"
+            >
+                <section class="page-heading roles-dashboard-heading">
+                    <div>
+                        <div class="eyebrow">
+                            <span class="eyebrow-icon">
+                                <i class="bi bi-shield-lock"></i>
+                            </span>
+                            CONTROL DE ACCESO
+                        </div>
+
+                        <h1 id="roles-view-title">Roles, usuarios y permisos</h1>
+
+                        <p>
+                            Gestiona Administradores, Operadores y Clientes desde el mismo
+                            Dashboard, sin salir del panel administrativo.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="roles-return-dashboard"
+                        id="btn-roles-dashboard"
+                    >
+                        <i class="bi bi-arrow-left"></i>
+                        Volver al panel general
+                    </button>
+                </section>
+
+                <section class="roles-dashboard-stats">
+                    <article class="metric-card">
+                        <div class="metric-icon bg-purple">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <div class="metric-content">
+                            <span>Roles del sistema</span>
+                            <strong>3</strong>
+                            <small>Administrador · Operador · Cliente</small>
+                        </div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-icon bg-blue">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div class="metric-content">
+                            <span>Usuarios internos</span>
+                            <strong id="summary-system-users">0</strong>
+                            <small>Administradores y operadores</small>
+                        </div>
+                    </article>
+
+                    <article class="metric-card">
+                        <div class="metric-icon bg-green">
+                            <i class="bi bi-people"></i>
+                        </div>
+                        <div class="metric-content">
+                            <span>Clientes</span>
+                            <strong id="summary-clients">0</strong>
+                            <small>Registrados desde Login o Clientes</small>
+                        </div>
+                    </article>
+                </section>
+
+                <section class="content-card">
+                    <div class="card-header">
+                        <div>
+                            <h2>Roles del sistema</h2>
+                            <p>Los tres perfiles mantienen responsabilidades claramente separadas.</p>
+                        </div>
+                        <div class="header-icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="dashboard-role-definitions" id="roles-definition-grid"></div>
+                    </div>
+                </section>
+
+                <section class="dashboard-roles-grid">
+                    <section class="content-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Crear usuario interno</h2>
+                                <p>Crea cuentas para Administradores u Operadores.</p>
+                            </div>
+                            <div class="header-icon">
+                                <i class="bi bi-person-plus"></i>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <form id="form-internal-user" class="dashboard-role-form">
+                                <label>
+                                    <span>Nombre</span>
+                                    <input
+                                        id="internal-name"
+                                        maxlength="100"
+                                        required
+                                        placeholder="Nombre del usuario"
+                                    >
+                                </label>
+
+                                <label>
+                                    <span>Usuario</span>
+                                    <input
+                                        id="internal-username"
+                                        maxlength="80"
+                                        required
+                                        placeholder="usuario"
+                                    >
+                                </label>
+
+                                <label>
+                                    <span>Contraseña</span>
+                                    <input
+                                        id="internal-password"
+                                        type="password"
+                                        minlength="4"
+                                        required
+                                        placeholder="••••••••"
+                                    >
+                                </label>
+
+                                <label>
+                                    <span>Rol</span>
+                                    <select id="internal-role" required>
+                                        <option value="Operador">Operador</option>
+                                        <option value="Administrador">Administrador</option>
+                                    </select>
+                                </label>
+
+                                <button type="submit" class="roles-dashboard-primary">
+                                    <i class="bi bi-person-plus"></i>
+                                    Crear usuario
+                                </button>
+
+                                <p id="internal-user-message" class="dashboard-role-message"></p>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section class="content-card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Permisos del Operador</h2>
+                                <p>
+                                    El Administrador conserva acceso total y el Cliente
+                                    permanece limitado a NEXUS Store.
+                                </p>
+                            </div>
+                            <div class="header-icon">
+                                <i class="bi bi-sliders"></i>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="dashboard-permissions-list" id="permissions-list"></div>
+
+                            <button
+                                type="button"
+                                class="roles-dashboard-primary"
+                                id="btn-save-permissions"
+                            >
+                                <i class="bi bi-floppy"></i>
+                                Guardar permisos
+                            </button>
+                        </div>
+                    </section>
+                </section>
+
+                <section class="content-card">
+                    <div class="card-header dashboard-roles-users-header">
+                        <div>
+                            <h2>Usuarios y clientes</h2>
+                            <p>
+                                Los clientes registrados desde el Login aparecen aquí
+                                automáticamente con el rol Cliente.
+                            </p>
+                        </div>
+
+                        <label class="dashboard-roles-search">
+                            <i class="bi bi-search"></i>
+                            <input
+                                id="roles-search-input"
+                                type="search"
+                                placeholder="Buscar por nombre, usuario o correo..."
+                            >
+                        </label>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="dashboard-roles-table-wrap">
+                            <table class="dashboard-roles-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta</th>
+                                        <th>Origen</th>
+                                        <th>Usuario / correo</th>
+                                        <th>Rol</th>
+                                        <th>Acceso</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roles-users-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
         </main>
 
 
@@ -933,11 +1155,12 @@
 
     <!-- Dashboard JS -->
 
-    <script defer src="../src/js/permisos.js"></script>
+    <script defer src="../src/js/backend/permisos.js"></script>
 <script
         defer
-        src="../src/js/dashboard.js"
+        src="../src/js/backend/dashboard.js"
     ></script>
+    <script defer src="../src/js/backend/roles.js"></script>
 
 
 </body>

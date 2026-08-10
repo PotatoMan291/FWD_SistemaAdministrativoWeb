@@ -123,6 +123,7 @@
         }
     </style>
 
+  <link rel="stylesheet" href="../src/css/permisos.css">
 </head>
 
 <body>
@@ -178,7 +179,14 @@
                     <span class="sidebar-icon"><i class="bi bi-receipt"></i></span>
                     <span>Pedidos</span>
                 </a>
-        </nav>
+        
+            <a href="dashboard.html#roles" class="sidebar-link" data-admin-role-link>
+                <span class="sidebar-icon">
+                    <i class="bi bi-shield-lock"></i>
+                </span>
+                <span>Roles</span>
+            </a>
+</nav>
 
         <div class="sidebar-bottom">
             <div class="storage-card">
@@ -551,10 +559,11 @@
 
     <script defer src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@6.7.0/dist/apexcharts.min.js"></script>
-    <script defer src="../src/js/csv-import.js"></script>
-    <script defer src="../src/js/categorias.js"></script>
-    <script defer src="../src/js/pdf-export.js"></script>
-    <script defer src="../src/js/categorias-enhancements.js"></script>
+    <script defer src="../src/js/backend/permisos.js"></script>
+    <script defer src="../src/js/backend/csv-import.js"></script>
+    <script defer src="../src/js/backend/categorias.js"></script>
+    <script defer src="../src/js/backend/pdf-export.js"></script>
+    <script defer src="../src/js/backend/categorias-enhancements.js"></script>
 
 </body>
 </html>

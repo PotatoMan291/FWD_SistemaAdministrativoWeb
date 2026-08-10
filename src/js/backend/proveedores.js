@@ -886,6 +886,20 @@ formProveedor.addEventListener(
 
         event.preventDefault();
 
+        const permisoIdActual =
+            proveedorId.value;
+
+        if (
+            window.Permisos &&
+            !Permisos.exigir(
+                permisoIdActual === ""
+                    ? "crear"
+                    : "editar"
+            )
+        ) {
+            return;
+        }
+
         const id =
             proveedorId.value;
 
@@ -1059,6 +1073,13 @@ formProveedor.addEventListener(
 // ------------------------------------------------------
 function editarProveedor(id) {
 
+    if (
+        window.Permisos &&
+        !Permisos.exigir("editar")
+    ) {
+        return;
+    }
+
     const proveedores =
         obtenerProveedores();
 
@@ -1115,6 +1136,13 @@ function editarProveedor(id) {
 // Eliminar proveedor
 // ------------------------------------------------------
 function eliminarProveedor(id) {
+
+    if (
+        window.Permisos &&
+        !Permisos.exigir("eliminar")
+    ) {
+        return;
+    }
 
     const productos =
         obtenerProductos();

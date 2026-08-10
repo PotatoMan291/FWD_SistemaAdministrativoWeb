@@ -1,0 +1,30 @@
+/* NEXUS · Rol visible en Admin */
+.nexus-role-badge,
+#rolUsuario {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  margin-left: 8px;
+  padding: 0 8px;
+  border: 1px solid rgba(59,130,246,.20);
+  border-radius: 999px;
+  color: #2563eb;
+  background: rgba(59,130,246,.08);
+  font-size: 10px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.nexus-role-badge[data-role="Administrador"],
+#rolUsuario[data-role="Administrador"] {
+  color: #b76b00;
+  border-color: rgba(245,158,11,.25);
+  background: rgba(245,158,11,.10);
+}
+
+.nexus-role-badge[data-role="Cliente"],
+#rolUsuario[data-role="Cliente"] {
+  color: #6d28d9;
+  border-color: rgba(124,58,237,.22);
+  background: rgba(124,58,237,.08);
+}

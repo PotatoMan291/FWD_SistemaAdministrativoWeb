@@ -1553,7 +1553,14 @@ function confirmCheckout(event) {
   const clients = oldClients.slice();
   let client = clients.find(c => normalize(c.correo) === normalize(correo));
   if (!client) {
-    client = { id: makeId(), nombre, correo, telefono };
+    client = {
+      id: makeId(),
+      nombre,
+      correo,
+      telefono,
+      rol: "Cliente",
+      rolAsignado: "Cliente"
+    };
     clients.push(client);
   }
 
@@ -1631,9 +1638,12 @@ function renderSession() {
   if (user) {
     const name = safeText(user.nombre || user.usuario || "Usuario", 40).split(" ")[0];
     text.textContent = "Hola, " + name;
-    link.href = "dashboard.html";
-    mobile.href = "dashboard.html";
-    mobile.textContent = "Mi cuenta";
+    const clientRole =
+      String(user.rol || user.rolAsignado || "").toLowerCase() === "cliente";
+
+    link.href = clientRole ? "login.html" : "dashboard.html";
+    mobile.href = clientRole ? "login.html" : "dashboard.html";
+    mobile.textContent = clientRole ? "Mi cuenta" : "Panel";
   } else {
     text.textContent = "Iniciar sesión";
     link.href = "login.html";
